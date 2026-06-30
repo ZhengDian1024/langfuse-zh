@@ -1,0 +1,23 @@
+{
+  "settings.language": "语言",
+  "settings.language.english": "English",
+  "settings.language.chinese": "中文",
+  "setup.traces.copy.failed": "复制到剪贴板失败",
+  "setup.traces.copy.copied": "已复制",
+  "setup.traces.copy.prompt": "复制提示词",
+  "setup.traces.waiting": "等待第一条 trace",
+  "setup.traces.title": "开始记录你的第一条 trace，只需要一分钟",
+  "setup.traces.description": "先获取 API keys，然后让你的编码智能体为应用接入 Langfuse 可观测能力。",
+  "setup.traces.step.create-api-keys.title": "创建 API keys",
+  "setup.traces.step.create-api-keys.description": "你的应用需要 API keys 才能向 Langfuse 发送 traces。",
+  "setup.traces.create-api-key.failed": "创建 API key 失败",
+  "setup.traces.create-new-api-key": "创建新的 API key",
+  "setup.traces.manage-api-keys": "管理 API keys",
+  "setup.traces.step.agent.title": "使用编码智能体添加 tracing",
+  "setup.traces.recommended": "推荐",
+  "setup.traces.step.agent.description": "将这段提示词粘贴到 Claude、Cursor、Copilot 或其他编码智能体中。",
+  "setup.traces.agent.prompt": "从 github.com/langfuse/skills 安装 Langfuse AI skill，并按照最佳实践使用 Langfuse 为这个应用添加 tracing。",
+  "setup.traces.manual-docs-link": "或按照文档手动设置 tracing",
+  "setup.traces.step.run-app.title": "运行你的应用 — traces 会显示在这里",
+  "setup.traces.step.run-app.description": "当你的应用发起 LLM 调用后，traces 会在几秒内显示。"
+}

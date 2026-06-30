@@ -1,0 +1,23 @@
+{
+  "settings.language": "Language",
+  "settings.language.english": "English",
+  "settings.language.chinese": "中文",
+  "setup.traces.copy.failed": "Failed to copy to clipboard",
+  "setup.traces.copy.copied": "Copied",
+  "setup.traces.copy.prompt": "Copy prompt",
+  "setup.traces.waiting": "Waiting for first trace",
+  "setup.traces.title": "Time to log your first trace, it only takes a minute",
+  "setup.traces.description": "Get your API keys first, then ask your coding agent to add observability with Langfuse to your application.",
+  "setup.traces.step.create-api-keys.title": "Create API keys",
+  "setup.traces.step.create-api-keys.description": "Your application needs API keys to send traces to Langfuse.",
+  "setup.traces.create-api-key.failed": "Failed to create API key",
+  "setup.traces.create-new-api-key": "Create new API key",
+  "setup.traces.manage-api-keys": "Manage API keys",
+  "setup.traces.step.agent.title": "Add tracing with your coding agent",
+  "setup.traces.recommended": "Recommended",
+  "setup.traces.step.agent.description": "Paste this prompt into Claude, Cursor, Copilot, or another coding agent.",
+  "setup.traces.agent.prompt": "Install the Langfuse AI skill from github.com/langfuse/skills and use it to add tracing to this application with Langfuse following best practices.",
+  "setup.traces.manual-docs-link": "or follow our docs to set up tracing manually",
+  "setup.traces.step.run-app.title": "Run your app — traces will appear here",
+  "setup.traces.step.run-app.description": "Once your app makes an LLM call, traces show up within seconds."
+}
