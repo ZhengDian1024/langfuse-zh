@@ -16,7 +16,7 @@ const i18nMessages = {
 };
 
 export type AppLanguage = keyof typeof i18nMessages;
-type MessageKey = keyof (typeof i18nMessages)["en"];
+export type MessageKey = keyof (typeof i18nMessages)["en"];
 
 type I18nContextValue = {
   language: AppLanguage;

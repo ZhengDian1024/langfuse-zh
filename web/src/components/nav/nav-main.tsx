@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { type ReactNode } from "react";
 import { type RouteGroup } from "@/src/components/layouts/routes";
+import { useI18n, type MessageKey } from "@/src/features/i18n/useI18n";
 
 export type NavMainItem = {
   title: string;
@@ -54,6 +55,8 @@ export function NavMain({
     ungrouped: NavMainItem[];
   };
 }) {
+  const { t } = useI18n();
+
   return (
     <>
       <SidebarGroup>
@@ -83,7 +86,7 @@ export function NavMain({
       {items.grouped &&
         Object.entries(items.grouped).map(([group, items]) => (
           <SidebarGroup key={group}>
-            <SidebarGroupLabel>{group}</SidebarGroupLabel>
+            <SidebarGroupLabel>{t(group as MessageKey)}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (

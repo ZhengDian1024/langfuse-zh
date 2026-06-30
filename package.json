@@ -47,8 +47,7 @@
     "storybook": "pnpm --filter web run storybook",
     "test": "turbo run test",
     "release": "bash ./scripts/release-preflight.sh && dotenv -e ../.env -- release-it",
-    "release:cloud": "bash ./scripts/release-cloud.sh",
-    "prepare": "husky"
+    "release:cloud": "bash ./scripts/release-cloud.sh"
   },
   "devDependencies": {
     "@release-it/bumper": "^7.0.6",
