@@ -20,9 +20,11 @@ import {
 import { Card } from "@/src/components/ui/card";
 import { LockIcon, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function AIFeatureSwitch() {
   const { update: updateSession } = useSession();
+  const { t } = useI18n();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const capture = usePostHogClientCapture();
   const organization = useQueryOrganization();
@@ -113,26 +115,24 @@ export default function AIFeatureSwitch() {
 
   return (
     <div>
-      <Header title="AI Features" />
+      <Header title={t("ai-features.title")} />
       <Card className="mb-4 p-3">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-col gap-1">
             <h4 className="font-semibold">
-              Enable AI powered features for your organization
+              {t("ai-features.enable-title")}
             </h4>
             <p className="text-sm">
-              This setting applies to all users and projects. Any data{" "}
-              <i>can</i> be sent to AWS Bedrock within the Langfuse data region.
-              Traces are sent to Langfuse Cloud in your data region. Your data
-              will not be used for training models. Applicable HIPAA, SOC2,
-              GDPR, and ISO 27001 compliance remains intact.{" "}
+              {t("ai-features.enable-description-before")}
+              <i>{t("ai-features.enable-description-can")}</i>
+              {t("ai-features.enable-description-after")}{" "}
               <a
                 href="https://langfuse.com/security/ai-features"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary inline-flex items-center gap-1 hover:underline"
               >
-                More details in the docs here.
+                {t("ai-features.more-details")}
                 <ExternalLink className="h-3 w-3" />
               </a>
             </p>
@@ -144,7 +144,7 @@ export default function AIFeatureSwitch() {
               disabled={!hasAccess}
             />
             {!hasAccess && (
-              <span title="No access">
+              <span title={t("organization.no-access")}>
                 <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
               </span>
             )}
@@ -154,11 +154,10 @@ export default function AIFeatureSwitch() {
           <div className="mt-4 flex flex-row items-center justify-between border-t pt-4">
             <div className="flex flex-col gap-1">
               <h4 className="font-semibold">
-                AI Data Use for Product/Service Improvement
+                {t("ai-features.telemetry-title")}
               </h4>
               <p className="text-sm">
-                Share data about your use of AI with Langfuse for product and
-                service improvement.
+                {t("ai-features.telemetry-description")}
               </p>
             </div>
             <div className="relative">
@@ -168,7 +167,7 @@ export default function AIFeatureSwitch() {
                 disabled={!hasAccess || updateAITelemetry.isPending}
               />
               {!hasAccess && (
-                <span title="No access">
+                <span title={t("organization.no-access")}>
                   <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
                 </span>
               )}
@@ -187,17 +186,19 @@ export default function AIFeatureSwitch() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm AI Features Change</DialogTitle>
+            <DialogTitle>{t("ai-features.confirm-title")}</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <span className="text-sm">
-              You are about to{" "}
+              {t("ai-features.confirm-before")}{" "}
               <strong>
-                {isAIFeatureSwitchEnabled ? "enable " : "disable"}
+                {isAIFeatureSwitchEnabled
+                  ? t("ai-features.confirm-action-enable")
+                  : t("ai-features.confirm-action-disable")}
               </strong>{" "}
-              AI features for your organization. When enabled, any data{"  "}
-              <i>can</i> be sent to AWS Bedrock in your data region for
-              processing.
+              {t("ai-features.confirm-after")}
+              <i>{t("ai-features.enable-description-can")}</i>
+              {t("ai-features.confirm-processing")}
               <br />
               <br />{" "}
               <a
@@ -206,12 +207,12 @@ export default function AIFeatureSwitch() {
                 rel="noopener noreferrer"
                 className="text-primary inline-flex items-center gap-1 hover:underline"
               >
-                Learn more in the docs.
+                {t("ai-features.learn-more")}
                 <ExternalLink className="h-3 w-3" />
               </a>
             </span>
             <p className="text-muted-foreground mt-3 text-sm">
-              Are you sure you want to proceed?
+              {t("ai-features.proceed")}
             </p>
           </DialogBody>
           <DialogFooter>
@@ -222,14 +223,14 @@ export default function AIFeatureSwitch() {
                 disabled={updateAIFeatures.isPending}
                 onClick={handleCancel}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"
                 onClick={handleConfirm}
                 loading={updateAIFeatures.isPending}
               >
-                Confirm
+                {t("common.confirm")}
               </Button>
             </div>
           </DialogFooter>

@@ -30,6 +30,7 @@ import { useAuthGuard } from "./hooks/useAuthGuard";
 import { useProjectAccess } from "./hooks/useProjectAccess";
 import { useFilteredNavigation } from "./hooks/useFilteredNavigation";
 import { useLayoutMetadata } from "./hooks/useLayoutMetadata";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Main layout component
@@ -41,6 +42,7 @@ import { useLayoutMetadata } from "./hooks/useLayoutMetadata";
  */
 export function AppLayout(props: PropsWithChildren) {
   const router = useRouter();
+  const { t } = useI18n();
   const session = useAuthSession();
   const { organization } = useQueryProjectOrOrganization();
 
@@ -78,7 +80,7 @@ export function AppLayout(props: PropsWithChildren) {
     authGuard.action === "redirect" ||
     authGuard.action === "sign-out"
   ) {
-    return <LoadingLayout message={authGuard.message} />;
+    return <LoadingLayout message={t(authGuard.messageKey)} />;
   }
 
   // Project access denied - handle based on path type
@@ -92,10 +94,10 @@ export function AppLayout(props: PropsWithChildren) {
     // For non-publishable paths, show error page
     return (
       <ErrorPageWithSentry
-        title="Project Not Found"
-        message="The project you are trying to access does not exist or you do not have access to it."
+        title={t("layout.project-not-found.title")}
+        message={t("layout.project-not-found.message")}
         additionalButton={{
-          label: "Go to Home",
+          label: t("layout.go-to-home"),
           href: "/",
         }}
       />
@@ -124,7 +126,7 @@ export function AppLayout(props: PropsWithChildren) {
   // The authGuard hook ensures we don't reach here without a valid session
   if (!session.data) {
     // This should never happen due to guards above, but TypeScript needs this
-    return <LoadingLayout message="Loading" />;
+    return <LoadingLayout message={t("layout.loading")} />;
   }
 
   const handleSignOut = async () => {

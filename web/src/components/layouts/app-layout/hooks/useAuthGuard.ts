@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { PATH_CONSTANTS } from "../utils/pathClassification";
 import { getSafeRedirectPath, stripBasePath } from "@/src/utils/redirect";
 import type { SessionContextValue } from "next-auth/react";
+import { type MessageKey } from "@/src/features/i18n/useI18n";
 
 /** Actions the auth guard can request */
 export type AuthGuardAction = "allow" | "loading" | "redirect" | "sign-out";
@@ -15,9 +16,9 @@ export type AuthGuardAction = "allow" | "loading" | "redirect" | "sign-out";
 /** Result of auth guard evaluation */
 export type AuthGuardResult =
   | { action: "allow" }
-  | { action: "loading"; message: string }
-  | { action: "redirect"; url: string; message: string }
-  | { action: "sign-out"; message: string };
+  | { action: "loading"; messageKey: MessageKey }
+  | { action: "redirect"; url: string; messageKey: MessageKey }
+  | { action: "sign-out"; messageKey: MessageKey };
 
 /**
  * Evaluates authentication state and determines appropriate action
@@ -41,7 +42,7 @@ export function useAuthGuard(
 
     // Loading state
     if (session.status === "loading") {
-      return { action: "loading", message: "Loading" };
+      return { action: "loading", messageKey: "layout.loading" };
     }
 
     const isUnauthPath = PATH_CONSTANTS.unauthenticated.some((p) =>
@@ -77,7 +78,7 @@ export function useAuthGuard(
       !isPublishable &&
       !isPublicPath
     ) {
-      return { action: "sign-out", message: "Redirecting" };
+      return { action: "sign-out", messageKey: "layout.redirecting" };
     }
 
     // Unauthenticated user trying to access protected route
@@ -101,7 +102,7 @@ export function useAuthGuard(
       return {
         action: "redirect",
         url: `/auth/sign-in${targetPathQuery}`,
-        message: "Redirecting",
+        messageKey: "layout.redirecting",
       };
     }
 
@@ -113,7 +114,7 @@ export function useAuthGuard(
       return {
         action: "redirect",
         url: routerRedirectUrl,
-        message: "Redirecting",
+        messageKey: "layout.redirecting",
       };
     }
 

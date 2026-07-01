@@ -1,5 +1,3 @@
-import enMessages from "../../../i18n/en.json";
-import zhMessages from "../../../i18n/zh.json";
 import {
   createContext,
   useCallback,
@@ -9,28 +7,29 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
+import {
+  DEFAULT_LANGUAGE,
+  isAppLanguage,
+  translate,
+  type AppLanguage,
+  type MessageKey,
+} from "@/src/features/i18n/messages";
 
-const i18nMessages = {
-  en: enMessages,
-  zh: zhMessages,
-};
-
-export type AppLanguage = keyof typeof i18nMessages;
-export type MessageKey = keyof (typeof i18nMessages)["en"];
+export type { AppLanguage, MessageKey } from "@/src/features/i18n/messages";
 
 type I18nContextValue = {
   language: AppLanguage;
   setLanguage: (language: AppLanguage) => void;
-  t: (key: MessageKey) => string;
+  t: (
+    key: MessageKey,
+    defaultMessageOrValues?: string | Record<string, string>,
+    values?: Record<string, string>,
+  ) => string;
 };
 
 const LANGUAGE_STORAGE_KEY = "langfuse-language";
-const DEFAULT_LANGUAGE: AppLanguage = "en";
 
 const I18nContext = createContext<I18nContextValue | null>(null);
-
-const isAppLanguage = (language: string): language is AppLanguage =>
-  language in i18nMessages;
 
 export function I18nProvider({ children }: PropsWithChildren) {
   const [language, setLanguageState] = useState<AppLanguage>(DEFAULT_LANGUAGE);
@@ -49,7 +48,11 @@ export function I18nProvider({ children }: PropsWithChildren) {
   }, []);
 
   const t = useCallback(
-    (key: MessageKey) => i18nMessages[language][key] ?? i18nMessages.en[key],
+    (
+      key: MessageKey,
+      defaultMessageOrValues?: string | Record<string, string>,
+      values?: Record<string, string>,
+    ) => translate(key, defaultMessageOrValues, values, language),
     [language],
   );
 

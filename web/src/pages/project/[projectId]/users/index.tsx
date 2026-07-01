@@ -33,6 +33,7 @@ import {
   convertSelectedEnvironmentsToFilter,
 } from "@/src/hooks/useEnvironmentFilter";
 import { Badge } from "@/src/components/ui/badge";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type RowData = {
   userId: string;
@@ -46,6 +47,7 @@ type RowData = {
 
 export default function UsersPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const projectId = router.query.projectId as string;
   const { isBetaEnabled } = useV4Beta();
 
@@ -84,12 +86,14 @@ export default function UsersPage() {
   return (
     <Page
       headerProps={{
-        title: "Users",
+        title: t("nav.users", "Users"),
         help: {
           description: (
             <>
-              Attribute data in Langfuse to a user by adding a userId to your
-              traces. See{" "}
+              {t(
+                "users.help.description-before",
+                "Attribute data in Langfuse to a user by adding a userId to your traces. See ",
+              )}
               <a
                 href="https://langfuse.com/docs/observability/features/users"
                 target="_blank"
@@ -97,9 +101,9 @@ export default function UsersPage() {
                 className="decoration-primary/30 hover:decoration-primary underline"
                 onClick={(e) => e.stopPropagation()}
               >
-                docs
-              </a>{" "}
-              to learn more.
+                {t("users.help.docs", "docs")}
+              </a>
+              {t("users.help.description-after", " to learn more.")}
             </>
           ),
           href: "https://langfuse.com/docs/observability/features/users",
@@ -119,6 +123,7 @@ export default function UsersPage() {
 
 const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const projectId = router.query.projectId as string;
 
   const [userFilterState, setUserFilterState] = useQueryFilterState(
@@ -287,10 +292,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     {
       accessorKey: "userId",
       enableColumnFilter: true,
-      header: "User ID",
+      header: t("users.table.user-id", "User ID"),
       headerTooltip: {
-        description:
+        description: t(
+          "users.table.user-id-description",
           "The unique identifier for the user that was logged in Langfuse. See docs for more details on how to set this up.",
+        ),
         href: "https://langfuse.com/docs/observability/features/users",
       },
       size: 150,
@@ -308,7 +315,7 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "environment",
-      header: "Environment",
+      header: t("dashboard.filter.environment", "Environment"),
       id: "environment",
       size: 150,
       enableHiding: true,
@@ -327,9 +334,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "firstEvent",
-      header: "First Event",
+      header: t("users.table.first-event", "First Event"),
       headerTooltip: {
-        description: "The earliest trace recorded for this user.",
+        description: t(
+          "users.table.first-event-description",
+          "The earliest trace recorded for this user.",
+        ),
       },
       size: 150,
       loadingCell: <TableTextLoadingCell />,
@@ -343,9 +353,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "lastEvent",
-      header: "Last Event",
+      header: t("users.table.last-event", "Last Event"),
       headerTooltip: {
-        description: "The latest trace recorded for this user.",
+        description: t(
+          "users.table.last-event-description",
+          "The latest trace recorded for this user.",
+        ),
       },
       size: 150,
       loadingCell: <TableTextLoadingCell />,
@@ -359,10 +372,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "totalEvents",
-      header: "Total Events",
+      header: t("users.table.total-events", "Total Events"),
       headerTooltip: {
-        description:
+        description: t(
+          "users.table.total-events-description",
           "Total number of events for the user, includes traces and observations. See data model for more details.",
+        ),
         href: "https://langfuse.com/docs/observability/data-model",
       },
       size: 120,
@@ -377,10 +392,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "totalTokens",
-      header: "Total Tokens",
+      header: t("users.table.total-tokens", "Total Tokens"),
       headerTooltip: {
-        description:
+        description: t(
+          "users.table.total-tokens-description",
           "Total number of tokens used for the user across all generations.",
+        ),
         href: "https://langfuse.com/docs/model-usage-and-cost",
       },
       size: 120,
@@ -395,9 +412,12 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
     },
     {
       accessorKey: "totalCost",
-      header: "Total Cost",
+      header: t("users.table.total-cost", "Total Cost"),
       headerTooltip: {
-        description: "Total cost for the user across all generations.",
+        description: t(
+          "users.table.total-cost-description",
+          "Total cost for the user across all generations.",
+        ),
         href: "https://langfuse.com/docs/model-usage-and-cost",
       },
       size: 120,
@@ -422,7 +442,7 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
         timeRange={timeRange}
         setTimeRange={setTimeRange}
         searchConfig={{
-          metadataSearchFields: ["User ID"],
+          metadataSearchFields: [t("users.table.user-id", "User ID")],
           updateQuery: setSearchQuery,
           currentQuery: searchQuery ?? undefined,
           tableAllowsFullTextSearch: false,
@@ -450,23 +470,25 @@ const UsersTable = ({ isBetaEnabled }: { isBetaEnabled: boolean }) => {
               : {
                   isLoading: false,
                   isError: false,
-                  data: userRowData.rows?.map((t) => {
+                  data: userRowData.rows?.map((row) => {
                     return {
-                      userId: t.id,
-                      environment: t.environment ?? undefined,
+                      userId: row.id,
+                      environment: row.environment ?? undefined,
                       firstEvent:
-                        t.firstTrace?.toLocaleString() ?? "No event yet",
+                        row.firstTrace?.toLocaleString() ??
+                        t("users.table.no-event-yet", "No event yet"),
                       lastEvent:
-                        t.lastTrace?.toLocaleString() ?? "No event yet",
+                        row.lastTrace?.toLocaleString() ??
+                        t("users.table.no-event-yet", "No event yet"),
                       totalEvents: compactNumberFormatter(
                         isBetaEnabled
-                          ? Number(t.totalObservations ?? 0)
-                          : Number(t.totalTraces ?? 0) +
-                              Number(t.totalObservations ?? 0),
+                          ? Number(row.totalObservations ?? 0)
+                          : Number(row.totalTraces ?? 0) +
+                              Number(row.totalObservations ?? 0),
                       ),
-                      totalTokens: compactNumberFormatter(t.totalTokens ?? 0),
+                      totalTokens: compactNumberFormatter(row.totalTokens ?? 0),
                       totalCost: usdFormatter(
-                        t.sumCalculatedTotalCost ?? 0,
+                        row.sumCalculatedTotalCost ?? 0,
                         2,
                         2,
                       ),

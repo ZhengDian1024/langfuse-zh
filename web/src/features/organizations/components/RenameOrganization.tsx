@@ -19,9 +19,11 @@ import { useQueryOrganization } from "@/src/features/organizations/hooks";
 import { Card } from "@/src/components/ui/card";
 import { LockIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function RenameOrganization() {
   const { update: updateSession } = useSession();
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const organization = useQueryOrganization();
   const hasAccess = useHasOrganizationAccess({
@@ -63,19 +65,18 @@ export default function RenameOrganization() {
 
   return (
     <div>
-      <Header title="Organization Name" />
+      <Header title={t("organization.name.title")} />
       <Card className="mb-4 p-3">
         {form.getValues().name !== "" ? (
           <p className="text-primary mb-4 text-sm">
-            Your Organization will be renamed from &quot;
-            {orgName}
-            &quot; to &quot;
-            <b>{form.watch().name}</b>&quot;.
+            {t("organization.rename.preview", {
+              currentName: orgName,
+              nextName: form.watch().name,
+            })}
           </p>
         ) : (
           <p className="mb-4 text-sm">
-            Your Organization is currently named &quot;<b>{orgName}</b>
-            &quot;.
+            {t("organization.rename.current", { name: orgName })}
           </p>
         )}
         <Form {...form}>
@@ -98,7 +99,7 @@ export default function RenameOrganization() {
                         disabled={!hasAccess}
                       />
                       {!hasAccess && (
-                        <span title="No access">
+                        <span title={t("organization.no-access")}>
                           <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
                         </span>
                       )}
@@ -116,7 +117,7 @@ export default function RenameOrganization() {
                 disabled={form.getValues().name === "" || !hasAccess}
                 className="mt-4"
               >
-                Save
+                {t("common.save")}
               </Button>
             )}
           </form>

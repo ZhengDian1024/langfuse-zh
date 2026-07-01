@@ -28,15 +28,35 @@ import {
 import { isCloudPlan, planLabels } from "@langfuse/shared";
 import Link from "next/link";
 import { Badge } from "@/src/components/ui/badge";
+import { useI18n, type MessageKey } from "@/src/features/i18n/useI18n";
 
-const LoadingMenuItem = () => (
-  <DropdownMenuItem>
-    <span className="mr-1.5 inline-flex">
-      <Spinner size="sm" />
-    </span>
-    Loading...
-  </DropdownMenuItem>
-);
+const breadcrumbNameKeyMap: Record<string, MessageKey> = {
+  Scores: "breadcrumb.scores",
+  Users: "breadcrumb.users",
+  Home: "breadcrumb.home",
+  Settings: "breadcrumb.settings",
+  Datasets: "breadcrumb.datasets",
+  Experiments: "breadcrumb.experiments",
+  Dashboards: "breadcrumb.dashboards",
+  Traces: "breadcrumb.traces",
+  Prompts: "breadcrumb.prompts",
+  Evaluators: "breadcrumb.evaluators",
+  Monitors: "breadcrumb.monitors",
+  Automations: "breadcrumb.automations",
+};
+
+const LoadingMenuItem = () => {
+  const { t } = useI18n();
+
+  return (
+    <DropdownMenuItem>
+      <span className="mr-1.5 inline-flex">
+        <Spinner size="sm" />
+      </span>
+      {t("breadcrumb.loading")}
+    </DropdownMenuItem>
+  );
+};
 
 const BreadcrumbComponent = ({
   items,
@@ -47,6 +67,7 @@ const BreadcrumbComponent = ({
 }) => {
   const router = useRouter();
   const session = useSession();
+  const { t } = useI18n();
   const { organization, project } = useQueryProjectOrOrganization();
 
   const organizations = session.data?.user?.organizations;
@@ -90,13 +111,19 @@ const BreadcrumbComponent = ({
         )
       : `/organization/${orgId}`;
 
+  const getBreadcrumbName = (name: string) => {
+    const key = breadcrumbNameKeyMap[name];
+
+    return key ? t(key) : name;
+  };
+
   return (
     <Breadcrumb className={className}>
       <BreadcrumbList>
         {organization && (
           <DropdownMenu>
             <DropdownMenuTrigger className="text-primary flex items-center gap-1 text-sm">
-              {organization?.name ?? "Organization"}
+              {organization?.name ?? t("breadcrumb.organization")}
               {isCloudPlan(organization?.plan) &&
                 organization.id !== env.NEXT_PUBLIC_DEMO_ORG_ID && (
                   <Badge
@@ -111,7 +138,7 @@ const BreadcrumbComponent = ({
             <DropdownMenuContent align="start">
               <DropdownMenuItem className="font-semibold" asChild>
                 <Link href="/" className="cursor-pointer">
-                  Organizations
+                  {t("breadcrumb.organizations")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -184,7 +211,7 @@ const BreadcrumbComponent = ({
                           className="mr-1.5 h-4 w-4"
                           aria-hidden="true"
                         />
-                        New Organization
+                        {t("breadcrumb.new-organization")}
                       </Link>
                     </Button>
                   </DropdownMenuItem>
@@ -200,7 +227,7 @@ const BreadcrumbComponent = ({
             </BreadcrumbSeparator>
             <DropdownMenu>
               <DropdownMenuTrigger className="text-primary flex items-center gap-1">
-                {project?.name ?? "Project"}
+                {project?.name ?? t("breadcrumb.project")}
                 <ChevronDownIcon className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
@@ -209,7 +236,7 @@ const BreadcrumbComponent = ({
                     href={`/organization/${organization.id}`}
                     className="cursor-pointer"
                   >
-                    Projects
+                    {t("breadcrumb.projects")}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -270,7 +297,7 @@ const BreadcrumbComponent = ({
                             className="mr-1.5 h-4 w-4"
                             aria-hidden="true"
                           />
-                          New Project
+                          {t("breadcrumb.new-project")}
                         </Link>
                       </Button>
                     </DropdownMenuItem>
@@ -288,10 +315,10 @@ const BreadcrumbComponent = ({
             <BreadcrumbItem key={index}>
               {item.href ? (
                 <BreadcrumbLink asChild>
-                  <Link href={item.href}>{item.name}</Link>
+                  <Link href={item.href}>{getBreadcrumbName(item.name)}</Link>
                 </BreadcrumbLink>
               ) : (
-                <span>{item.name}</span>
+                <span>{getBreadcrumbName(item.name)}</span>
               )}
             </BreadcrumbItem>
           </Fragment>

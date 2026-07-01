@@ -40,6 +40,7 @@ import {
   getDashboardQuerySchedulerMaxConcurrent,
   useDashboardQueryScheduler,
 } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const HOME_DASHBOARD_CARD_IDS = {
   traces: "home:traces",
@@ -56,6 +57,7 @@ const HOME_DASHBOARD_CARD_IDS = {
 
 export default function Dashboard() {
   const router = useRouter();
+  const { t } = useI18n();
   const projectId = router.query.projectId as string;
   const { timeRange, setTimeRange } = useDashboardDateRange();
   const { isBetaEnabled } = useV4Beta();
@@ -92,33 +94,33 @@ export default function Dashboard() {
 
   const filterColumns: ColumnDefinition[] = [
     {
-      name: "Trace Name",
+      name: t("dashboard.filter.trace-name", "Trace Name"),
       id: "traceName",
       type: "stringOptions",
       options: nameOptions,
       internal: "internalValue",
     },
     {
-      name: "Tags",
+      name: t("dashboard.filter.tags", "Tags"),
       id: "tags",
       type: "arrayOptions",
       options: tagsOptions,
       internal: "internalValue",
     },
     {
-      name: "User",
+      name: t("dashboard.filter.user", "User"),
       id: "user",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Release",
+      name: t("dashboard.filter.release", "Release"),
       id: "release",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Version",
+      name: t("dashboard.filter.version", "Version"),
       id: "version",
       type: "string",
       internal: "internalValue",
@@ -199,7 +201,7 @@ export default function Dashboard() {
         withPadding
         scrollable
         headerProps={{
-          title: "Home",
+          title: t("nav.home", "Home"),
           actionButtonsLeft: (
             <>
               <TimeRangePicker
@@ -219,8 +221,8 @@ export default function Dashboard() {
                 }
               />
               <MultiSelect
-                title="Environment"
-                label="Env"
+                title={t("dashboard.filter.environment", "Environment")}
+                label={t("dashboard.filter.environment-label", "Env")}
                 values={selectedEnvironments}
                 onValueChange={useDebounce(setSelectedEnvironments)}
                 options={environmentOptions.map((env) => ({

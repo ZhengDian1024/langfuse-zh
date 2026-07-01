@@ -25,6 +25,7 @@ import type { NavigationItem } from "@/src/components/layouts/utilities/routes";
 import type { RouteGroup } from "@/src/components/layouts/routes";
 import dynamic from "next/dynamic";
 import { ControlledFeaturePreviewModal } from "@/src/features/feature-previews/components/ControlledFeaturePreviewModal";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const CommandMenu = dynamic(
   () =>
@@ -106,6 +107,7 @@ export function AuthenticatedLayout({
   onSignOut,
 }: AuthenticatedLayoutProps) {
   const { isLangfuseCloud, region: currentRegion } = useLangfuseCloudRegion();
+  const { t } = useI18n();
   const [featurePreviewOpen, setFeaturePreviewOpen] = useState(false);
   const router = useRouter();
   useProjectCookie(router);
@@ -135,6 +137,9 @@ export function AuthenticatedLayout({
 
   // Currently there are no feature previews available
   const hasFeaturePreviews = false;
+  const currentRegionLabel = t("user-menu.current-region", {
+    region: currentRegion ?? "",
+  });
 
   // User navigation items for sidebar dropdown
   const userNavProps = {
@@ -144,13 +149,13 @@ export function AuthenticatedLayout({
       avatar: user.image ?? "",
     },
     items: [
-      { name: "Account Settings", href: "/account/settings" },
-      { name: "Theme", onClick: () => {}, content: <ThemeToggle /> },
-      { name: "Language", onClick: () => {}, content: <LanguageToggle /> },
+      { name: t("user-menu.account-settings"), href: "/account/settings" },
+      { name: t("user-menu.theme"), onClick: () => {}, content: <ThemeToggle /> },
+      { name: t("settings.language"), onClick: () => {}, content: <LanguageToggle /> },
       ...(hasFeaturePreviews
         ? [
             {
-              name: "Feature Preview",
+              name: t("user-menu.feature-preview"),
               onClick: () => setFeaturePreviewOpen(true),
             },
           ]
@@ -158,20 +163,20 @@ export function AuthenticatedLayout({
       ...(isLangfuseCloud
         ? [
             {
-              name: "Regions",
+              name: t("user-menu.regions"),
               subItems: regionMenuItems,
               content: (
                 <>
-                  Regions
+                  {t("user-menu.regions")}
                   <div className="ml-2 inline-flex rounded bg-black/5 p-1 text-xs dark:bg-white/10">
-                    Current: {currentRegion}
+                    {currentRegionLabel}
                   </div>
                 </>
               ),
             },
           ]
         : []),
-      { name: "Sign out", onClick: onSignOut },
+      { name: t("user-menu.sign-out"), onClick: onSignOut },
     ],
   };
 

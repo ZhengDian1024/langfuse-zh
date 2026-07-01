@@ -15,6 +15,7 @@ import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { organizationFormSchema } from "@/src/features/organizations/utils/organizationNameSchema";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const NewOrganizationForm = ({
   onSuccess,
@@ -22,6 +23,7 @@ export const NewOrganizationForm = ({
   onSuccess: (orgId: string) => void | Promise<void>;
 }) => {
   const { update: updateSession } = useSession();
+  const { t } = useI18n();
 
   const form = useForm({
     resolver: zodResolver(organizationFormSchema),
@@ -71,7 +73,7 @@ export const NewOrganizationForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Organization name</FormLabel>
+              <FormLabel>{t("organization.form.name-label")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="my-org"
@@ -84,7 +86,7 @@ export const NewOrganizationForm = ({
           )}
         />
         <Button type="submit" loading={createOrgMutation.isPending}>
-          Create
+          {t("common.create")}
         </Button>
       </form>
     </Form>

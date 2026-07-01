@@ -13,8 +13,12 @@ import {
 } from "@/src/features/rbac/constants/organizationAccessRights";
 import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { createProjectRoute } from "@/src/features/setup/setupRoutes";
+import { translate } from "@/src/features/i18n/messages";
 
-const DEFAULT_STARTER_PROJECT_NAME = "My Project";
+const DEFAULT_STARTER_PROJECT_NAME = translate(
+  "onboarding.starter-project-name",
+  "My Project",
+);
 const STARTER_ORGANIZATION_METADATA = {
   langfuseOnboarding: {
     starterOrganization: true,
@@ -42,7 +46,11 @@ const isStarterOrganizationMetadata = (metadata: Prisma.JsonValue) => {
 const getStarterOrganizationName = (userName?: string | null) => {
   const firstName = userName?.trim().split(/\s+/)[0];
 
-  return firstName ? `${firstName}'s Organization` : "My Organization";
+  return firstName
+    ? translate("onboarding.starter-organization-name", "{firstName}'s Organization", {
+        firstName,
+      })
+    : translate("onboarding.default-organization-name", "My Organization");
 };
 
 const getRealOrganizationMembershipWhereClause = (
