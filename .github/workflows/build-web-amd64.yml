@@ -56,5 +56,6 @@ jobs:
           build-args: |
             BUILDPLATFORM=linux/amd64
             NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+            NEXT_PUBLIC_BASE_PATH=/langfuse
           cache-from: type=gha
           cache-to: type=gha,mode=max
