@@ -23,10 +23,13 @@ RUN rm -rf /usr/local/lib/node_modules/corepack \
 FROM --platform=${BUILDPLATFORM} golang:1.26 AS migrate-builder
 ARG TARGETOS
 ARG TARGETARCH
+# 内网环境访问不了 proxy.golang.org, 用 goproxy.cn (可通过 build-arg 覆盖)
+ARG GOPROXY=https://goproxy.cn,direct
 ENV CGO_ENABLED=0 \
     GOBIN=/out \
     GOOS=${TARGETOS} \
-    GOARCH=${TARGETARCH}
+    GOARCH=${TARGETARCH} \
+    GOPROXY=${GOPROXY}
 # Build only the ClickHouse migrate CLI Langfuse uses at runtime.
 # compile this ourselves instead of downloading the upstream release
 # because prebuilt bins bundle many unused drivers and thus inherit CVEs
