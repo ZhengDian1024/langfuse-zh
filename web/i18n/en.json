@@ -265,5 +265,11 @@
   "onboarding.dataset-items.add-code.description": "Use our Python/TS/JS SDKs or custom API",
   "onboarding.dataset-items.select-traces.title": "Select Traces",
   "onboarding.dataset-items.select-traces.description": "Coming soon!",
-  "onboarding.dataset-items.select-traces.doc": "Creating items from production data is supported on single trace level. Click to view docs for more details."
+  "onboarding.dataset-items.select-traces.doc": "Creating items from production data is supported on single trace level. Click to view docs for more details.",
+  "api-keys.create.button-new": "Create new API keys",
+  "api-keys.create.title-create": "Create API Keys",
+  "api-keys.create.label-note": "Note (optional)",
+  "api-keys.create.button-create": "Create API keys",
+  "api-keys.create.secret-notice": "This key can only be viewed once. You can always create new keys in the {scope} settings.",
+  "api-keys.create.loading": "Loading ..."
 }

@@ -100,16 +100,14 @@ const nextConfig = {
     turbopackFileSystemCacheForBuild: true,
   },
 
-  /**
-   * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config
-   * out.
-   *
-   * @see https://github.com/vercel/next.js/issues/41980
-   */
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
+  // App Router (app/ 目录) 与 Pages Router 的 i18n 配置不兼容，共存会导致
+  // Pages Router 所有路由在运行时报 PageNotFoundError → 404。注释掉以恢复路由。
+  // 若将来需要 locale 路由前缀，应改用 App Router 的 i18n 方案。
+  // @see https://github.com/vercel/next.js/issues/41980
+  // i18n: {
+  //   locales: ["en"],
+  //   defaultLocale: "en",
+  // },
   output: "standalone",
 
   async headers() {

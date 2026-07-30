@@ -265,5 +265,11 @@
   "onboarding.dataset-items.add-code.description": "使用 Python/TS/JS SDK 或自定义 API",
   "onboarding.dataset-items.select-traces.title": "选择 Traces",
   "onboarding.dataset-items.select-traces.description": "即将推出！",
-  "onboarding.dataset-items.select-traces.doc": "支持在单条 trace 级别从生产数据创建条目。点击查看文档了解更多详情。"
+  "onboarding.dataset-items.select-traces.doc": "支持在单条 trace 级别从生产数据创建条目。点击查看文档了解更多详情。",
+  "api-keys.create.button-new": "创建新 API 密钥",
+  "api-keys.create.title-create": "创建 API 密钥",
+  "api-keys.create.label-note": "备注（可选）",
+  "api-keys.create.button-create": "创建 API 密钥",
+  "api-keys.create.secret-notice": "此密钥仅能查看一次。你随时可以在 {scope} 设置中创建新密钥。",
+  "api-keys.create.loading": "加载中…"
 }
