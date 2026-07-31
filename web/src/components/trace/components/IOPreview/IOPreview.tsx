@@ -13,6 +13,7 @@ import { IOPreviewPretty } from "./IOPreviewPretty";
 import { Button } from "@/src/components/ui/button";
 import { ActionButton } from "@/src/components/ActionButton";
 import { BookOpen, X } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type { ViewMode };
 
@@ -139,6 +140,7 @@ export function IOPreview({
   showCorrections = true,
 }: IOPreviewProps) {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const [dismissedTraceViewNotifications, setDismissedTraceViewNotifications] =
     useLocalStorage<string[]>(STORAGE_KEY, []);
 
@@ -303,7 +305,7 @@ export function IOPreview({
                     : [...prev, EMPTY_IO_ALERT_ID],
                 );
               }}
-              title="Dismiss"
+              title={t("trace.common.dismiss", "Dismiss")}
             >
               <X className="h-3.5 w-3.5" />
             </Button>
@@ -312,11 +314,17 @@ export function IOPreview({
                 <BookOpen className="text-muted-foreground h-4 w-4" />
               </div>
               <h3 className="text-sm font-semibold">
-                Looks like this trace didn&apos;t receive an input or output.
+                {t(
+                  "trace.io.empty-title",
+                  "Looks like this trace didn't receive an input or output.",
+                )}
               </h3>
             </div>
             <p className="text-muted-foreground max-w-sm text-sm">
-              Add it in your code to make debugging a lot easier.
+              {t(
+                "trace.io.empty-description",
+                "Add it in your code to make debugging a lot easier.",
+              )}
             </p>
             <ActionButton
               variant="outline"
@@ -325,7 +333,7 @@ export function IOPreview({
               trackingEventName="notification:click_link"
               trackingProps={{ notification_id: EMPTY_IO_ALERT_ID }}
             >
-              View Documentation
+              {t("trace.io.view-documentation", "View Documentation")}
             </ActionButton>
           </div>
         </div>
