@@ -37,6 +37,7 @@ import { api, type RouterOutputs } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { type useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { DialogFooter } from "@/src/components/ui/dialog";
 import { DialogBody } from "@/src/components/ui/dialog";
 import { env } from "@/src/env.mjs";
@@ -266,6 +267,7 @@ export function CreateLLMApiKeyForm({
   mode = "create",
   existingKey,
 }: CreateLLMApiKeyFormProps) {
+  const { t } = useI18n();
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   // When the "Other model" option is selected we hide the form fields and show
   // guidance instead. This is purely UI state and never reaches the form value.
@@ -411,23 +413,19 @@ export function CreateLLMApiKeyForm({
       name="customModels"
       render={() => (
         <FormItem>
-          <FormLabel>Custom models</FormLabel>
+          <FormLabel>{t("llm-api-key.custom-models-label", "Custom models")}</FormLabel>
           <FormDescription>
-            Custom model names accepted by given endpoint.
+            {t("llm-api-key.custom-models-desc", "Custom model names accepted by given endpoint.")}
           </FormDescription>
           {currentAdapter === LLMAdapter.Azure && (
             <FormDescription className="text-dark-yellow">
-              {
-                "For Azure, the model name should be the same as the deployment name in Azure. For evals, choose a model with function calling capabilities."
-              }
+              {t("llm-api-key.custom-models-azure-desc", "For Azure, the model name should be the same as the deployment name in Azure. For evals, choose a model with function calling capabilities.")}
             </FormDescription>
           )}
 
           {currentAdapter === LLMAdapter.Bedrock && (
             <FormDescription className="text-dark-yellow">
-              {
-                "For Bedrock, the model name is the Bedrock Inference Profile ID, e.g. 'eu.anthropic.claude-sonnet-4-6'"
-              }
+              {t("llm-api-key.custom-models-bedrock-desc", "For Bedrock, the model name is the Bedrock Inference Profile ID, e.g. 'eu.anthropic.claude-sonnet-4-6'")}
             </FormDescription>
           )}
 
@@ -435,7 +433,7 @@ export function CreateLLMApiKeyForm({
             <span key={customModel.id} className="flex flex-row space-x-2">
               <Input
                 {...form.register(`customModels.${index}.value`)}
-                placeholder={`Custom model name ${index + 1}`}
+                placeholder={t("llm-api-key.custom-model-placeholder", "Custom model name {index}", { index: String(index + 1) })}
               />
               <Button
                 type="button"
@@ -453,7 +451,7 @@ export function CreateLLMApiKeyForm({
             className="w-full"
           >
             <PlusIcon className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-            Add custom model name
+            {t("llm-api-key.add-custom-model", "Add custom model name")}
           </Button>
         </FormItem>
       )}
@@ -466,18 +464,18 @@ export function CreateLLMApiKeyForm({
       name="extraHeaders"
       render={() => (
         <FormItem>
-          <FormLabel>Extra Headers</FormLabel>
+          <FormLabel>{t("llm-api-key.extra-headers-label", "Extra Headers")}</FormLabel>
           <FormDescription>
-            Optional additional HTTP headers to include with requests towards
-            LLM provider. All header values stored encrypted{" "}
-            {isLangfuseCloud ? "on our servers" : "in your database"}.
+            {isLangfuseCloud
+              ? t("llm-api-key.extra-headers-desc-cloud", "Optional additional HTTP headers to include with requests towards LLM provider. All header values stored encrypted on our servers.")
+              : t("llm-api-key.extra-headers-desc-self", "Optional additional HTTP headers to include with requests towards LLM provider. All header values stored encrypted in your database.")}
           </FormDescription>
 
           {headerFields.map((header, index) => (
             <div key={header.id} className="flex flex-row space-x-2">
               <Input
                 {...form.register(`extraHeaders.${index}.key`)}
-                placeholder="Header name"
+                placeholder={t("llm-api-key.header-name-placeholder", "Header name")}
               />
               <Input
                 {...form.register(`extraHeaders.${index}.value`)}
@@ -486,7 +484,7 @@ export function CreateLLMApiKeyForm({
                   existingKey?.extraHeaderKeys &&
                   existingKey.extraHeaderKeys[index]
                     ? "***"
-                    : "Header value"
+                    : t("llm-api-key.header-value-placeholder", "Header value")
                 }
               />
               <Button
@@ -506,7 +504,7 @@ export function CreateLLMApiKeyForm({
             className="w-full"
           >
             <PlusIcon className="mr-1.5 -ml-0.5 h-5 w-5" aria-hidden="true" />
-            Add Header
+            {t("llm-api-key.add-header", "Add Header")}
           </Button>
         </FormItem>
       )}
@@ -680,9 +678,9 @@ export function CreateLLMApiKeyForm({
             name="adapter"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>LLM adapter</FormLabel>
+                <FormLabel>{t("llm-api-key.adapter-label", "LLM adapter")}</FormLabel>
                 <FormDescription>
-                  Schema that is accepted at that provider endpoint.
+                  {t("llm-api-key.adapter-desc", "Schema that is accepted at that provider endpoint.")}
                 </FormDescription>
                 <Select
                   open={adapterSelectOpen}
@@ -711,7 +709,7 @@ export function CreateLLMApiKeyForm({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a LLM provider" />
+                      <SelectValue placeholder={t("llm-api-key.adapter-placeholder", "Select a LLM provider")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -722,7 +720,7 @@ export function CreateLLMApiKeyForm({
                     ))}
                     {mode === "create" && (
                       <SelectItem value={OTHER_MODEL_OPTION}>
-                        other model
+                        {t("llm-api-key.other-model", "other model")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -735,12 +733,7 @@ export function CreateLLMApiKeyForm({
           {showOtherModelInfo && (
             <div className="bg-muted/40 text-muted-foreground space-y-2 rounded-md border p-4 text-sm">
               <p>
-                You can use any model provider as LLM connection that supports
-                one of the adapters in the list. Many providers support the
-                OpenAI API schema, such as Z.ai, OpenRouter, Qwen, Mistral,
-                Hugging Face, and more. Just replace the API Base URL with the
-                endpoint for the model, and add your provider&apos;s custom
-                model names and api key.
+                {t("llm-api-key.other-model-info", "You can use any model provider as LLM connection that supports one of the adapters in the list. Many providers support the OpenAI API schema, such as Z.ai, OpenRouter, Qwen, Mistral, Hugging Face, and more. Just replace the API Base URL with the endpoint for the model, and add your provider's custom model names and api key.")}
               </p>
               <p>
                 <a
@@ -749,7 +742,7 @@ export function CreateLLMApiKeyForm({
                   rel="noopener noreferrer"
                   className="text-blue-600 underline hover:text-blue-800"
                 >
-                  Learn more about supported providers
+                  {t("llm-api-key.learn-more-providers", "Learn more about supported providers")}
                 </a>
               </p>
             </div>
@@ -763,15 +756,14 @@ export function CreateLLMApiKeyForm({
                 name="provider"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Provider name</FormLabel>
+                    <FormLabel>{t("llm-api-key.provider-name-label", "Provider name")}</FormLabel>
                     <FormDescription>
-                      Key to identify the connection within Langfuse. Cannot
-                      contain colons.
+                      {t("llm-api-key.provider-name-desc", "Key to identify the connection within Langfuse. Cannot contain colons.")}
                     </FormDescription>
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder={`e.g. ${currentAdapter}`}
+                        placeholder={t("llm-api-key.provider-placeholder", "e.g. {adapter}", { adapter: currentAdapter })}
                         disabled={isFieldDisabled("provider")}
                       />
                     </FormControl>
@@ -788,9 +780,9 @@ export function CreateLLMApiKeyForm({
                     name="authMethod"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Authentication Method</FormLabel>
+                        <FormLabel>{t("llm-api-key.auth-method-label", "Authentication Method")}</FormLabel>
                         <FormDescription>
-                          Select how Langfuse should authenticate to Bedrock.
+                          {t("llm-api-key.auth-method-desc", "Select how Langfuse should authenticate to Bedrock.")}
                         </FormDescription>
                         <FormControl>
                           <Tabs
@@ -810,13 +802,13 @@ export function CreateLLMApiKeyForm({
                                 value={AuthMethod.AccessKeys}
                                 className="text-xs"
                               >
-                                AWS access keys
+                                {t("llm-api-key.aws-access-keys", "AWS access keys")}
                               </TabsTrigger>
                               <TabsTrigger
                                 value={AuthMethod.ApiKey}
                                 className="text-xs"
                               >
-                                API key
+                                {t("llm-api-key.api-key-tab", "API key")}
                               </TabsTrigger>
                             </TabsList>
                           </Tabs>
@@ -830,13 +822,13 @@ export function CreateLLMApiKeyForm({
                     name="awsRegion"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>AWS Region</FormLabel>
+                        <FormLabel>{t("llm-api-key.aws-region-label", "AWS Region")}</FormLabel>
                         <FormDescription>
                           {mode === "update" &&
                             existingKey?.config &&
                             (existingKey.config as BedrockConfig).region && (
                               <span className="text-sm">
-                                Current:{" "}
+                                {t("llm-api-key.current-prefix", "Current: ")}
                                 <code className="bg-muted rounded px-1 py-0.5">
                                   {(existingKey.config as BedrockConfig).region}
                                 </code>
@@ -850,7 +842,7 @@ export function CreateLLMApiKeyForm({
                               mode === "update" && existingKey?.config
                                 ? ((existingKey.config as BedrockConfig)
                                     .region ?? "")
-                                : "e.g., us-east-1"
+                                : t("llm-api-key.aws-region-placeholder", "e.g., us-east-1")
                             }
                             data-1p-ignore
                           />
@@ -865,31 +857,30 @@ export function CreateLLMApiKeyForm({
                       name="bedrockApiKey"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Bedrock API Key</FormLabel>
+                          <FormLabel>{t("llm-api-key.bedrock-api-key-label", "Bedrock API Key")}</FormLabel>
                           <FormDescription>
                             {mode === "update" ? (
                               <>
-                                Use{" "}
+                                {t("llm-api-key.bedrock-api-key-update-desc", "Use {link} to replace the current authentication.", { link: t("llm-api-key.amazon-bedrock-api-keys-link", "Amazon Bedrock API keys") })}{" "}
                                 <a
                                   href="https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 underline hover:text-blue-800"
                                 >
-                                  Amazon Bedrock API keys
+                                  {t("llm-api-key.amazon-bedrock-api-keys-link", "Amazon Bedrock API keys")}
                                 </a>{" "}
-                                to replace the current authentication.
                               </>
                             ) : (
                               <>
-                                Use{" "}
+                                {t("llm-api-key.bedrock-api-key-create-desc", "Use {link}.", { link: t("llm-api-key.amazon-bedrock-api-keys-link", "Amazon Bedrock API keys") })}{" "}
                                 <a
                                   href="https://docs.aws.amazon.com/bedrock/latest/userguide/api-keys.html"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-blue-600 underline hover:text-blue-800"
                                 >
-                                  Amazon Bedrock API keys
+                                  {t("llm-api-key.amazon-bedrock-api-keys-link", "Amazon Bedrock API keys")}
                                 </a>
                                 .
                               </>
@@ -903,8 +894,8 @@ export function CreateLLMApiKeyForm({
                                 mode === "update"
                                   ? isKeepingCurrentBedrockAuthMethod &&
                                     existingKey?.displaySecretKey
-                                    ? `${existingKey.displaySecretKey} (preserved unless replaced)`
-                                    : "Enter Bedrock API key"
+                                    ? t("llm-api-key.bedrock-api-key-preserved-placeholder", "{key} (preserved unless replaced)", { key: existingKey.displaySecretKey })
+                                    : t("llm-api-key.bedrock-api-key-enter-placeholder", "Enter Bedrock API key")
                                   : undefined
                               }
                               autoComplete="new-password"

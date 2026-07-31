@@ -12,6 +12,7 @@ import {
 } from "@/src/components/ui/tooltip";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { api } from "@/src/utils/api";
 
 type WebCalloutTarget = {
@@ -75,6 +76,7 @@ export function WebCalloutMenuItem({
 }: WebCalloutTarget & {
   withSeparator?: boolean;
 }) {
+  const { t } = useI18n();
   const action = useWebCalloutAction({
     projectId,
     traceId,
@@ -101,7 +103,7 @@ export function WebCalloutMenuItem({
           className="max-w-[260px] min-w-0 truncate"
           title={action.endpointName}
         >
-          <span>Call </span>
+          <span>{t("integration.web-callouts.menu-call-prefix", "Call ")}</span>
           <span className="font-semibold">{action.endpointName}</span>
         </span>
       </DropdownMenuItem>
@@ -116,6 +118,7 @@ export function WebCalloutButton({
   observationId,
   sessionId,
 }: WebCalloutTarget) {
+  const { t } = useI18n();
   const action = useWebCalloutAction({
     projectId,
     traceId,
@@ -127,7 +130,7 @@ export function WebCalloutButton({
     return null;
   }
 
-  const label = `Call ${action.endpointName}`;
+  const label = `${t("integration.web-callouts.menu-call-prefix", "Call ")}${action.endpointName}`;
 
   return (
     <Tooltip>

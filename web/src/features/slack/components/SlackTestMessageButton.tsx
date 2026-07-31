@@ -4,6 +4,7 @@ import { Zap } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { type SlackChannel } from "./ChannelSelector";
 
 /**
@@ -48,23 +49,24 @@ export const SlackTestMessageButton: React.FC<SlackTestMessageButtonProps> = ({
   disabled = false,
   variant = "default",
   size = "default",
-  buttonText = "Send Test Message",
+  buttonText,
   onSuccess,
   onError,
   showText = true,
   hasAccess = true,
 }) => {
+  const { t } = useI18n();
   // Test message mutation
   const testMessageMutation = api.slack.sendTestMessage.useMutation({
     onSuccess: (data) => {
       showSuccessToast({
-        title: "Test Message Sent",
-        description: "Test message sent successfully to the selected channel.",
+        title: t("integration.slack.test-message-sent-title", "Test Message Sent"),
+        description: t("integration.slack.test-message-sent-desc", "Test message sent successfully to the selected channel."),
       });
       onSuccess?.(data.channelInfo);
     },
     onError: (error) => {
-      showErrorToast("Failed to Send Test Message", error.message);
+      showErrorToast(t("integration.slack.failed-send-test", "Failed to Send Test Message"), error.message);
       onError?.(new Error(error.message));
     },
   });
@@ -99,12 +101,12 @@ export const SlackTestMessageButton: React.FC<SlackTestMessageButtonProps> = ({
       {testMessageMutation.isPending ? (
         <>
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-          {showText && <span>Sending...</span>}
+          {showText && <span>{t("integration.slack.sending", "Sending...")}</span>}
         </>
       ) : (
         <>
           <Zap className="h-4 w-4" />
-          {showText && <span>{buttonText}</span>}
+          {showText && <span>{buttonText ?? t("integration.slack.send-test-message", "Send Test Message")}</span>}
         </>
       )}
     </Button>

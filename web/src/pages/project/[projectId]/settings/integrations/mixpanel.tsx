@@ -50,9 +50,11 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { type z } from "zod";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { Info, ExternalLink } from "lucide-react";
 
 export default function MixpanelIntegrationSettings() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -77,40 +79,41 @@ export default function MixpanelIntegrationSettings() {
   return (
     <ContainerPage
       headerProps={{
-        title: "Mixpanel Integration",
+        title: t("integration.page.mixpanel.title", "Mixpanel Integration"),
         breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
+          { name: t("breadcrumb.settings", "Settings"), href: `/project/${projectId}/settings` },
         ],
         actionButtonsLeft: <>{status && <StatusBadge type={status} />}</>,
         actionButtonsRight: (
           <Button asChild variant="secondary">
             <Link href="https://langfuse.com/integrations/analytics/mixpanel">
-              Integration Docs ↗
+              {t("settings.integrations.docs", "Integration Docs ↗")}
             </Link>
           </Button>
         ),
       }}
     >
       <p className="text-primary mb-4 text-sm">
-        Integrate with{" "}
+        {t("integration.mixpanel.description-before", "Integrate with")}{" "}
         <Link href="https://mixpanel.com" className="underline">
-          Mixpanel
+          {t("integration.mixpanel.description-link", "Mixpanel")}
         </Link>{" "}
-        to sync your Langfuse traces, generations, and scores for advanced
-        product analytics. Upon activation, all historical data from your
-        project will be synced. After the initial sync, new data is
-        automatically synced every hour to keep your Mixpanel dashboards up to
-        date.
+        {t(
+          "integration.mixpanel.description-after",
+          "to sync your Langfuse traces, generations, and scores for advanced product analytics. Upon activation, all historical data from your project will be synced. After the initial sync, new data is automatically synced every hour to keep your Mixpanel dashboards up to date.",
+        )}
       </p>
       {!hasAccess && (
         <p className="text-sm">
-          Your current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
+          {t(
+            "integration.common.no-access",
+            "Your current role does not grant you access to these settings, please reach out to your project admin or owner.",
+          )}
         </p>
       )}
       {hasAccess && (
         <>
-          <Header title="Configuration" />
+          <Header title={t("integration.common.configuration", "Configuration")} />
           <Card className="p-3">
             <MixpanelLogo className="text-foreground mb-4 w-20" />
             <MixpanelIntegrationSettingsForm
@@ -123,12 +126,12 @@ export default function MixpanelIntegrationSettings() {
       )}
       {state.data?.enabled && (
         <>
-          <Header title="Status" className="mt-8" />
+          <Header title={t("integration.common.status", "Status")} className="mt-8" />
           <p className="text-primary text-sm">
-            Data synced until:{" "}
+            {t("integration.common.data-synced-until", "Data synced until: ")}
             {state.data?.lastSyncAt
               ? new Date(state.data.lastSyncAt).toLocaleString()
-              : "Never (pending)"}
+              : t("integration.common.never-pending", "Never (pending)")}
           </p>
         </>
       )}
@@ -146,6 +149,7 @@ const MixpanelIntegrationSettingsForm = ({
   isLoading: boolean;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const { isBetaEnabled } = useV4Beta();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const { project } = useQueryProject();
@@ -226,11 +230,11 @@ const MixpanelIntegrationSettingsForm = ({
           name="mixpanelRegion"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mixpanel Region</FormLabel>
+              <FormLabel>{t("integration.mixpanel.region-label", "Mixpanel Region")}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a region" />
+                    <SelectValue placeholder={t("integration.mixpanel.region-placeholder", "Select a region")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -242,7 +246,7 @@ const MixpanelIntegrationSettingsForm = ({
                 </SelectContent>
               </Select>
               <FormDescription>
-                Select the Mixpanel region where your project is hosted
+                {t("integration.mixpanel.region-desc", "Select the Mixpanel region where your project is hosted")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -253,13 +257,12 @@ const MixpanelIntegrationSettingsForm = ({
           name="mixpanelProjectToken"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mixpanel Project Token</FormLabel>
+              <FormLabel>{t("integration.mixpanel.token-label", "Mixpanel Project Token")}</FormLabel>
               <FormControl>
                 <PasswordInput {...field} />
               </FormControl>
               <FormDescription>
-                You can find your Project Token in your Mixpanel project
-                settings
+                {t("integration.mixpanel.token-desc", "You can find your Project Token in your Mixpanel project settings")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -272,7 +275,7 @@ const MixpanelIntegrationSettingsForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="flex items-center gap-1.5 pt-2">
-                  Export Source
+                  {t("integration.common.export-source", "Export Source")}
                   <Tooltip>
                     <TooltipTrigger>
                       <Info className="text-muted-foreground h-3.5 w-3.5" />
@@ -296,7 +299,7 @@ const MixpanelIntegrationSettingsForm = ({
                           rel="noopener noreferrer"
                           className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs hover:underline"
                         >
-                          For further information see
+                          {t("integration.common.for-further-info", "For further information see")}
                           <ExternalLink className="h-3 w-3" />
                         </a>
                       </div>
@@ -306,7 +309,7 @@ const MixpanelIntegrationSettingsForm = ({
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select data to export" />
+                      <SelectValue placeholder={t("integration.common.export-source-placeholder", "Select data to export")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -318,8 +321,7 @@ const MixpanelIntegrationSettingsForm = ({
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  Choose which data sources to export to Mixpanel. Scores are
-                  always included.
+                  {t("integration.common.export-source-desc-mixpanel", "Choose which data sources to export to Mixpanel. Scores are always included.")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -331,7 +333,7 @@ const MixpanelIntegrationSettingsForm = ({
           name="enabled"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Enabled</FormLabel>
+              <FormLabel>{t("integration.common.enabled", "Enabled")}</FormLabel>
               <FormControl>
                 <Switch
                   id="mixpanel-integration-enabled"
@@ -353,7 +355,7 @@ const MixpanelIntegrationSettingsForm = ({
           onClick={mixpanelForm.handleSubmit(onSubmit)}
           disabled={isLoading}
         >
-          Save
+          {t("common.save", "Save")}
         </Button>
         <Button
           variant="ghost"
@@ -362,13 +364,13 @@ const MixpanelIntegrationSettingsForm = ({
           onClick={() => {
             if (
               confirm(
-                "Are you sure you want to reset the Mixpanel integration for this project?",
+                t("integration.common.confirm-reset-mixpanel", "Are you sure you want to reset the Mixpanel integration for this project?"),
               )
             )
               mutDelete.mutate({ projectId });
           }}
         >
-          Reset
+          {t("integration.common.reset", "Reset")}
         </Button>
       </div>
     </Form>

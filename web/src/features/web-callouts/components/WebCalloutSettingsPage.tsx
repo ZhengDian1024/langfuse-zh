@@ -47,6 +47,7 @@ import {
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   WEB_CALLOUT_BLOCKED_HEADER_NAMES,
   WEB_CALLOUT_HEADER_NAME_PATTERN,
@@ -112,6 +113,7 @@ const webCalloutFormSchema = z
 type WebCalloutFormValues = z.infer<typeof webCalloutFormSchema>;
 
 export function WebCalloutSettingsPage(props: { projectId: string }) {
+  const { t } = useI18n();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEndpoint, setEditingEndpoint] =
     useState<WebCalloutEndpoint | null>(null);
@@ -131,12 +133,12 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
     onSuccess: async () => {
       await utils.webCallouts.invalidate();
       showSuccessToast({
-        title: "Callout endpoint deleted",
-        description: "The endpoint was removed from this project.",
+        title: t("integration.web-callouts.deleted-title", "Callout endpoint deleted"),
+        description: t("integration.web-callouts.deleted-desc", "The endpoint was removed from this project."),
       });
     },
     onError: (error) => {
-      showErrorToast("Failed to delete callout endpoint", error.message);
+      showErrorToast(t("integration.web-callouts.failed-delete", "Failed to delete callout endpoint"), error.message);
     },
   });
 
@@ -144,9 +146,9 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
     return (
       <div>
         <Alert>
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>{t("integration.web-callouts.access-denied-title", "Access Denied")}</AlertTitle>
           <AlertDescription>
-            You do not have permission to manage integrations for this project.
+            {t("integration.web-callouts.access-denied-desc", "You do not have permission to manage integrations for this project.")}
           </AlertDescription>
         </Alert>
       </div>
@@ -156,9 +158,9 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
   const configuredEndpoint = endpoints.data?.[0];
   const canCreateEndpoint = !configuredEndpoint;
   const addEndpointDisabledReason = endpoints.isLoading
-    ? "Loading callout endpoint configuration."
+    ? t("integration.web-callouts.loading-disabled", "Loading callout endpoint configuration.")
     : !canCreateEndpoint
-      ? "Currently you can only create one callout per project."
+      ? t("integration.web-callouts.only-one-allowed", "Currently you can only create one callout per project.")
       : undefined;
 
   const openCreateDialog = () => {
@@ -174,18 +176,16 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
   return (
     <div>
       <p className="text-primary mb-4 text-sm">
-        Configure a project-level callout. Your users can trigger a POST to an
-        endpoint on trace, observation, and session detail screens. This can be
-        used to integrate with your services to trigger workflows. See the docs{" "}
+        {t("integration.web-callouts.description-before", "Configure a project-level callout. Your users can trigger a POST to an endpoint on trace, observation, and session detail screens. This can be used to integrate with your services to trigger workflows. See the docs")}{" "}
         <a
           href="https://langfuse.com/docs/observability/features/web-callouts"
           target="_blank"
           rel="noreferrer"
           className="underline underline-offset-2"
         >
-          here
+          {t("integration.web-callouts.description-link", "here")}
         </a>{" "}
-        for more info.
+        {t("integration.web-callouts.description-after", "for more info.")}
       </p>
 
       <div className="mb-4 flex justify-end">
@@ -212,11 +212,11 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-primary">Name</TableHead>
-              <TableHead className="text-primary">Endpoint</TableHead>
-              <TableHead className="text-primary">Toast Message</TableHead>
-              <TableHead className="text-primary">Headers</TableHead>
-              <TableHead className="text-primary">Status</TableHead>
+              <TableHead className="text-primary">{t("integration.web-callouts.col-name", "Name")}</TableHead>
+              <TableHead className="text-primary">{t("integration.web-callouts.col-endpoint", "Endpoint")}</TableHead>
+              <TableHead className="text-primary">{t("integration.web-callouts.col-toast-message", "Toast Message")}</TableHead>
+              <TableHead className="text-primary">{t("integration.web-callouts.col-headers", "Headers")}</TableHead>
+              <TableHead className="text-primary">{t("integration.web-callouts.col-status", "Status")}</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
@@ -228,7 +228,7 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
                   colSpan={6}
                   className="text-muted-foreground text-center"
                 >
-                  No callout endpoint configured.
+                  {t("integration.web-callouts.no-endpoint", "No callout endpoint configured.")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -266,7 +266,7 @@ export function WebCalloutSettingsPage(props: { projectId: string }) {
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent>Edit endpoint</TooltipContent>
+                        <TooltipContent>{t("integration.web-callouts.edit-endpoint-tooltip", "Edit endpoint")}</TooltipContent>
                       </Tooltip>
                       <DeleteEndpointButton
                         endpoint={endpoint}
@@ -294,6 +294,7 @@ function AddEndpointButton(props: {
   disabledReason?: string;
   onClick: () => void;
 }) {
+  const { t } = useI18n();
   const button = (
     <Button
       disabled={Boolean(props.disabledReason)}
@@ -301,7 +302,7 @@ function AddEndpointButton(props: {
       onClick={props.onClick}
     >
       <Plus className="mr-1 h-4 w-4" />
-      Add endpoint
+      {t("integration.web-callouts.add-endpoint", "Add endpoint")}
     </Button>
   );
 
@@ -320,10 +321,11 @@ function AddEndpointButton(props: {
 }
 
 function HeaderList(props: { endpoint: WebCalloutEndpoint }) {
+  const { t } = useI18n();
   const headers = props.endpoint.requestHeaderKeys;
 
   if (headers.length === 0) {
-    return <span className="text-muted-foreground">None</span>;
+    return <span className="text-muted-foreground">{t("integration.web-callouts.none", "None")}</span>;
   }
 
   return (
@@ -349,20 +351,21 @@ function WebCalloutEndpointDialog(props: {
   onOpenChange: (open: boolean) => void;
   trigger: ReactNode;
 }) {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const upsertMutation = api.webCallouts.upsert.useMutation({
     onSuccess: async () => {
       await utils.webCallouts.invalidate();
       showSuccessToast({
         title: props.endpoint
-          ? "Callout endpoint updated"
-          : "Callout endpoint created",
-        description: "Web callout configuration was saved.",
+          ? t("integration.web-callouts.updated-title", "Callout endpoint updated")
+          : t("integration.web-callouts.created-title", "Callout endpoint created"),
+        description: t("integration.web-callouts.saved-desc", "Web callout configuration was saved."),
       });
       props.onOpenChange(false);
     },
     onError: (error) => {
-      showErrorToast("Failed to save callout endpoint", error.message);
+      showErrorToast(t("integration.web-callouts.failed-save", "Failed to save callout endpoint"), error.message);
     },
   });
 
@@ -400,18 +403,17 @@ function WebCalloutEndpointDialog(props: {
       <DialogContent size="lg">
         <DialogHeader>
           <DialogTitle>
-            {props.endpoint ? "Edit Callout Endpoint" : "Add Callout Endpoint"}
+            {props.endpoint ? t("integration.web-callouts.dialog-title-edit", "Edit Callout Endpoint") : t("integration.web-callouts.dialog-title-add", "Add Callout Endpoint")}
           </DialogTitle>
           <DialogDescription>
-            Langfuse sends a backend JSON POST when a user clicks a web callout
-            action.{" "}
+            {t("integration.web-callouts.dialog-desc", "Langfuse sends a backend JSON POST when a user clicks a web callout action.")}{" "}
             <a
               href="https://langfuse.com/docs/observability/features/web-callouts"
               target="_blank"
               rel="noreferrer"
               className="underline underline-offset-2"
             >
-              View docs
+              {t("integration.web-callouts.view-docs", "View docs")}
             </a>
             .
           </DialogDescription>
@@ -428,7 +430,7 @@ function WebCalloutEndpointDialog(props: {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t("integration.web-callouts.name-label", "Name")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -442,16 +444,15 @@ function WebCalloutEndpointDialog(props: {
                 name="url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Endpoint URL</FormLabel>
+                    <FormLabel>{t("integration.web-callouts.endpoint-url-label", "Endpoint URL")}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="https://example.com/langfuse/callout"
+                        placeholder={t("integration.web-callouts.endpoint-url-placeholder", "https://example.com/langfuse/callout")}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      HTTP or HTTPS URL. Custom ports are allowed. The endpoint
-                      is called from the Langfuse backend.
+                      {t("integration.web-callouts.endpoint-url-desc", "HTTP or HTTPS URL. Custom ports are allowed. The endpoint is called from the Langfuse backend.")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -464,10 +465,9 @@ function WebCalloutEndpointDialog(props: {
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between rounded-md border p-3">
                     <div>
-                      <FormLabel>Enabled</FormLabel>
+                      <FormLabel>{t("integration.common.enabled", "Enabled")}</FormLabel>
                       <FormDescription>
-                        Shows the callout action in trace, observation, and
-                        session detail headers.
+                        {t("integration.web-callouts.enabled-desc", "Shows the callout action in trace, observation, and session detail headers.")}
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -485,12 +485,12 @@ function WebCalloutEndpointDialog(props: {
                 name="toastMessage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Toast message</FormLabel>
+                    <FormLabel>{t("integration.web-callouts.toast-message-label", "Toast message")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
                     <FormDescription>
-                      Shown after the backend callout succeeds.
+                      {t("integration.web-callouts.toast-message-desc", "Shown after the backend callout succeeds.")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -498,11 +498,9 @@ function WebCalloutEndpointDialog(props: {
               />
 
               <div>
-                <FormLabel>Headers</FormLabel>
+                <FormLabel>{t("integration.web-callouts.headers-label", "Headers")}</FormLabel>
                 <FormDescription className="mb-2">
-                  Optional headers added to the backend POST. Content-Type is
-                  set automatically. Leave values empty for existing header
-                  names to keep encrypted values.
+                  {t("integration.web-callouts.headers-desc", "Optional headers added to the backend POST. Content-Type is set automatically. Leave values empty for existing header names to keep encrypted values.")}
                 </FormDescription>
                 <div className="space-y-2">
                   {fields.map((field, index) => {
@@ -525,7 +523,7 @@ function WebCalloutEndpointDialog(props: {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Input placeholder="Header name" {...field} />
+                                <Input placeholder={t("integration.web-callouts.header-name-placeholder", "Header name")} {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -541,7 +539,7 @@ function WebCalloutEndpointDialog(props: {
                                   placeholder={
                                     preservesExistingValue
                                       ? "***"
-                                      : "Header value"
+                                      : t("integration.web-callouts.header-value-placeholder", "Header value")
                                   }
                                   type="password"
                                   {...field}
@@ -562,7 +560,7 @@ function WebCalloutEndpointDialog(props: {
                               <X className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>Remove header</TooltipContent>
+                          <TooltipContent>{t("integration.web-callouts.remove-header", "Remove header")}</TooltipContent>
                         </Tooltip>
                       </div>
                     );
@@ -580,7 +578,7 @@ function WebCalloutEndpointDialog(props: {
                   }
                 >
                   <Plus className="mr-1 h-4 w-4" />
-                  Add header
+                  {t("integration.web-callouts.add-header", "Add header")}
                 </Button>
               </div>
             </DialogBody>
@@ -591,10 +589,10 @@ function WebCalloutEndpointDialog(props: {
                 variant="ghost"
                 onClick={() => props.onOpenChange(false)}
               >
-                Cancel
+                {t("common.cancel", "Cancel")}
               </Button>
               <Button type="submit" loading={upsertMutation.isPending}>
-                Save endpoint
+                {t("integration.web-callouts.save-endpoint", "Save endpoint")}
               </Button>
             </DialogFooter>
           </form>
@@ -609,6 +607,7 @@ function DeleteEndpointButton(props: {
   onDelete: (id: string) => void;
   loading: boolean;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   return (
@@ -621,19 +620,18 @@ function DeleteEndpointButton(props: {
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
-        <TooltipContent>Delete endpoint</TooltipContent>
+        <TooltipContent>{t("integration.web-callouts.delete-endpoint-tooltip", "Delete endpoint")}</TooltipContent>
       </Tooltip>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Callout Endpoint</DialogTitle>
+          <DialogTitle>{t("integration.web-callouts.delete-dialog-title", "Delete Callout Endpoint")}</DialogTitle>
           <DialogDescription>
-            This removes the configured endpoint and hides the web callout
-            action.
+            {t("integration.web-callouts.delete-dialog-desc", "This removes the configured endpoint and hides the web callout action.")}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
+            {t("common.cancel", "Cancel")}
           </Button>
           <Button
             variant="destructive"
@@ -643,7 +641,7 @@ function DeleteEndpointButton(props: {
               setOpen(false);
             }}
           >
-            Delete endpoint
+            {t("integration.web-callouts.delete-endpoint-button", "Delete endpoint")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -694,22 +692,22 @@ export function WebCalloutIntegrationCard(props: {
   projectId: string;
   hasAccess: boolean;
 }) {
+  const { t } = useI18n();
   return (
     <Card className="p-3">
       <div className="mb-4 flex items-center gap-2">
         <Webhook className="text-foreground h-5 w-5" />
-        <span className="font-semibold">Web Callouts</span>
+        <span className="font-semibold">{t("integration.web-callouts.card-title", "Web Callouts")}</span>
       </div>
       <p className="text-primary mb-4 text-sm">
-        Send backend callouts from trace, observation, and session detail views
-        to your own application.
+        {t("integration.web-callouts.card-description", "Send backend callouts from trace, observation, and session detail views to your own application.")}
       </p>
       <ActionButton
         variant="secondary"
         hasAccess={props.hasAccess}
         href={`/project/${props.projectId}/settings/integrations/web-callouts`}
       >
-        Configure
+        {t("settings.integrations.configure", "Configure")}
       </ActionButton>
     </Card>
   );

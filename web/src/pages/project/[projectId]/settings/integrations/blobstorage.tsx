@@ -65,9 +65,11 @@ import {
 } from "@/src/features/blobstorage-integration/exportSource";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
 import { useQueryProject } from "@/src/features/projects/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { Info, ExternalLink } from "lucide-react";
 
 export default function BlobStorageIntegrationSettings() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const hasAccess = useHasProjectAccess({
@@ -126,9 +128,9 @@ export default function BlobStorageIntegrationSettings() {
   return (
     <ContainerPage
       headerProps={{
-        title: "Blob Storage Integration",
+        title: t("integration.page.blobstorage.title", "Blob Storage Integration"),
         breadcrumb: [
-          { name: "Settings", href: `/project/${projectId}/settings` },
+          { name: t("breadcrumb.settings", "Settings"), href: `/project/${projectId}/settings` },
         ],
         actionButtonsLeft: (
           <>
@@ -141,32 +143,32 @@ export default function BlobStorageIntegrationSettings() {
               href="https://langfuse.com/docs/api-and-data-platform/features/export-to-blob-storage"
               target="_blank"
             >
-              Integration Docs ↗
+              {t("settings.integrations.docs", "Integration Docs ↗")}
             </Link>
           </Button>
         ),
       }}
     >
       <p className="text-primary mb-4 text-sm">
-        Configure scheduled exports of your trace data to AWS S3, S3-compatible
-        storages, or Azure Blob Storage. Set up a hourly, daily, or weekly
-        export to your own storage for data analysis or backup purposes. Use the
-        &quot;Validate&quot; button to test your configuration by uploading a
-        small test file, and the &quot;Run Now&quot; button to trigger an
-        immediate export.
+        {t(
+          "integration.blobstorage.description",
+          "Configure scheduled exports of your trace data to AWS S3, S3-compatible storages, or Azure Blob Storage. Set up a hourly, daily, or weekly export to your own storage for data analysis or backup purposes. Use the “Validate” button to test your configuration by uploading a small test file, and the “Run Now” button to trigger an immediate export.",
+        )}
       </p>
       {!hasAccess && (
         <p className="text-sm">
-          Your current role does not grant you access to these settings, please
-          reach out to your project admin or owner.
+          {t(
+            "integration.common.no-access",
+            "Your current role does not grant you access to these settings, please reach out to your project admin or owner.",
+          )}
         </p>
       )}
       {state.data?.config && (
         <>
-          <Header title="Status" />
+          <Header title={t("integration.common.status", "Status")} />
           {state.data.config.lastError && (
             <Alert variant="destructive" className="mb-4">
-              <AlertTitle>Last export failed</AlertTitle>
+              <AlertTitle>{t("integration.common.last-export-failed", "Last export failed")}</AlertTitle>
               <AlertDescription>
                 {state.data.config.lastError}
                 {state.data.config.lastErrorAt && (
@@ -182,34 +184,34 @@ export default function BlobStorageIntegrationSettings() {
           )}
           <Card className="p-3">
             <div className="grid grid-cols-[auto,1fr] gap-x-4 gap-y-1 text-sm">
-              <span className="text-muted-foreground">Data exported up to</span>
+              <span className="text-muted-foreground">{t("integration.common.data-exported-up-to", "Data exported up to")}</span>
               <span>
                 {state.data.config.lastSyncAt
                   ? new Date(state.data.config.lastSyncAt).toLocaleString()
-                  : "Never (pending)"}
+                  : t("integration.common.never-pending", "Never (pending)")}
               </span>
               {state.data.config.nextSyncAt && (
                 <>
                   <span className="text-muted-foreground">
-                    Next export scheduled
+                    {t("integration.common.next-export-scheduled", "Next export scheduled")}
                   </span>
                   <span>
                     {new Date(state.data.config.nextSyncAt).toLocaleString()}
                   </span>
                 </>
               )}
-              <span className="text-muted-foreground">Export mode</span>
+              <span className="text-muted-foreground">{t("integration.common.export-mode", "Export mode")}</span>
               <span>
                 {state.data.config.exportMode ===
                 BlobStorageExportMode.FULL_HISTORY
-                  ? "Full history"
+                  ? t("integration.common.export-mode-full-history", "Full history")
                   : state.data.config.exportMode ===
                       BlobStorageExportMode.FROM_TODAY
-                    ? "From setup date"
+                    ? t("integration.common.export-mode-from-setup", "From setup date")
                     : state.data.config.exportMode ===
                         BlobStorageExportMode.FROM_CUSTOM_DATE
-                      ? "From custom date"
-                      : "Unknown"}
+                      ? t("integration.common.export-mode-from-custom", "From custom date")
+                      : t("integration.common.export-mode-unknown", "Unknown")}
               </span>
               {(state.data.config.exportMode ===
                 BlobStorageExportMode.FROM_CUSTOM_DATE ||
@@ -218,7 +220,7 @@ export default function BlobStorageIntegrationSettings() {
                 state.data.config.exportStartDate && (
                   <>
                     <span className="text-muted-foreground">
-                      Export start date
+                      {t("integration.common.export-start-date", "Export start date")}
                     </span>
                     <span>
                       {new Date(
@@ -233,7 +235,7 @@ export default function BlobStorageIntegrationSettings() {
       )}
       {hasAccess && (
         <>
-          <Header title="Configuration" className="mt-8" />
+          <Header title={t("integration.common.configuration", "Configuration")} className="mt-8" />
           <Card className="p-3">
             <BlobStorageIntegrationSettingsForm
               state={state.data?.config || undefined}
@@ -262,6 +264,7 @@ const BlobStorageIntegrationSettingsForm = ({
   isEnrichedExportAvailable: boolean;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const { project } = useQueryProject();
 
@@ -405,7 +408,7 @@ const BlobStorageIntegrationSettingsForm = ({
       utils.blobStorageIntegration.invalidate();
     },
     onError: (error) => {
-      showErrorToast("Failed to save integration", error.message);
+      showErrorToast(t("integration.common.save-failed", "Failed to save integration"), error.message);
     },
   });
   const mutDelete = api.blobStorageIntegration.delete.useMutation({
@@ -422,11 +425,13 @@ const BlobStorageIntegrationSettingsForm = ({
     onSuccess: (data) => {
       showSuccessToast({
         title: data.message,
-        description: `Test file: ${data.testFileName}`,
+        description: t("integration.common.test-file-prefix", "Test file: {name}", {
+          name: data.testFileName,
+        }),
       });
     },
     onError: (error) => {
-      showErrorToast("Validation failed", error.message);
+      showErrorToast(t("integration.common.validation-failed", "Validation failed"), error.message);
     },
   });
 
@@ -453,7 +458,7 @@ const BlobStorageIntegrationSettingsForm = ({
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Storage Provider</FormLabel>
+              <FormLabel>{t("integration.blobstorage.storage-provider-label", "Storage Provider")}</FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
@@ -464,21 +469,21 @@ const BlobStorageIntegrationSettingsForm = ({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select provider" />
+                    <SelectValue placeholder={t("integration.blobstorage.storage-provider-placeholder", "Select provider")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="S3">AWS S3</SelectItem>
+                    <SelectItem value="S3">{t("integration.blobstorage.s3", "AWS S3")}</SelectItem>
                     <SelectItem value="S3_COMPATIBLE">
-                      S3 Compatible Storage
+                      {t("integration.blobstorage.s3-compatible", "S3 Compatible Storage")}
                     </SelectItem>
                     <SelectItem value="AZURE_BLOB_STORAGE">
-                      Azure Blob Storage
+                      {t("integration.blobstorage.azure-blob-storage", "Azure Blob Storage")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
               <FormDescription>
-                Choose your cloud storage provider
+                {t("integration.blobstorage.storage-provider-desc", "Choose your cloud storage provider")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -492,16 +497,16 @@ const BlobStorageIntegrationSettingsForm = ({
             <FormItem>
               <FormLabel>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Container Name"
-                  : "Bucket Name"}
+                  ? t("integration.blobstorage.container-name", "Container Name")
+                  : t("integration.blobstorage.bucket-name", "Bucket Name")}
               </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormDescription>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only)"
-                  : "The S3 bucket name"}
+                  ? t("integration.blobstorage.container-name-desc", "Azure container name (3-63 chars, lowercase letters, numbers, and hyphens only)")
+                  : t("integration.blobstorage.bucket-name-desc", "The S3 bucket name")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -515,14 +520,14 @@ const BlobStorageIntegrationSettingsForm = ({
             name="endpoint"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Endpoint URL</FormLabel>
+                <FormLabel>{t("integration.blobstorage.endpoint-url-label", "Endpoint URL")}</FormLabel>
                 <FormControl>
                   <Input {...field} value={field.value || ""} />
                 </FormControl>
                 <FormDescription>
                   {integrationType === "AZURE_BLOB_STORAGE"
-                    ? "Azure Blob Storage endpoint URL (e.g., https://accountname.blob.core.windows.net)"
-                    : "S3 compatible endpoint URL (e.g., https://play.min.io)"}
+                    ? t("integration.blobstorage.endpoint-azure-desc", "Azure Blob Storage endpoint URL (e.g., https://accountname.blob.core.windows.net)")
+                    : t("integration.blobstorage.endpoint-s3-desc", "S3 compatible endpoint URL (e.g., https://play.min.io)")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -537,14 +542,14 @@ const BlobStorageIntegrationSettingsForm = ({
             name="region"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Region</FormLabel>
+                <FormLabel>{t("integration.blobstorage.region-label", "Region")}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
                 <FormDescription>
                   {integrationType === "S3"
-                    ? "AWS region (e.g., us-east-1)"
-                    : "S3 compatible storage region"}
+                    ? t("integration.blobstorage.region-s3-desc", "AWS region (e.g., us-east-1)")
+                    : t("integration.blobstorage.region-s3-compatible-desc", "S3 compatible storage region")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -559,7 +564,7 @@ const BlobStorageIntegrationSettingsForm = ({
             name="forcePathStyle"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Force Path Style</FormLabel>
+                <FormLabel>{t("integration.blobstorage.force-path-style-label", "Force Path Style")}</FormLabel>
                 <FormControl>
                   <Switch
                     checked={field.value}
@@ -568,7 +573,7 @@ const BlobStorageIntegrationSettingsForm = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Enable for MinIO and some other S3 compatible providers
+                  {t("integration.blobstorage.force-path-style-desc", "Enable for MinIO and some other S3 compatible providers")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -583,13 +588,13 @@ const BlobStorageIntegrationSettingsForm = ({
             <FormItem>
               <FormLabel>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Storage Account Name"
+                  ? t("integration.blobstorage.azure-account-name", "Storage Account Name")
                   : integrationType === "S3"
-                    ? "AWS Access Key ID"
-                    : "Access Key ID"}
+                    ? t("integration.blobstorage.aws-access-key-id", "AWS Access Key ID")
+                    : t("integration.blobstorage.access-key-id", "Access Key ID")}
                 {/* Show optional indicator for S3 types on self-hosted instances with entitlement */}
                 {isSelfHosted && integrationType === "S3" && (
-                  <span className="text-muted-foreground"> (optional)</span>
+                  <span className="text-muted-foreground">{t("integration.blobstorage.access-key-optional-suffix", " (optional)")}</span>
                 )}
               </FormLabel>
               <FormControl>
@@ -597,12 +602,12 @@ const BlobStorageIntegrationSettingsForm = ({
               </FormControl>
               <FormDescription>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Your Azure storage account name"
+                  ? t("integration.blobstorage.azure-account-name-desc", "Your Azure storage account name")
                   : integrationType === "S3"
                     ? isSelfHosted
-                      ? "Your AWS IAM user access key ID. Leave empty to use host credentials (IAM roles, instance profiles, etc.)"
-                      : "Your AWS IAM user access key ID"
-                    : "Access key for your S3-compatible storage"}
+                      ? t("integration.blobstorage.aws-access-key-id-self-hosted-desc", "Your AWS IAM user access key ID. Leave empty to use host credentials (IAM roles, instance profiles, etc.)")
+                      : t("integration.blobstorage.aws-access-key-id-desc", "Your AWS IAM user access key ID")
+                    : t("integration.blobstorage.access-key-s3-compatible-desc", "Access key for your S3-compatible storage")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -616,13 +621,13 @@ const BlobStorageIntegrationSettingsForm = ({
             <FormItem>
               <FormLabel>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Storage Account Key"
+                  ? t("integration.blobstorage.azure-account-key", "Storage Account Key")
                   : integrationType === "S3"
-                    ? "AWS Secret Access Key"
-                    : "Secret Access Key"}
+                    ? t("integration.blobstorage.aws-secret-access-key", "AWS Secret Access Key")
+                    : t("integration.blobstorage.secret-access-key", "Secret Access Key")}
                 {/* Show optional indicator for S3 types on self-hosted instances with entitlement */}
                 {isSelfHosted && integrationType === "S3" && (
-                  <span className="text-muted-foreground"> (optional)</span>
+                  <span className="text-muted-foreground">{t("integration.blobstorage.access-key-optional-suffix", " (optional)")}</span>
                 )}
               </FormLabel>
               <FormControl>
@@ -634,12 +639,12 @@ const BlobStorageIntegrationSettingsForm = ({
               </FormControl>
               <FormDescription>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? "Your Azure storage account access key"
+                  ? t("integration.blobstorage.azure-account-key-desc", "Your Azure storage account access key")
                   : integrationType === "S3"
                     ? isSelfHosted
-                      ? "Your AWS IAM user secret access key. Leave empty to use host credentials (IAM roles, instance profiles, etc.)"
-                      : "Your AWS IAM user secret access key"
-                    : "Secret key for your S3-compatible storage"}
+                      ? t("integration.blobstorage.aws-secret-access-key-self-hosted-desc", "Your AWS IAM user secret access key. Leave empty to use host credentials (IAM roles, instance profiles, etc.)")
+                      : t("integration.blobstorage.aws-secret-access-key-desc", "Your AWS IAM user secret access key")
+                    : t("integration.blobstorage.secret-access-key-s3-compatible-desc", "Secret key for your S3-compatible storage")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -651,16 +656,16 @@ const BlobStorageIntegrationSettingsForm = ({
           name="prefix"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Export Prefix</FormLabel>
+              <FormLabel>{t("integration.blobstorage.export-prefix-label", "Export Prefix")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormDescription>
                 {integrationType === "AZURE_BLOB_STORAGE"
-                  ? 'Optional prefix path for exported files in your Azure container (e.g., "langfuse-exports/")'
+                  ? t("integration.blobstorage.export-prefix-azure-desc", "Optional prefix path for exported files in your Azure container (e.g., “langfuse-exports/”)")
                   : integrationType === "S3"
-                    ? 'Optional prefix path for exported files in your S3 bucket (e.g., "langfuse-exports/")'
-                    : 'Optional prefix path for exported files (e.g., "langfuse-exports/")'}
+                    ? t("integration.blobstorage.export-prefix-s3-desc", "Optional prefix path for exported files in your S3 bucket (e.g., “langfuse-exports/”)")
+                    : t("integration.blobstorage.export-prefix-s3-compatible-desc", "Optional prefix path for exported files (e.g., “langfuse-exports/”)")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -672,25 +677,24 @@ const BlobStorageIntegrationSettingsForm = ({
           name="exportFrequency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Export Frequency</FormLabel>
+              <FormLabel>{t("integration.blobstorage.export-frequency-label", "Export Frequency")}</FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select frequency" />
+                    <SelectValue placeholder={t("integration.blobstorage.export-frequency-placeholder", "Select frequency")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="every_20_minutes">
-                      Every 20 Minutes
+                      {t("integration.blobstorage.export-frequency-every-20-minutes", "Every 20 Minutes")}
                     </SelectItem>
-                    <SelectItem value="hourly">Hourly</SelectItem>
-                    <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="hourly">{t("integration.blobstorage.export-frequency-hourly", "Hourly")}</SelectItem>
+                    <SelectItem value="daily">{t("integration.blobstorage.export-frequency-daily", "Daily")}</SelectItem>
+                    <SelectItem value="weekly">{t("integration.blobstorage.export-frequency-weekly", "Weekly")}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
               <FormDescription>
-                How often the data should be exported. Changes are taken into
-                consideration from the next run onwards.
+                {t("integration.blobstorage.export-frequency-desc", "How often the data should be exported. Changes are taken into consideration from the next run onwards.")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -702,7 +706,7 @@ const BlobStorageIntegrationSettingsForm = ({
           name="fileType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>File Type</FormLabel>
+              <FormLabel>{t("integration.blobstorage.file-type-label", "File Type")}</FormLabel>
               <FormControl>
                 {/* "PARQUET" is display-only; the persisted fileType is kept but ignored. */}
                 <Select
@@ -711,7 +715,7 @@ const BlobStorageIntegrationSettingsForm = ({
                   disabled={isParquetOverride}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select file type" />
+                    <SelectValue placeholder={t("integration.blobstorage.file-type-placeholder", "Select file type")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="JSONL">JSONL</SelectItem>
@@ -725,8 +729,8 @@ const BlobStorageIntegrationSettingsForm = ({
               </FormControl>
               <FormDescription>
                 {isParquetOverride
-                  ? "Exporting as Apache Parquet — a columnar binary format encoded and compressed by ClickHouse. This is configured for your project and overrides the file type; gzip compression is not applicable."
-                  : "The file format for exported data."}
+                  ? t("integration.blobstorage.file-type-parquet-desc", "Exporting as Apache Parquet — a columnar binary format encoded and compressed by ClickHouse. This is configured for your project and overrides the file type; gzip compression is not applicable.")
+                  : t("integration.blobstorage.file-type-desc", "The file format for exported data.")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -738,29 +742,27 @@ const BlobStorageIntegrationSettingsForm = ({
           name="exportMode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Export Mode</FormLabel>
+              <FormLabel>{t("integration.blobstorage.export-mode-label", "Export Mode")}</FormLabel>
               <FormControl>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select export mode" />
+                    <SelectValue placeholder={t("integration.blobstorage.export-mode-placeholder", "Select export mode")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={BlobStorageExportMode.FULL_HISTORY}>
-                      Full history
+                      {t("integration.blobstorage.export-mode-full-history", "Full history")}
                     </SelectItem>
                     <SelectItem value={BlobStorageExportMode.FROM_TODAY}>
-                      Today
+                      {t("integration.blobstorage.export-mode-today", "Today")}
                     </SelectItem>
                     <SelectItem value={BlobStorageExportMode.FROM_CUSTOM_DATE}>
-                      Custom date
+                      {t("integration.blobstorage.export-mode-custom-date", "Custom date")}
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
               <FormDescription>
-                Choose when to start exporting data. &quot;Today&quot; and
-                &quot;Custom date&quot; modes will not include historical data
-                before the specified date.
+                {t("integration.blobstorage.export-mode-desc", "Choose when to start exporting data. “Today” and “Custom date” modes will not include historical data before the specified date.")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -773,7 +775,7 @@ const BlobStorageIntegrationSettingsForm = ({
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-1.5 pt-2">
-                Export Source
+                {t("integration.common.export-source", "Export Source")}
                 <Tooltip>
                   <TooltipTrigger>
                     <Info className="text-muted-foreground h-3.5 w-3.5" />
@@ -797,7 +799,7 @@ const BlobStorageIntegrationSettingsForm = ({
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-primary inline-flex items-center gap-1 text-xs hover:underline"
                       >
-                        For further information see
+                        {t("integration.common.for-further-info", "For further information see")}
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     </div>
@@ -811,7 +813,7 @@ const BlobStorageIntegrationSettingsForm = ({
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select data to export" />
+                    <SelectValue placeholder={t("integration.common.export-source-placeholder", "Select data to export")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -822,15 +824,14 @@ const BlobStorageIntegrationSettingsForm = ({
                       disabled={option.unavailable}
                     >
                       {option.unavailable
-                        ? `${option.label} (not available on this deployment)`
+                        ? `${option.label}${t("integration.blobstorage.export-source-not-available-suffix", " (not available on this deployment)")}`
                         : option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <FormDescription>
-                Choose which data sources to export to blob storage. Scores are
-                always included.
+                {t("integration.common.export-source-desc-blob", "Choose which data sources to export to blob storage. Scores are always included.")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -839,15 +840,15 @@ const BlobStorageIntegrationSettingsForm = ({
 
         {exportSourceUnavailable && (
           <Alert variant="destructive">
-            <AlertTitle>Saved export source is no longer available</AlertTitle>
+            <AlertTitle>{t("integration.blobstorage.export-source-unavailable-title", "Saved export source is no longer available")}</AlertTitle>
             <AlertDescription>
               {/* Two distinct rejection reasons; key on the deployment, not the
                   source, since TRACES_OBSERVATIONS_EVENTS is both enriched and
                   legacy. !eventsExportAvailable means enriched is genuinely
                   unavailable; otherwise the block is the Cloud legacy cutoff. */}
               {!availability.eventsExportAvailable
-                ? "This integration is configured to export enriched observations, but enriched export is not available on this deployment. Saving is blocked until you select an available export source above. To keep the current configuration instead, re-enable enriched export (V4 preview opt-in) on your deployment."
-                : "This integration is configured to export legacy traces and observations, which is no longer available for this project. Saving is blocked until you select an available export source above."}
+                ? t("integration.blobstorage.export-source-unavailable-enriched-desc", "This integration is configured to export enriched observations, but enriched export is not available on this deployment. Saving is blocked until you select an available export source above. To keep the current configuration instead, re-enable enriched export (V4 preview opt-in) on your deployment.")
+                : t("integration.blobstorage.export-source-unavailable-legacy-desc", "This integration is configured to export legacy traces and observations, which is no longer available for this project. Saving is blocked until you select an available export source above.")}
             </AlertDescription>
           </Alert>
         )}
@@ -857,15 +858,12 @@ const BlobStorageIntegrationSettingsForm = ({
           name="exportFieldGroups"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Export Field Groups</FormLabel>
+              <FormLabel>{t("integration.blobstorage.export-field-groups-label", "Export Field Groups")}</FormLabel>
               <FormDescription>
-                Choose which field groups to include in the observation exports.
-                Deselect large groups (e.g. Input / Output) to reduce export
-                size, or privacy-sensitive groups (e.g. Metadata) to avoid
-                storing user data.
+                {t("integration.blobstorage.export-field-groups-desc", "Choose which field groups to include in the observation exports. Deselect large groups (e.g. Input / Output) to reduce export size, or privacy-sensitive groups (e.g. Metadata) to avoid storing user data.")}
                 {includesLegacyExport
-                  ? " Traces and scores are always exported in full. Fields that only exist on the enriched observations (e.g. Trace Context) are omitted from the legacy observations export."
-                  : " Scores are always exported in full."}
+                  ? t("integration.blobstorage.export-field-groups-legacy-suffix", " Traces and scores are always exported in full. Fields that only exist on the enriched observations (e.g. Trace Context) are omitted from the legacy observations export.")
+                  : t("integration.blobstorage.export-field-groups-events-suffix", " Scores are always exported in full.")}
               </FormDescription>
               <div className="mt-2 space-y-2">
                 {EXPORT_FIELD_GROUP_OPTIONS.map((option) => {
@@ -908,7 +906,7 @@ const BlobStorageIntegrationSettingsForm = ({
                           {option.label}
                           {isCore && (
                             <span className="text-muted-foreground ml-1 font-normal">
-                              (required)
+                              {t("integration.blobstorage.export-field-groups-required-suffix", "(required)")}
                             </span>
                           )}
                         </div>
@@ -939,13 +937,13 @@ const BlobStorageIntegrationSettingsForm = ({
             name="exportStartDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Export Start Date</FormLabel>
+                <FormLabel>{t("integration.blobstorage.export-start-date-label", "Export Start Date")}</FormLabel>
                 <FormControl>
                   <Input
                     type="date"
                     max={(() => {
-                      const t = new Date();
-                      return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
+                      const now = new Date();
+                      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
                     })()}
                     value={
                       field.value instanceof Date
@@ -958,11 +956,11 @@ const BlobStorageIntegrationSettingsForm = ({
                         : null;
                       field.onChange(date);
                     }}
-                    placeholder="Select start date"
+                    placeholder={t("integration.blobstorage.export-start-date-placeholder", "Select start date")}
                   />
                 </FormControl>
                 <FormDescription>
-                  Data before this date will not be included in exports
+                  {t("integration.blobstorage.export-start-date-desc", "Data before this date will not be included in exports")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -977,7 +975,7 @@ const BlobStorageIntegrationSettingsForm = ({
             name="compressed"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Gzip Compression</FormLabel>
+                <FormLabel>{t("integration.common.gzip-compression", "Gzip Compression")}</FormLabel>
                 <FormControl>
                   <Switch
                     checked={field.value}
@@ -986,8 +984,7 @@ const BlobStorageIntegrationSettingsForm = ({
                   />
                 </FormControl>
                 <FormDescription>
-                  Compress exported files with gzip (.csv.gz, .json.gz,
-                  .jsonl.gz)
+                  {t("integration.common.gzip-desc", "Compress exported files with gzip (.csv.gz, .json.gz, .jsonl.gz)")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -1000,7 +997,7 @@ const BlobStorageIntegrationSettingsForm = ({
           name="enabled"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Enabled</FormLabel>
+              <FormLabel>{t("integration.common.enabled", "Enabled")}</FormLabel>
               <FormControl>
                 <Switch
                   checked={field.value}
@@ -1019,34 +1016,34 @@ const BlobStorageIntegrationSettingsForm = ({
           onClick={blobStorageForm.handleSubmit(onSubmit)}
           disabled={isLoading}
         >
-          Save
+          {t("common.save", "Save")}
         </Button>
         <Button
           variant="secondary"
           loading={mutValidate.isPending}
           disabled={isLoading || !state}
-          title="Test your saved configuration by uploading a small test file to your storage"
+          title={t("integration.common.validate-title", "Test your saved configuration by uploading a small test file to your storage")}
           onClick={() => {
             mutValidate.mutate({ projectId });
           }}
         >
-          Validate
+          {t("integration.common.validate", "Validate")}
         </Button>
         <Button
           variant="secondary"
           loading={mutRunNow.isPending}
           disabled={isLoading || !state?.enabled}
-          title="Trigger an immediate export of all data since the last sync"
+          title={t("integration.common.run-now-title", "Trigger an immediate export of all data since the last sync")}
           onClick={() => {
             if (
               confirm(
-                "Are you sure you want to run the blob storage export now? This will export all data since the last sync.",
+                t("integration.common.confirm-run-now-blob", "Are you sure you want to run the blob storage export now? This will export all data since the last sync."),
               )
             )
               mutRunNow.mutate({ projectId });
           }}
         >
-          Run Now
+          {t("integration.common.run-now", "Run Now")}
         </Button>
         <Button
           variant="ghost"
@@ -1055,13 +1052,13 @@ const BlobStorageIntegrationSettingsForm = ({
           onClick={() => {
             if (
               confirm(
-                "Are you sure you want to reset the Blob Storage integration for this project?",
+                t("integration.common.confirm-reset-blob", "Are you sure you want to reset the Blob Storage integration for this project?"),
               )
             )
               mutDelete.mutate({ projectId });
           }}
         >
-          Reset
+          {t("integration.common.reset", "Reset")}
         </Button>
       </div>
     </Form>

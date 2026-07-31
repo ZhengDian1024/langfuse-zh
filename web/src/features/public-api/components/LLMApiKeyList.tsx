@@ -14,12 +14,14 @@ import {
 } from "@/src/components/ui/table";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { api } from "@/src/utils/api";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { CreateLLMApiKeyDialog } from "./CreateLLMApiKeyDialog";
 import { UpdateLLMApiKeyDialog } from "./UpdateLLMApiKeyDialog";
 
 export function LlmApiKeyList(props: { projectId: string }) {
+  const { t } = useI18n();
   const [editingKeyId, setEditingKeyId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -44,11 +46,11 @@ export function LlmApiKeyList(props: { projectId: string }) {
   if (!hasAccess) {
     return (
       <div>
-        <Header title="LLM Connections" />
+        <Header title={t("llm-api-key.title", "LLM Connections")} />
         <Alert>
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>{t("llm-api-key.access-denied-title", "Access Denied")}</AlertTitle>
           <AlertDescription>
-            You do not have permission to view LLM API keys for this project.
+            {t("llm-api-key.access-denied-desc", "You do not have permission to view LLM API keys for this project.")}
           </AlertDescription>
         </Alert>
       </div>
@@ -57,27 +59,26 @@ export function LlmApiKeyList(props: { projectId: string }) {
 
   return (
     <div id="llm-api-keys">
-      <Header title="LLM Connections" />
+      <Header title={t("llm-api-key.title", "LLM Connections")} />
       <p className="mb-4 text-sm">
-        Connect your LLM services to enable evaluations and playground features.
-        Your provider will charge based on usage.
+        {t("llm-api-key.description", "Connect your LLM services to enable evaluations and playground features. Your provider will charge based on usage.")}
       </p>
       <Card className="mb-4 overflow-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="text-primary md:table-cell">
-                Provider
+                {t("llm-api-key.col-provider", "Provider")}
               </TableHead>
               <TableHead className="text-primary md:table-cell">
-                Adapter
+                {t("llm-api-key.col-adapter", "Adapter")}
               </TableHead>
               <TableHead className="text-primary md:table-cell">
-                Base URL
+                {t("llm-api-key.col-base-url", "Base URL")}
               </TableHead>
-              <TableHead className="text-primary">API Key</TableHead>
+              <TableHead className="text-primary">{t("llm-api-key.col-api-key", "API Key")}</TableHead>
               {hasExtraHeaderKeys ? (
-                <TableHead className="text-primary">Extra headers</TableHead>
+                <TableHead className="text-primary">{t("llm-api-key.col-extra-headers", "Extra headers")}</TableHead>
               ) : null}
               <TableHead />
             </TableRow>
@@ -90,7 +91,7 @@ export function LlmApiKeyList(props: { projectId: string }) {
                   colSpan={6}
                   className="text-center"
                 >
-                  None
+                  {t("llm-api-key.none", "None")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -110,7 +111,7 @@ export function LlmApiKeyList(props: { projectId: string }) {
                     density="comfortable"
                     className="max-w-md overflow-auto font-mono"
                   >
-                    {apiKey.baseURL ?? "default"}
+                    {apiKey.baseURL ?? t("llm-api-key.default", "default")}
                   </TableCell>
                   <TableCell density="comfortable" className="font-mono">
                     {apiKey.displaySecretKey}
@@ -157,6 +158,7 @@ export function LlmApiKeyList(props: { projectId: string }) {
 
 // show dialog to let user confirm that this is a destructive action
 function DeleteApiKeyButton(props: { projectId: string; apiKeyId: string }) {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
@@ -180,9 +182,9 @@ function DeleteApiKeyButton(props: { projectId: string; apiKeyId: string }) {
           <TrashIcon className="h-4 w-4" />
         </Button>
       }
-      title="Delete LLM Connection"
-      description="Are you sure you want to delete this connection? This action cannot be undone."
-      confirmLabel="Permanently delete"
+      title={t("llm-api-key.delete-title", "Delete LLM Connection")}
+      description={t("llm-api-key.delete-desc", "Are you sure you want to delete this connection? This action cannot be undone.")}
+      confirmLabel={t("llm-api-key.delete-confirm", "Permanently delete")}
       loading={mutDeleteApiKey.isPending}
       onConfirm={() => {
         mutDeleteApiKey

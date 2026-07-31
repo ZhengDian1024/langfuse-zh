@@ -10,6 +10,7 @@ import {
 import { CreateLLMApiKeyForm } from "./CreateLLMApiKeyForm";
 import { useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { PencilIcon } from "lucide-react";
 import { type RouterOutputs } from "@/src/utils/api";
 
@@ -26,6 +27,7 @@ export function UpdateLLMApiKeyDialog({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
+  const { t } = useI18n();
   const [internalOpen, setInternalOpen] = useState(false);
   const uiCustomization = useUiCustomization();
 
@@ -52,7 +54,7 @@ export function UpdateLLMApiKeyDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader>
-          <DialogTitle>Update LLM Connection</DialogTitle>
+          <DialogTitle>{t("llm-api-key.update-connection", "Update LLM Connection")}</DialogTitle>
         </DialogHeader>
         {isOpen && (
           <CreateLLMApiKeyForm

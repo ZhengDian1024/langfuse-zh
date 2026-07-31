@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { api } from "@/src/utils/api";
 import { SlackConnectButton } from "@/src/features/slack/components/SlackConnectButton";
 import { SlackDisconnectButton } from "@/src/features/slack/components/SlackDisconnectButton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Props for the SlackConnectionCard component
@@ -50,6 +51,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
   onConnectionChange,
   showConnectButton = true,
 }) => {
+  const { t } = useI18n();
   // Get Slack integration status
   const {
     data: integrationStatus,
@@ -77,14 +79,14 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("integration.slack.connection-title", "Slack Connection")}
           </CardTitle>
-          <CardDescription>Checking connection status...</CardDescription>
+          <CardDescription>{t("integration.slack.checking-status", "Checking connection status...")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-muted-foreground flex items-center gap-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            <span>Loading...</span>
+            <span>{t("layout.loading", "Loading")}...</span>
           </div>
         </CardContent>
       </Card>
@@ -97,15 +99,15 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("integration.slack.connection-title", "Slack Connection")}
           </CardTitle>
-          <CardDescription>Error loading connection status</CardDescription>
+          <CardDescription>{t("integration.slack.error-loading-status", "Error loading connection status")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Failed to load Slack integration status. Please try again.
+              {t("integration.slack.failed-load-status", "Failed to load Slack integration status. Please try again.")}
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -119,10 +121,10 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Slack Connection
+            {t("integration.slack.connection-title", "Slack Connection")}
           </CardTitle>
           <CardDescription>
-            Connect your Slack workspace to send notifications
+            {t("integration.slack.connect-description", "Connect your Slack workspace to send notifications")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -135,8 +137,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
 
           <div className="space-y-2">
             <p className="text-muted-foreground text-sm">
-              Connect your Slack workspace to enable real-time notifications for
-              your automations.
+              {t("integration.slack.connect-hint", "Connect your Slack workspace to enable real-time notifications for your automations.")}
             </p>
 
             {showConnectButton && (
@@ -160,28 +161,28 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Slack Connection
+          {t("integration.slack.connection-title", "Slack Connection")}
         </CardTitle>
-        <CardDescription>Connected to your Slack workspace</CardDescription>
+        <CardDescription>{t("integration.slack.connected-status", "Connected to your Slack workspace")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Connection Status */}
         <div className="flex items-center gap-2">
           <CheckCircle className="h-4 w-4 text-green-500" />
-          <span className="text-sm font-medium">Connected</span>
+          <span className="text-sm font-medium">{t("integration.slack.connected", "Connected")}</span>
         </div>
 
         {/* Team Information */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Workspace:</span>
+            <span className="text-sm font-medium">{t("integration.slack.workspace-label", "Workspace:")}</span>
             <Badge variant="secondary" className="text-xs">
               {integrationStatus.teamName}
             </Badge>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Team ID:</span>
+            <span className="text-sm font-medium">{t("integration.slack.team-id-label", "Team ID:")}</span>
             <Badge variant="outline" className="font-mono text-xs">
               {integrationStatus.teamId}
             </Badge>
@@ -189,7 +190,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
 
           {integrationStatus.botUserId && (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Bot User:</span>
+              <span className="text-sm font-medium">{t("integration.slack.bot-user-label", "Bot User:")}</span>
               <Badge variant="outline" className="font-mono text-xs">
                 {integrationStatus.botUserId}
               </Badge>
@@ -214,7 +215,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
             onClick={() => refetchStatus()}
             disabled={disabled}
           >
-            Refresh Status
+            {t("integration.slack.refresh-status", "Refresh Status")}
           </Button>
         </div>
       </CardContent>
