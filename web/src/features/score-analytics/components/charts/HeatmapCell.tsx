@@ -7,6 +7,7 @@ import {
 } from "@/src/components/ui/tooltip";
 import { cn } from "@/src/utils/tailwind";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface HeatmapCellProps {
   cell?: HeatmapCell;
@@ -60,6 +61,7 @@ function CellWithData({
   cellClassName,
   showValues,
 }: CellWithDataProps) {
+  const { t } = useI18n();
   const [isHovered, setIsHovered] = useState(false);
 
   // Determine if cell is empty (value = 0)
@@ -115,7 +117,7 @@ function CellWithData({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={() => onClick?.(cell)}
-      aria-label={cell.displayValue || `Value: ${cell.value}`}
+      aria-label={cell.displayValue || t("score-analytics.heatmap-cell-value", "Value: {value}", { value: String(cell.value) })}
     >
       {showValues && (
         <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>
@@ -127,7 +129,7 @@ function CellWithData({
       style={sharedStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      aria-label={cell.displayValue || `Value: ${cell.value}`}
+      aria-label={cell.displayValue || t("score-analytics.heatmap-cell-value", "Value: {value}", { value: String(cell.value) })}
     >
       {showValues && (
         <span className="text-[10px] sm:text-xs">{cell.displayValue}</span>

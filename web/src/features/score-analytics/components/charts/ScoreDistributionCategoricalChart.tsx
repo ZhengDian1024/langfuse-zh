@@ -8,6 +8,7 @@ import {
 } from "@/src/components/ui/chart";
 import { ScoreChartLegendContent } from "./ScoreChartLegendContent";
 import { ScoreChartTooltip } from "../../lib/ScoreChartTooltip";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface CategoricalChartProps {
   distribution1: Array<{ binIndex: number; count: number }>;
@@ -40,6 +41,7 @@ export function ScoreDistributionCategoricalChart({
   score2Source,
   colors,
 }: CategoricalChartProps) {
+  const { t } = useI18n();
   const hasStackedData = Boolean(
     stackedDistribution && stackedDistribution.length > 0,
   );
@@ -116,7 +118,7 @@ export function ScoreDistributionCategoricalChart({
             normalizedStacks[stackKey] = stacks[stackKey] ?? 0;
           });
           return {
-            name: category === "__unmatched__" ? "no match" : category,
+            name: category === "__unmatched__" ? t("score-analytics.no-match", "no match") : category,
             ...normalizedStacks,
           };
         });
@@ -126,7 +128,7 @@ export function ScoreDistributionCategoricalChart({
     return [...distribution1]
       .sort((a, b) => a.binIndex - b.binIndex)
       .map((item) => {
-        const label = categories[item.binIndex] ?? `Category ${item.binIndex}`;
+        const label = categories[item.binIndex] ?? t("score-analytics.category-fallback", "Category {index}", { index: String(item.binIndex) });
         return {
           name: label,
           pv: item.count,
@@ -139,6 +141,7 @@ export function ScoreDistributionCategoricalChart({
     stackedDistribution,
     score2Categories,
     allStackKeys,
+    t,
   ]);
 
   // Visibility state for interactive legend (stacked mode only)
@@ -179,7 +182,7 @@ export function ScoreDistributionCategoricalChart({
         // Special handling for unmatched category
         if (key === "__unmatched__") {
           stackConfig[key] = {
-            label: "no match",
+            label: t("score-analytics.no-match", "no match"),
             color: "hsl(var(--muted))", // Light grey for unmatched
           };
           return;
@@ -230,6 +233,7 @@ export function ScoreDistributionCategoricalChart({
     score2Source,
     colors,
     categories,
+    t,
   ]);
 
   return (

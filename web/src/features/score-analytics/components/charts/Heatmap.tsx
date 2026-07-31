@@ -8,6 +8,7 @@ import {
   HoverCardTrigger,
 } from "@/src/components/ui/hover-card";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface HeatmapProps {
   // Data
@@ -65,8 +66,9 @@ export function Heatmap({
   renderTooltip,
   onCellClick,
   onCellHover,
-  ariaLabel = "Score comparison heatmap",
+  ariaLabel,
 }: HeatmapProps) {
+  const { t } = useI18n();
   // Create a 2D lookup map for fast cell access
   const cellMap = useMemo(() => {
     const map = new Map<string, HeatmapCell>();
@@ -141,7 +143,7 @@ export function Heatmap({
         className={cn("flex w-full flex-1 flex-col gap-4", className)}
         style={{ width, height }}
         role="img"
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? t("score-analytics.heatmap-aria", "Score comparison heatmap")}
       >
         <div className="flex flex-1 items-stretch justify-center gap-1 sm:gap-2">
           {/* Y-axis label (vertical) */}

@@ -5,6 +5,7 @@ import {
 } from "@/src/components/ui/combobox";
 import { Button } from "@/src/components/ui/button";
 import { X } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface ScoreOption {
   value: string; // "name-dataType-source"
@@ -27,11 +28,13 @@ export function ScoreCombobox({
   value,
   onChange,
   options,
-  placeholder = "Select score",
+  placeholder,
   filterByDataType,
   disabled = false,
   className,
 }: ScoreComboboxProps) {
+  const { t } = useI18n();
+  const resolvedPlaceholder = placeholder ?? t("score-analytics.select-score", "Select score");
   // 1. Filter options by dataType
   const filteredOptions = useMemo(() => {
     if (!filterByDataType) return options;
@@ -56,9 +59,9 @@ export function ScoreCombobox({
     );
 
     const typeLabels: Record<string, string> = {
-      BOOLEAN: "Boolean",
-      CATEGORICAL: "Categorical",
-      NUMERIC: "Numeric",
+      BOOLEAN: t("score-analytics.type-boolean", "Boolean"),
+      CATEGORICAL: t("score-analytics.type-categorical", "Categorical"),
+      NUMERIC: t("score-analytics.type-numeric", "Numeric"),
     };
     const typeOrder = ["BOOLEAN", "CATEGORICAL", "NUMERIC"];
 
@@ -71,7 +74,7 @@ export function ScoreCombobox({
           label: `${opt.name} • ${opt.source}`,
         })),
       }));
-  }, [filteredOptions]);
+  }, [filteredOptions, t]);
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -88,9 +91,9 @@ export function ScoreCombobox({
         value={value ?? ""}
         onValueChange={handleValueChange}
         options={groupedOptions}
-        placeholder={placeholder}
-        searchPlaceholder="Search scores..."
-        emptyText="No scores found."
+        placeholder={resolvedPlaceholder}
+        searchPlaceholder={t("score-analytics.search-scores", "Search scores...")}
+        emptyText={t("score-analytics.no-scores-found", "No scores found.")}
         disabled={disabled}
         className={className}
       />
@@ -100,7 +103,7 @@ export function ScoreCombobox({
           variant="ghost"
           size="icon"
           onClick={handleClear}
-          title="Clear selection"
+          title={t("score-analytics.clear-selection", "Clear selection")}
           className="h-6 w-6 shrink-0"
         >
           <X className="h-3 w-3" />
