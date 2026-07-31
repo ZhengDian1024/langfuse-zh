@@ -19,6 +19,7 @@ import {
   type CodeEvalSourceCodeLanguage,
   getDefaultCodeEvalSource,
 } from "@/src/features/evals/utils/code-eval-template-validation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type EvalTemplateFormInput = z.input<typeof templateFormSchema>;
 type EvalTemplateFormOutput = z.output<typeof templateFormSchema>;
@@ -48,6 +49,7 @@ export function EvalTemplateTypeSelector({
   hasExistingTemplate: boolean;
   onChange?: () => void;
 }) {
+  const { t } = useI18n();
   const sourceCodeDraftsRef = useRef<CodeEvalSourceDrafts>({});
   const evalTemplateType = form.watch("type");
   const sourceCodeLanguage =
@@ -101,7 +103,7 @@ export function EvalTemplateTypeSelector({
       name="type"
       render={() => (
         <FormItem>
-          <FormLabel>Type</FormLabel>
+          <FormLabel>{t("evals.type-selector.type", "Type")}</FormLabel>
           <FormControl>
             <Tabs
               value={selectedValue}
@@ -119,14 +121,14 @@ export function EvalTemplateTypeSelector({
                     value={EvalTemplateType.LLM_AS_JUDGE}
                     className="min-w-[100px]"
                   >
-                    LLM-as-judge
+                    {t("evals.type-selector.llm-as-judge", "LLM-as-judge")}
                   </TabsTrigger>
                 ) : null}
                 <TabsTrigger
                   value={EvalTemplateSourceCodeLanguage.TYPESCRIPT}
                   className="min-w-[100px]"
                 >
-                  TypeScript
+                  {t("evals.type-selector.typescript", "TypeScript")}
                 </TabsTrigger>
                 {codeEvalCapabilities.supportedSourceCodeLanguages.includes(
                   EvalTemplateSourceCodeLanguage.PYTHON,
@@ -135,7 +137,7 @@ export function EvalTemplateTypeSelector({
                     value={EvalTemplateSourceCodeLanguage.PYTHON}
                     className="min-w-[100px]"
                   >
-                    Python
+                    {t("evals.type-selector.python", "Python")}
                   </TabsTrigger>
                 ) : null}
               </TabsList>

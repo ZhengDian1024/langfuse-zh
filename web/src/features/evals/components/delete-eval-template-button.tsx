@@ -8,6 +8,7 @@ import { api } from "@/src/utils/api";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type ReferencingEvaluator = {
   id: string;
@@ -23,6 +24,7 @@ type DeleteEvalTemplateButtonProps = DeleteButtonProps & {
 };
 
 export function DeleteEvalTemplateButton(props: DeleteEvalTemplateButtonProps) {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const {
     itemId,
@@ -36,13 +38,20 @@ export function DeleteEvalTemplateButton(props: DeleteEvalTemplateButtonProps) {
   const templateMutation = api.evals.deleteEvalTemplate.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Evaluator deleted",
-        description: `Evaluator "${templateName}" was deleted.`,
+        title: t("evals.delete.deleted-title", "Evaluator deleted"),
+        description: t(
+          "evals.delete.deleted-desc",
+          'Evaluator "{name}" was deleted.',
+          { name: templateName },
+        ),
       });
       utils.evals.invalidate();
     },
     onError: (error) =>
-      showErrorToast("Failed to delete evaluator", error.message),
+      showErrorToast(
+        t("evals.delete.failed", "Failed to delete evaluator"),
+        error.message,
+      ),
   });
 
   // Only fetch usage once the user actually opens the delete popover. Once
@@ -88,10 +97,15 @@ export function DeleteEvalTemplateButton(props: DeleteEvalTemplateButtonProps) {
   const deleteBlocker =
     usageCount > 0 ? (
       <>
-        <h2 className="mb-3 font-semibold">Cannot delete</h2>
+        <h2 className="mb-3 font-semibold">
+          {t("evals.delete.cannot-delete-title", "Cannot delete")}
+        </h2>
         <p className="mb-3 max-w-72 text-sm">
-          This evaluator is used by {usageCount} running evaluator
-          {usageCount === 1 ? "" : "s"}. Delete those running evaluators first.
+          {t(
+            "evals.delete.cannot-delete-desc",
+            "This evaluator is used by {count} running evaluator(s). Delete those running evaluators first.",
+            { count: String(usageCount) },
+          )}
         </p>
         {referencingEvaluators && referencingEvaluators.length > 0 ? (
           referencingEvaluators.length === 1 ? (
@@ -124,8 +138,11 @@ export function DeleteEvalTemplateButton(props: DeleteEvalTemplateButtonProps) {
           source: isTableAction ? "table-single-row" : "template",
         })
       }
-      entityToDeleteName="evaluator"
-      customDeletePrompt="This action cannot be undone. It permanently deletes all versions of this evaluator. Scores already produced by it will not be deleted."
+      entityToDeleteName={t("evals.delete.entity-name", "evaluator")}
+      customDeletePrompt={t(
+        "evals.delete.custom-prompt",
+        "This action cannot be undone. It permanently deletes all versions of this evaluator. Scores already produced by it will not be deleted.",
+      )}
       executeDeleteMutation={executeDeleteMutation}
       isDeleteMutationLoading={templateMutation.isPending}
       deleteBlocker={deleteBlocker}

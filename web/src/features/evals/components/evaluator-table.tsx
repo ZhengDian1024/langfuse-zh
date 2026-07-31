@@ -62,12 +62,14 @@ import {
   TableIconButtonLoadingCell,
   TableTextLoadingCell,
 } from "@/src/components/table/loading-cells";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function LegacyBadgeCell({ status }: { status: string }) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-1.5">
       <Badge variant="warning">
-        Legacy
+        {t("evals.legacy", "Legacy")}
         {status === "ACTIVE" && (
           <Tooltip>
             <TooltipTrigger>
@@ -75,10 +77,17 @@ function LegacyBadgeCell({ status }: { status: string }) {
             </TooltipTrigger>
             <TooltipContent className="max-w-[280px]">
               <div className="space-y-1 text-sm">
-                <p className="font-medium">Action required</p>
+                <p className="font-medium">
+                  {t(
+                    "evals.evaluator-table.action-required",
+                    "Action required",
+                  )}
+                </p>
                 <p className="text-muted-foreground">
-                  This evaluator requires changes to benefit from new features
-                  and performance improvements. Please follow{" "}
+                  {t(
+                    "evals.evaluator-table.upgrade-tooltip-prefix",
+                    "This evaluator requires changes to benefit from new features and performance improvements. Please follow",
+                  )}{" "}
                   <Link
                     href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
                     target="_blank"
@@ -88,11 +97,17 @@ function LegacyBadgeCell({ status }: { status: string }) {
                       e.stopPropagation();
                     }}
                   >
-                    this guide
+                    {t("evals.evaluator-table.this-guide", "this guide")}
                   </Link>{" "}
-                  to upgrade to the new version. <br /> <br /> If you do not
-                  upgrade, your evaluator will continue to run, but you will not
-                  benefit from improvements.
+                  {t(
+                    "evals.evaluator-table.upgrade-tooltip-suffix",
+                    "to upgrade to the new version.",
+                  )}{" "}
+                  <br /> <br />{" "}
+                  {t(
+                    "evals.evaluator-table.upgrade-tooltip-tail",
+                    "If you do not upgrade, your evaluator will continue to run, but you will not benefit from improvements.",
+                  )}
                 </p>
               </div>
             </TooltipContent>
@@ -104,6 +119,7 @@ function LegacyBadgeCell({ status }: { status: string }) {
 }
 
 export default function EvaluatorTable({ projectId }: { projectId: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const { setDetailPageList } = useDetailPageLists();
   const [paginationState, setPaginationState] = usePaginationState(0, 50, {
@@ -176,7 +192,10 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
   const columns = [
     columnHelper.accessor("scoreName", {
       id: "scoreName",
-      header: "Generated Score Name",
+      header: t(
+        "evals.evaluator-table.col-generated-score-name",
+        "Generated Score Name",
+      ),
       size: 200,
       cell: (row) => {
         const scoreName = row.getValue();
@@ -184,7 +203,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("status", {
-      header: "Status",
+      header: t("evals.evaluator-table.col-status", "Status"),
       id: "status",
       size: 80,
       loadingCell: <TableBadgeLoadingCell />,
@@ -199,7 +218,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("totalCost", {
-      header: "Total Cost (7d)",
+      header: t("evals.evaluator-table.col-total-cost", "Total Cost (7d)"),
       id: "totalCost",
       size: 120,
       cell: (row) => {
@@ -215,7 +234,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("result", {
-      header: "Result",
+      header: t("evals.evaluator-table.col-result", "Result"),
       id: "result",
       size: 150,
       cell: (row) => {
@@ -229,7 +248,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("logs", {
-      header: "Logs",
+      header: t("evals.evaluator-table.col-logs", "Logs"),
       id: "logs",
       size: 150,
       loadingCell: <Skeleton className="h-6 w-16 rounded-md" />,
@@ -248,14 +267,17 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
             }}
           >
             <ExternalLinkIcon className="mr-1 h-3 w-3" />
-            View
+            {t("evals.view", "View")}
           </Button>
         );
       },
     }),
     columnHelper.accessor("template", {
       id: "template",
-      header: "Referenced Evaluator",
+      header: t(
+        "evals.evaluator-table.col-referenced-evaluator",
+        "Referenced Evaluator",
+      ),
       size: 200,
       loadingCell: (
         <div className="flex items-center gap-2">
@@ -265,7 +287,11 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       ),
       cell: ({ row }) => {
         const template = row.original.template;
-        if (!template) return "template not found";
+        if (!template)
+          return t(
+            "evals.evaluator-table.template-not-found",
+            "template not found",
+          );
         return (
           <div className="flex items-center gap-2">
             <TableIdOrName value={template.name} />
@@ -278,19 +304,19 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",
-      header: "Created At",
+      header: t("evals.evaluator-table.col-created-at", "Created At"),
       enableSorting: true,
       size: 150,
     }),
     columnHelper.accessor("updatedAt", {
       id: "updatedAt",
-      header: "Updated At",
+      header: t("evals.evaluator-table.col-updated-at", "Updated At"),
       enableSorting: true,
       size: 150,
     }),
     columnHelper.accessor("isLegacy", {
       id: "isLegacy",
-      header: "Eval Version",
+      header: t("evals.evaluator-table.col-eval-version", "Eval Version"),
       size: 180,
       enableHiding: true,
       loadingCell: <TableBadgeLoadingCell />,
@@ -306,20 +332,20 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
     }),
     columnHelper.accessor("target", {
       id: "target",
-      header: "Runs on",
+      header: t("evals.evaluator-table.col-runs-on", "Runs on"),
       size: 150,
       enableHiding: true,
       cell: (row) => {
         const targetObject = row.getValue();
         const renderText = isEventTarget(targetObject)
-          ? "observations"
+          ? t("evals.evaluator-table.observations", "observations")
           : targetObject;
         return <span className="text-muted-foreground">{renderText}</span>;
       },
     }),
     columnHelper.accessor("filter", {
       id: "filter",
-      header: "Filter",
+      header: t("evals.evaluator-table.col-filter", "Filter"),
       size: 200,
       enableHiding: true,
       cell: (row) => {
@@ -348,7 +374,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("id", {
-      header: "Id",
+      header: t("evals.evaluator-table.col-id", "Id"),
       id: "id",
       size: 100,
       enableHiding: true,
@@ -358,7 +384,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       },
     }),
     columnHelper.accessor("actions", {
-      header: "Actions",
+      header: t("evals.evaluator-table.col-actions", "Actions"),
       id: "actions",
       size: 100,
       loadingCell: <TableIconButtonLoadingCell />,
@@ -369,12 +395,15 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
             <IconOnlyButton
               key={id}
               icon={<Pen className="h-4 w-4" />}
-              label="Edit"
+              label={t("evals.edit", "Edit")}
               aria-label="edit"
               disabledReason={
                 hasAccess
                   ? undefined
-                  : "You don't have permission to edit this evaluator."
+                  : t(
+                      "evals.evaluator-table.edit-disabled",
+                      "You don't have permission to edit this evaluator.",
+                    )
               }
               onClick={(e) => {
                 e.stopPropagation();
@@ -390,7 +419,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
               icon
               variant="ghost"
               size="icon-xs"
-              title="Delete"
+              title={t("evals.delete", "Delete")}
             />
           </div>
         );
@@ -433,19 +462,22 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
               variant="warning"
               key="dismissed-eval-remapping-callouts"
             >
-              <span>New functionality has landed. </span>
-              <span className="font-semibold">
-                Some of your evaluators (marked &quot;Legacy&quot;) require
-                changes{" "}
+              <span>
+                {t(
+                  "evals.evaluator-table.callout",
+                  'New functionality has landed. Some of your evaluators (marked "Legacy") require changes to benefit from new features and improvements.',
+                )}{" "}
               </span>
-              <span>to benefit from new features and improvements. </span>
               <Link
                 href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-dark-blue font-medium hover:opacity-80"
               >
-                Learn what is changing and how to upgrade
+                {t(
+                  "evals.evaluator-table.learn-what-changed",
+                  "Learn what is changing and how to upgrade",
+                )}
               </Link>
               <span>.</span>
               <Tooltip>
@@ -453,8 +485,10 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                   <Info className="ml-1 inline h-4 w-4 cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Your evaluator will continue to work without upgrading, but
-                  you will not benefit from performance improvements.
+                  {t(
+                    "evals.evaluator-table.continue-work-tooltip",
+                    "Your evaluator will continue to work without upgrading, but you will not benefit from performance improvements.",
+                  )}
                 </TooltipContent>
               </Tooltip>
             </Callout>
@@ -526,7 +560,12 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       >
         <DialogContent className="max-h-[90vh] max-w-(--breakpoint-xl) overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit configuration</DialogTitle>
+            <DialogTitle>
+              {t(
+                "evals.evaluator-table.edit-configuration-title",
+                "Edit configuration",
+              )}
+            </DialogTitle>
           </DialogHeader>
           {existingEvaluator.isLoading ? (
             <div className="flex items-center justify-center p-4">
@@ -553,9 +592,14 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
                 setEditConfigId(null);
                 utils.evals.allConfigs.invalidate();
                 showSuccessToast({
-                  title: "Evaluator updated successfully",
-                  description:
+                  title: t(
+                    "evals.evaluator-table.updated-success-title",
+                    "Evaluator updated successfully",
+                  ),
+                  description: t(
+                    "evals.evaluator-table.updated-success-desc",
                     "Changes will automatically be reflected future evaluator runs",
+                  ),
                 });
               }}
             />

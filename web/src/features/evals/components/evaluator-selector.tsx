@@ -27,17 +27,27 @@ import Link from "next/link";
 import { useIsCodeEvalEnabled } from "@/src/features/evals/hooks/useIsCodeEvalEnabled";
 import { shouldShowEvalTemplate } from "@/src/features/evals/utils/code-eval-template-utils";
 import { SiPython, SiTypescript } from "react-icons/si";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const CodeTemplateLanguageIcon = ({
   sourceCodeLanguage,
 }: {
   sourceCodeLanguage: EvalTemplate["sourceCodeLanguage"];
 }) => {
+  const { t } = useI18n();
   const language =
     sourceCodeLanguage === EvalTemplateSourceCodeLanguage.TYPESCRIPT
-      ? { Icon: SiTypescript, title: "TypeScript" }
+      ? {
+          Icon: SiTypescript,
+          title: t("evals.typescript", "TypeScript"),
+          ariaLabel: "TypeScript",
+        }
       : sourceCodeLanguage === EvalTemplateSourceCodeLanguage.PYTHON
-        ? { Icon: SiPython, title: "Python" }
+        ? {
+            Icon: SiPython,
+            title: t("evals.python", "Python"),
+            ariaLabel: "Python",
+          }
         : null;
 
   if (!language) return null;
@@ -47,7 +57,7 @@ const CodeTemplateLanguageIcon = ({
   return (
     <span
       title={language.title}
-      aria-label={language.title}
+      aria-label={language.ariaLabel}
       className="text-muted-foreground ml-1 inline-flex shrink-0"
     >
       <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -55,25 +65,24 @@ const CodeTemplateLanguageIcon = ({
   );
 };
 
-const getCodeTemplateLanguageTitle = (
-  sourceCodeLanguage: EvalTemplate["sourceCodeLanguage"],
-) =>
-  sourceCodeLanguage === EvalTemplateSourceCodeLanguage.PYTHON
-    ? "Python"
-    : sourceCodeLanguage === EvalTemplateSourceCodeLanguage.TYPESCRIPT
-      ? "TypeScript"
-      : "Code";
-
 const TemplatePreviewTooltipContent = ({
   template,
 }: {
   template: EvalTemplate;
 }) => {
+  const { t } = useI18n();
   if (template.type === EvalTemplateType.CODE) {
+    const languageTitle =
+      template.sourceCodeLanguage === EvalTemplateSourceCodeLanguage.PYTHON
+        ? t("evals.python", "Python")
+        : template.sourceCodeLanguage === EvalTemplateSourceCodeLanguage.TYPESCRIPT
+          ? t("evals.typescript", "TypeScript")
+          : t("evals.code", "Code");
     return (
       <>
         <p className="mb-1 font-medium">
-          {getCodeTemplateLanguageTitle(template.sourceCodeLanguage)} source
+          {languageTitle}
+          {t("evals.selector.source-suffix", " source")}
         </p>
         <pre className="text-muted-foreground text-xs wrap-break-word whitespace-pre-wrap">
           {template.sourceCode}
@@ -84,7 +93,9 @@ const TemplatePreviewTooltipContent = ({
 
   return (
     <>
-      <p className="mb-1 font-medium">Evaluation prompt</p>
+      <p className="mb-1 font-medium">
+        {t("evals.selector.evaluation-prompt", "Evaluation prompt")}
+      </p>
       <pre className="text-muted-foreground text-xs wrap-break-word whitespace-pre-wrap">
         {template.prompt}
       </pre>
@@ -111,6 +122,7 @@ export function EvaluatorSelector({
   showMissingProviderWarning = true,
   onTemplateSelect,
 }: EvaluatorSelectorProps) {
+  const { t } = useI18n();
   const [search, setSearch] = useState("");
   const codeEvalCapabilities = useIsCodeEvalEnabled();
   const visibleEvalTemplates = evalTemplates.filter((template) =>
@@ -172,7 +184,10 @@ export function EvaluatorSelector({
   return (
     <InputCommand className="flex h-full flex-col border-none">
       <InputCommandInput
-        placeholder="Search evaluators..."
+        placeholder={t(
+          "evals.selector.search-evaluators",
+          "Search evaluators...",
+        )}
         className="h-9 px-0"
         value={search}
         onValueChange={setSearch}
@@ -180,12 +195,19 @@ export function EvaluatorSelector({
       />
       <InputCommandList className="max-h-full flex-1 overflow-y-auto">
         {!hasResults && (
-          <InputCommandEmpty>No evaluator found.</InputCommandEmpty>
+          <InputCommandEmpty>
+            {t("evals.selector.no-evaluator", "No evaluator found.")}
+          </InputCommandEmpty>
         )}
 
         {filteredTemplates.custom.length > 0 && (
           <>
-            <InputCommandGroup heading="Custom evaluators">
+            <InputCommandGroup
+              heading={t(
+                "evals.selector.custom-evaluators",
+                "Custom evaluators",
+              )}
+            >
               {filteredTemplates.custom.map(([name, templateData]) => {
                 const latestVersion = templateData[templateData.length - 1];
                 const isInvalid = isTemplateInvalid(latestVersion);
@@ -202,7 +224,7 @@ export function EvaluatorSelector({
                       );
                     }}
                     className={cn(
-                      templateData.some((t) => t.id === selectedTemplateId) &&
+                      templateData.some((tmpl) => tmpl.id === selectedTemplateId) &&
                         "bg-secondary",
                     )}
                   >
@@ -234,19 +256,27 @@ export function EvaluatorSelector({
                           <AlertCircle className="ml-1 h-4 w-4 text-yellow-500" />
                         </TooltipTrigger>
                         <TooltipContent className="max-h-[50dvh] overflow-y-auto text-sm break-normal whitespace-normal">
-                          <p>Requires project-level evaluation model</p>
+                          <p>
+                            {t(
+                              "evals.selector.requires-default-model",
+                              "Requires project-level evaluation model",
+                            )}
+                          </p>
                           <Link
                             href={`/project/${projectId}/evals/default-model`}
                             className="mt-2 block text-blue-600 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            Configure default model
+                            {t(
+                              "evals.selector.configure-default-model",
+                              "Configure default model",
+                            )}
                           </Link>
                         </TooltipContent>
                       </Tooltip>
                     )}
-                    {templateData.some((t) => t.id === selectedTemplateId) && (
+                    {templateData.some((tmpl) => tmpl.id === selectedTemplateId) && (
                       <CheckIcon className="ml-auto h-4 w-4" />
                     )}
                   </InputCommandItem>
@@ -259,7 +289,12 @@ export function EvaluatorSelector({
 
         {filteredTemplates.langfuse.length > 0 && (
           <>
-            <InputCommandGroup heading="Langfuse managed evaluators">
+            <InputCommandGroup
+              heading={t(
+                "evals.selector.langfuse-managed",
+                "Langfuse managed evaluators",
+              )}
+            >
               {filteredTemplates.langfuse.map(([name, templateData]) => {
                 const latestVersion = templateData[templateData.length - 1];
                 const isInvalid = isTemplateInvalid(latestVersion);
@@ -276,7 +311,7 @@ export function EvaluatorSelector({
                       );
                     }}
                     className={cn(
-                      templateData.some((t) => t.id === selectedTemplateId) &&
+                      templateData.some((tmpl) => tmpl.id === selectedTemplateId) &&
                         "bg-secondary",
                     )}
                   >
@@ -311,19 +346,27 @@ export function EvaluatorSelector({
                           <AlertCircle className="ml-1 h-4 w-4 text-yellow-500" />
                         </TooltipTrigger>
                         <TooltipContent className="max-h-[50dvh] overflow-y-auto text-sm break-normal whitespace-normal">
-                          <p>Requires project-level evaluation model</p>
+                          <p>
+                            {t(
+                              "evals.selector.requires-default-model",
+                              "Requires project-level evaluation model",
+                            )}
+                          </p>
                           <Link
                             href={`/project/${projectId}/evals/default-model`}
                             className="mt-2 block text-blue-600 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            Configure default model
+                            {t(
+                              "evals.selector.configure-default-model",
+                              "Configure default model",
+                            )}
                           </Link>
                         </TooltipContent>
                       </Tooltip>
                     )}
-                    {templateData.some((t) => t.id === selectedTemplateId) && (
+                    {templateData.some((tmpl) => tmpl.id === selectedTemplateId) && (
                       <CheckIcon className="ml-auto h-4 w-4" />
                     )}
                   </InputCommandItem>

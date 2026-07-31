@@ -11,8 +11,10 @@ import {
   EVALS_TABS,
 } from "@/src/features/navigation/utils/evals-tabs";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function TemplatesPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const capture = usePostHogClientCapture();
@@ -33,9 +35,12 @@ export default function TemplatesPage() {
   return (
     <Page
       headerProps={{
-        title: "Evaluators",
+        title: t("nav.evaluators", "Evaluators"),
         help: {
-          description: "View all langfuse managed and custom evaluators.",
+          description: t(
+            "evals.templates.help",
+            "View all langfuse managed and custom evaluators.",
+          ),
           href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
         },
         tabsProps: {
@@ -63,7 +68,7 @@ export default function TemplatesPage() {
                 ) : (
                   <Lock className="mr-2 h-4 w-4" />
                 )}
-                Custom Evaluator
+                {t("evals.templates.custom-evaluator", "Custom Evaluator")}
               </Link>
             </Button>
           </>

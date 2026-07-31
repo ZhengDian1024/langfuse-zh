@@ -40,6 +40,7 @@ import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-to
 import { env } from "@/src/env.mjs";
 import { useIsCodeEvalEnabled } from "@/src/features/evals/hooks/useIsCodeEvalEnabled";
 import { shouldShowEvalTemplate } from "@/src/features/evals/utils/code-eval-template-utils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type TemplateSelectorProps = {
   projectId: string;
@@ -68,6 +69,7 @@ export const TemplateSelector = ({
   className,
   disabled = false,
 }: TemplateSelectorProps) => {
+  const { t } = useI18n();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [search, setSearch] = useState("");
   const codeEvalCapabilities = useIsCodeEvalEnabled();
@@ -167,8 +169,12 @@ export const TemplateSelector = ({
             <div className="flex items-center gap-1 overflow-hidden">
               <span className="mr-1 truncate">
                 {activeTemplates.length > 0
-                  ? `${activeTemplates.length} active evaluators`
-                  : "Select evaluators"}
+                  ? t(
+                      "evals.selector.active-evaluators",
+                      "{count} active evaluators",
+                      { count: String(activeTemplates.length) },
+                    )
+                  : t("evals.selector.select-evaluators", "Select evaluators")}
               </span>
             </div>
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -177,7 +183,10 @@ export const TemplateSelector = ({
         <PopoverContent className="w-[300px] p-0" align="start">
           <InputCommand>
             <InputCommandInput
-              placeholder="Search evaluators..."
+              placeholder={t(
+                "evals.selector.search-evaluators",
+                "Search evaluators...",
+              )}
               className="h-9"
               value={search}
               onValueChange={setSearch}
@@ -194,13 +203,18 @@ export const TemplateSelector = ({
             >
               <InputCommandList className="max-h-full overflow-visible overflow-x-hidden">
                 {!hasResults && (
-                  <InputCommandEmpty>No evaluator found.</InputCommandEmpty>
+                  <InputCommandEmpty>
+                    {t("evals.selector.no-evaluator", "No evaluator found.")}
+                  </InputCommandEmpty>
                 )}
 
                 {filteredTemplates.custom.length > 0 && (
                   <>
                     <InputCommandGroup
-                      heading="Custom evaluators"
+                      heading={t(
+                        "evals.selector.custom-evaluators",
+                        "Custom evaluators",
+                      )}
                       className="max-h-full"
                     >
                       {filteredTemplates.custom.map(([name, templateData]) => {
@@ -231,7 +245,7 @@ export const TemplateSelector = ({
                             {name}
                             {isLegacy && (
                               <Badge variant="outline" className="ml-2 text-xs">
-                                legacy
+                                {t("evals.selector.legacy-badge", "legacy")}
                               </Badge>
                             )}
                             {isInvalid && (
@@ -240,7 +254,12 @@ export const TemplateSelector = ({
                                   <AlertCircle className="ml-1 h-4 w-4 text-yellow-500" />
                                 </TooltipTrigger>
                                 <TooltipContent className="max-h-[50dvh] overflow-y-auto text-xs break-normal whitespace-normal">
-                                  <p>Requires project-level evaluation model</p>
+                                  <p>
+                                    {t(
+                                      "evals.selector.requires-default-model",
+                                      "Requires project-level evaluation model",
+                                    )}
+                                  </p>
                                   <Link
                                     href={`/project/${projectId}/evals/default-model`}
                                     className="mt-2 flex items-center gap-1 text-blue-600 hover:underline"
@@ -248,17 +267,23 @@ export const TemplateSelector = ({
                                     rel="noopener noreferrer"
                                   >
                                     <ExternalLinkIcon className="h-3 w-3" />
-                                    Configure default model
+                                    {t(
+                                      "evals.selector.configure-default-model",
+                                      "Configure default model",
+                                    )}
                                   </Link>
                                 </TooltipContent>
                               </Tooltip>
                             )}
                             {isInactive && (
                               <div
-                                title="The evaluator has been used in the past but is currently paused. It will not run against outputs created in this dataset run. You can reactivate it if you wish"
+                                title={t(
+                                  "evals.selector.paused-title",
+                                  "The evaluator has been used in the past but is currently paused. It will not run against outputs created in this dataset run. You can reactivate it if you wish",
+                                )}
                                 className="text-muted-foreground ml-2 text-xs"
                               >
-                                Paused
+                                {t("evals.selector.paused", "Paused")}
                               </div>
                             )}
                             {isActive && (
@@ -271,8 +296,14 @@ export const TemplateSelector = ({
                                 className="ml-auto"
                                 title={
                                   isInvalid
-                                    ? "Configure default model first"
-                                    : "Configure evaluator"
+                                    ? t(
+                                        "evals.selector.configure-default-first",
+                                        "Configure default model first",
+                                      )
+                                    : t(
+                                        "evals.selector.configure-evaluator",
+                                        "Configure evaluator",
+                                      )
                                 }
                                 disabled={isInvalid || disabled}
                               >
@@ -291,7 +322,10 @@ export const TemplateSelector = ({
 
                 {filteredTemplates.langfuse.length > 0 && (
                   <InputCommandGroup
-                    heading="Langfuse managed evaluators"
+                    heading={t(
+                      "evals.selector.langfuse-managed",
+                      "Langfuse managed evaluators",
+                    )}
                     className="max-h-full min-h-0"
                   >
                     {filteredTemplates.langfuse.map(([name, templateData]) => {
@@ -323,7 +357,7 @@ export const TemplateSelector = ({
                           />
                           {isLegacy && (
                             <Badge variant="outline" className="ml-2 text-xs">
-                              legacy
+                              {t("evals.selector.legacy-badge", "legacy")}
                             </Badge>
                           )}
                           {isInvalid && (
@@ -332,7 +366,12 @@ export const TemplateSelector = ({
                                 <AlertCircle className="ml-1 h-4 w-4 text-yellow-500" />
                               </TooltipTrigger>
                               <TooltipContent className="max-h-[50dvh] overflow-y-auto text-xs break-normal whitespace-normal">
-                                <p>Requires project-level evaluation model</p>
+                                <p>
+                                  {t(
+                                    "evals.selector.requires-default-model",
+                                    "Requires project-level evaluation model",
+                                  )}
+                                </p>
                                 <Link
                                   href={`/project/${projectId}/evals/default-model`}
                                   className="mt-2 flex items-center gap-1 text-blue-600 hover:underline"
@@ -340,17 +379,23 @@ export const TemplateSelector = ({
                                   rel="noopener noreferrer"
                                 >
                                   <ExternalLinkIcon className="h-3 w-3" />
-                                  Configure default model
+                                  {t(
+                                    "evals.selector.configure-default-model",
+                                    "Configure default model",
+                                  )}
                                 </Link>
                               </TooltipContent>
                             </Tooltip>
                           )}
                           {isInactive && (
                             <div
-                              title="The evaluator has been used in the past but is currently paused. It will not run against outputs created in this dataset run. You can reactivate it if you wish"
+                              title={t(
+                                "evals.selector.paused-title",
+                                "The evaluator has been used in the past but is currently paused. It will not run against outputs created in this dataset run. You can reactivate it if you wish",
+                              )}
                               className="text-muted-foreground ml-2 text-xs"
                             >
-                              Paused
+                              {t("evals.selector.paused", "Paused")}
                             </div>
                           )}
                           {isActive && (
@@ -363,8 +408,14 @@ export const TemplateSelector = ({
                               }
                               title={
                                 isInvalid
-                                  ? "Configure default model first"
-                                  : "Configure evaluator"
+                                  ? t(
+                                      "evals.selector.configure-default-first",
+                                      "Configure default model first",
+                                    )
+                                  : t(
+                                      "evals.selector.configure-evaluator",
+                                      "Configure evaluator",
+                                    )
                               }
                               disabled={isInvalid || disabled}
                             >
@@ -388,7 +439,10 @@ export const TemplateSelector = ({
                       );
                     }}
                   >
-                    Create custom evaluator
+                    {t(
+                      "evals.selector.create-custom",
+                      "Create custom evaluator",
+                    )}
                     <ExternalLink className="ml-auto h-4 w-4" />
                   </InputCommandItem>
                   {!hasDefaultModel && (
@@ -401,7 +455,10 @@ export const TemplateSelector = ({
                         );
                       }}
                     >
-                      Configure default model
+                      {t(
+                        "evals.selector.configure-default-model-item",
+                        "Configure default model",
+                      )}
                       <ExternalLink className="ml-auto h-4 w-4" />
                     </InputCommandItem>
                   )}

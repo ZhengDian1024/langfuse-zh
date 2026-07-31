@@ -4,6 +4,7 @@ import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import { Check, Pencil, TriangleAlert } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function ManageDefaultEvalModel({
   projectId,
@@ -18,6 +19,7 @@ export function ManageDefaultEvalModel({
   showEditButton?: boolean;
   className?: string;
 }) {
+  const { t } = useI18n();
   const hasDefaultModelReadAccess = useHasProjectAccess({
     projectId,
     scope: "evalDefaultModel:read",
@@ -48,7 +50,7 @@ export function ManageDefaultEvalModel({
             className,
           )}
         >
-          {"Current default model: "}
+          {t("evals.manage-default.current-prefix", "Current default model: ")}
           {defaultModel.provider} / {defaultModel.model}
         </span>
       ) : (
@@ -59,7 +61,8 @@ export function ManageDefaultEvalModel({
             className,
           )}
         >
-          {setUpMessage ?? "No default model set"}
+          {setUpMessage ??
+            t("evals.manage-default.no-default", "No default model set")}
         </span>
       )}
       {showEditButton && (

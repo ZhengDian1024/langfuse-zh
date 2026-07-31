@@ -23,12 +23,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Multi-step setup process
 // 1. Select Evaluator: /project/:projectId/evals/new
 // 2. Set up LLM connection (only after selecting an evaluator that needs it): /project/:projectId/evals/new?evaluator=:evaluatorId
 // 3. Configure Evaluator: /project/:projectId/evals/new?evaluator=:evaluatorId
 export default function NewEvaluatorPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const evaluatorId = router.query.evaluator as string | undefined;
@@ -135,7 +137,7 @@ export default function NewEvaluatorPage() {
   const isProviderStepComplete = step === "run" && selectedTemplateIsLlm;
 
   if (!hasAccess) {
-    return <div>You do not have access to this page.</div>;
+    return <div>{t("evals.new-evaluator.no-access", "You do not have access to this page.")}</div>;
   }
 
   return (
@@ -143,10 +145,10 @@ export default function NewEvaluatorPage() {
       withPadding
       scrollable
       headerProps={{
-        title: "Set up evaluator",
+        title: t("evals.new-evaluator.title", "Set up evaluator"),
         breadcrumb: [
           {
-            name: "Running Evaluators",
+            name: t("evals.new-evaluator.breadcrumb-running", "Running Evaluators"),
             href: `/project/${projectId}/evals`,
           },
         ],
@@ -165,7 +167,7 @@ export default function NewEvaluatorPage() {
                   : "text-foreground font-semibold",
               )}
             >
-              1. Select Evaluator
+              {t("evals.new-evaluator.step1", "1. Select Evaluator")}
               {step !== "select" && (
                 <Check className="ml-1 inline-block h-3 w-3" />
               )}
@@ -180,7 +182,7 @@ export default function NewEvaluatorPage() {
                   : "text-muted-foreground",
               )}
             >
-              2. Set up LLM connection
+              {t("evals.new-evaluator.step2", "2. Set up LLM connection")}
               {isProviderStepComplete && (
                 <Check className="ml-1 inline-block h-3 w-3" />
               )}
@@ -196,7 +198,7 @@ export default function NewEvaluatorPage() {
               )}
             >
               <div className="flex flex-row">
-                3. Run Evaluator
+                {t("evals.new-evaluator.step3", "3. Run Evaluator")}
                 {currentTemplate && (
                   <div className="flex flex-row gap-2">
                     <span>
@@ -239,11 +241,19 @@ export default function NewEvaluatorPage() {
             {hasNewerTemplate && latestTemplate && currentTemplate ? (
               <Alert variant="info">
                 <Info className="h-4 w-4" />
-                <AlertTitle>Selected Evaluator has been updated</AlertTitle>
+                <AlertTitle>
+                  {t(
+                    "evals.new-evaluator.updated-alert-title",
+                    "Selected Evaluator has been updated",
+                  )}
+                </AlertTitle>
                 <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <span>
-                    Click to use the latest version of your evaluator{" "}
-                    {latestTemplate.name}.
+                    {t(
+                      "evals.new-evaluator.updated-alert-desc",
+                      "Click to use the latest version of your evaluator {name}.",
+                      { name: latestTemplate.name },
+                    )}
                   </span>
                   <Button
                     type="button"
@@ -252,7 +262,10 @@ export default function NewEvaluatorPage() {
                     className="w-fit"
                     onClick={handleUseUpdatedEvaluator}
                   >
-                    Use updated evaluator
+                    {t(
+                      "evals.new-evaluator.use-updated",
+                      "Use updated evaluator",
+                    )}
                   </Button>
                 </AlertDescription>
               </Alert>

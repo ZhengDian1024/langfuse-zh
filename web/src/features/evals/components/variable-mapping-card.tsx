@@ -60,6 +60,7 @@ import {
   getEvalPreviewDetailPageListKey,
   getEvalPreviewPointerFromDetailPageEntry,
 } from "@/src/features/evals/hooks/useEvalPreviewNavigation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const VariableMappingCard = ({
   projectId,
@@ -86,6 +87,7 @@ export const VariableMappingCard = ({
   isNewCompatible?: boolean;
   compatibilityCheckWasPerformed?: boolean;
 }) => {
+  const { t } = useI18n();
   const [showPreview, setShowPreview] = useState(false);
   const [selectedPreviewPointer, setSelectedPreviewPointer] =
     useState<EvalPreviewPointer>();
@@ -163,7 +165,9 @@ export const VariableMappingCard = ({
     <div className="flex items-center gap-2">
       {shouldShowPreviewControls && (
         <>
-          <span className="text-muted-foreground text-xs">Preview</span>
+          <span className="text-muted-foreground text-xs">
+            {t("evals.variable-mapping.preview", "Preview")}
+          </span>
           <Switch
             checked={showPreview}
             onCheckedChange={setShowPreview}
@@ -212,7 +216,9 @@ export const VariableMappingCard = ({
   return (
     <Card className="max-w-full min-w-0 p-4">
       <div className="mb-2 flex items-center gap-2">
-        <span className="text-lg font-medium">Variable mapping</span>
+        <span className="text-lg font-medium">
+          {t("evals.variable-mapping.title", "Variable mapping")}
+        </span>
         <div className="flex flex-wrap items-center justify-between gap-2">
           {evalTemplate.projectId ? (
             <Button asChild variant="outline" size="sm">
@@ -221,7 +227,7 @@ export const VariableMappingCard = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Edit prompt
+                {t("evals.variable-mapping.edit-prompt", "Edit prompt")}
                 <ExternalLink className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -230,9 +236,12 @@ export const VariableMappingCard = ({
               variant="outline"
               size="sm"
               disabled
-              title="Only user-managed templates can be edited"
+              title={t(
+                "evals.inner.only-user-managed-edit",
+                "Only user-managed templates can be edited",
+              )}
             >
-              Edit prompt
+              {t("evals.variable-mapping.edit-prompt", "Edit prompt")}
               <ExternalLink className="ml-1 h-4 w-4" />
             </Button>
           )}
@@ -240,8 +249,10 @@ export const VariableMappingCard = ({
       </div>
       {isTraceTarget(form.watch("target")) && !disabled && (
         <FormDescription>
-          Preview of the evaluation prompt with the variables replaced with the
-          first matched trace data subject to the filters.
+          {t(
+            "evals.variable-mapping.preview-desc",
+            "Preview of the evaluation prompt with the variables replaced with the first matched trace data subject to the filters.",
+          )}
         </FormDescription>
       )}
       <div className="flex max-w-full flex-col gap-4">
@@ -274,7 +285,10 @@ export const VariableMappingCard = ({
                     <div className="bg-muted/50 flex max-h-full min-h-48 w-full flex-col gap-1 lg:w-2/3">
                       <div className="flex flex-row items-center justify-between py-0 text-sm font-medium capitalize">
                         <div className="flex flex-row items-center gap-2">
-                          Evaluation Prompt Preview
+                          {t(
+                            "evals.variable-mapping.skeleton-title",
+                            "Evaluation Prompt Preview",
+                          )}
                           <Skeleton className="h-[25px] w-[63px]" />
                         </div>
                         <div className="flex justify-end">
@@ -283,15 +297,20 @@ export const VariableMappingCard = ({
                       </div>
                       <div className="flex h-full w-full flex-1 items-center justify-center rounded border">
                         <p className="text-muted-foreground text-center text-sm">
-                          No trace data found, please adjust filters or switch
-                          to not show preview.
+                          {t(
+                            "evals.variable-mapping.no-trace-data",
+                            "No trace data found, please adjust filters or switch to not show preview.",
+                          )}
                         </p>
                       </div>
                     </div>
                   )
                 ) : (
                   <JSONView
-                    title={"Evaluation Prompt"}
+                    title={t(
+                      "evals.variable-mapping.eval-prompt-title",
+                      "Evaluation Prompt",
+                    )}
                     json={evalTemplate.prompt ?? null}
                     className={cn(
                       "bg-muted/50 min-h-48",
@@ -312,12 +331,20 @@ export const VariableMappingCard = ({
                     <Alert className="text-sm" variant="destructive">
                       <AlertCircle className="h-4 w-4" />
                       <AlertTitle className="text-base">
-                        Variable mapping is out of sync
+                        {t(
+                          "evals.variable-mapping.out-of-sync-title",
+                          "Variable mapping is out of sync",
+                        )}
                       </AlertTitle>
                       <AlertDescription>
-                        The template has {syncStatus.added.length} new
-                        variable(s) and {syncStatus.removed.length} removed
-                        variable(s). Toggle Edit Mode to update the mapping.
+                        {t(
+                          "evals.variable-mapping.out-of-sync-desc",
+                          "The template has {added} new variable(s) and {removed} removed variable(s). Toggle Edit Mode to update the mapping.",
+                          {
+                            added: String(syncStatus.added.length),
+                            removed: String(syncStatus.removed.length),
+                          },
+                        )}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -334,9 +361,10 @@ export const VariableMappingCard = ({
                             {mappingField.templateVariable}
                             {"}}"}
                             <DocPopup
-                              description={
-                                "Variable in the template to be replaced with the mapped data."
-                              }
+                              description={t(
+                                "evals.variable-mapping.var-desc",
+                                "Variable in the template to be replaced with the mapped data.",
+                              )}
                               href={
                                 "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               }
@@ -349,10 +377,14 @@ export const VariableMappingCard = ({
                             render={({ field }) => (
                               <div className="flex items-center gap-2">
                                 <VariableMappingDescription
-                                  title="Object"
-                                  description={
-                                    "Langfuse object to retrieve the data from."
-                                  }
+                                  title={t(
+                                    "evals.variable-mapping.object-title",
+                                    "Object",
+                                  )}
+                                  description={t(
+                                    "evals.variable-mapping.object-desc",
+                                    "Langfuse object to retrieve the data from.",
+                                  )}
                                   href={
                                     "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                   }
@@ -414,10 +446,14 @@ export const VariableMappingCard = ({
                                 return (
                                   <div className="flex items-center gap-2">
                                     <VariableMappingDescription
-                                      title={"Object Name"}
-                                      description={
-                                        "Name of the Langfuse object to retrieve the data from."
-                                      }
+                                      title={t(
+                                        "evals.variable-mapping.object-name-title",
+                                        "Object Name",
+                                      )}
+                                      description={t(
+                                        "evals.variable-mapping.object-name-desc",
+                                        "Name of the Langfuse object to retrieve the data from.",
+                                      )}
                                       href={
                                         "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                       }
@@ -437,7 +473,10 @@ export const VariableMappingCard = ({
                                             >
                                               <SelectTrigger>
                                                 <SelectValue>
-                                                  Enter name...
+                                                  {t(
+                                                    "evals.variable-mapping.enter-name",
+                                                    "Enter name...",
+                                                  )}
                                                 </SelectValue>
                                               </SelectTrigger>
                                               <SelectContent>
@@ -453,7 +492,10 @@ export const VariableMappingCard = ({
                                                   key="custom"
                                                   value="custom"
                                                 >
-                                                  Enter name...
+                                                  {t(
+                                                    "evals.variable-mapping.enter-name",
+                                                    "Enter name...",
+                                                  )}
                                                 </SelectItem>
                                               </SelectContent>
                                             </Select>
@@ -466,7 +508,10 @@ export const VariableMappingCard = ({
                                               onChange={(e) =>
                                                 field.onChange(e.target.value)
                                               }
-                                              placeholder="Enter langfuse object name"
+                                              placeholder={t(
+                                                "evals.variable-mapping.enter-langfuse-name",
+                                                "Enter langfuse object name",
+                                              )}
                                               disabled={disabled}
                                             />
                                           </div>
@@ -493,7 +538,10 @@ export const VariableMappingCard = ({
                                                 key="custom"
                                                 value="custom"
                                               >
-                                                Enter name...
+                                                {t(
+                                                  "evals.variable-mapping.enter-name",
+                                                  "Enter name...",
+                                                )}
                                               </SelectItem>
                                             </SelectContent>
                                           </Select>
@@ -514,10 +562,14 @@ export const VariableMappingCard = ({
                             render={({ field }) => (
                               <div className="flex items-center gap-2">
                                 <VariableMappingDescription
-                                  title={"Object Field"}
-                                  description={
-                                    "Field on the Langfuse object to insert into the template."
-                                  }
+                                  title={t(
+                                    "evals.variable-mapping.object-field-title",
+                                    "Object Field",
+                                  )}
+                                  description={t(
+                                    "evals.variable-mapping.object-field-desc",
+                                    "Field on the Langfuse object to insert into the template.",
+                                  )}
                                   href={
                                     "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                   }
@@ -545,7 +597,12 @@ export const VariableMappingCard = ({
                                       }}
                                     >
                                       <SelectTrigger>
-                                        <SelectValue placeholder="Object type" />
+                                        <SelectValue
+                                          placeholder={t(
+                                            "evals.variable-mapping.object-type-placeholder",
+                                            "Object type",
+                                          )}
+                                        />
                                       </SelectTrigger>
                                       <SelectContent>
                                         {availableVariables
@@ -582,10 +639,14 @@ export const VariableMappingCard = ({
                               render={({ field }) => (
                                 <div className="flex items-center gap-2">
                                   <VariableMappingDescription
-                                    title={"JsonPath"}
-                                    description={
-                                      "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt."
-                                    }
+                                    title={t(
+                                      "evals.variable-mapping.jsonpath-title",
+                                      "JsonPath",
+                                    )}
+                                    description={t(
+                                      "evals.variable-mapping.jsonpath-desc",
+                                      "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt.",
+                                    )}
                                     href={
                                       "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                     }
@@ -596,7 +657,10 @@ export const VariableMappingCard = ({
                                         {...field}
                                         value={field.value ?? ""}
                                         disabled={disabled}
-                                        placeholder="Optional"
+                                        placeholder={t(
+                                          "evals.variable-mapping.optional",
+                                          "Optional",
+                                        )}
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -620,9 +684,10 @@ export const VariableMappingCard = ({
                             {mappingField.templateVariable}
                             {"}}"}
                             <DocPopup
-                              description={
-                                "Variable in the template to be replaced with the mapped data."
-                              }
+                              description={t(
+                                "evals.variable-mapping.var-desc",
+                                "Variable in the template to be replaced with the mapped data.",
+                              )}
                               href={
                                 "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               }
@@ -631,16 +696,28 @@ export const VariableMappingCard = ({
                           {hideAdvancedSettings && (
                             <div className="flex items-center gap-2">
                               <VariableMappingDescription
-                                title="Object"
-                                description="Type of object to retrieve the data from."
+                                title={t(
+                                  "evals.variable-mapping.object-title",
+                                  "Object",
+                                )}
+                                description={t(
+                                  "evals.variable-mapping.object-desc-simple",
+                                  "Type of object to retrieve the data from.",
+                                )}
                                 href="https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               />
                               <div className="w-2/3">
                                 <Input
                                   value={
                                     isEventTarget(form.watch("target"))
-                                      ? "Observation"
-                                      : "Experiment item"
+                                      ? t(
+                                          "evals.variable-mapping.observation-fixed",
+                                          "Observation",
+                                        )
+                                      : t(
+                                          "evals.variable-mapping.experiment-item-fixed",
+                                          "Experiment item",
+                                        )
                                   }
                                   disabled
                                 />
@@ -662,10 +739,14 @@ export const VariableMappingCard = ({
                               return (
                                 <div className="flex items-center gap-2">
                                   <VariableMappingDescription
-                                    title={"Object Field"}
-                                    description={
-                                      "Observation field to insert into the template."
-                                    }
+                                    title={t(
+                                      "evals.variable-mapping.object-field-title",
+                                      "Object Field",
+                                    )}
+                                    description={t(
+                                      "evals.variable-mapping.object-field-observation-desc",
+                                      "Observation field to insert into the template.",
+                                    )}
                                     href={
                                       "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                     }
@@ -678,7 +759,12 @@ export const VariableMappingCard = ({
                                         onValueChange={field.onChange}
                                       >
                                         <SelectTrigger>
-                                          <SelectValue placeholder="Select field" />
+                                          <SelectValue
+                                            placeholder={t(
+                                              "evals.variable-mapping.select-field",
+                                              "Select field",
+                                            )}
+                                          />
                                         </SelectTrigger>
                                         <SelectContent>
                                           {availableColumns.map((column) => (
@@ -708,10 +794,14 @@ export const VariableMappingCard = ({
                               render={({ field }) => (
                                 <div className="flex items-center gap-2">
                                   <VariableMappingDescription
-                                    title={"JsonPath"}
-                                    description={
-                                      "Optional selection: Use JsonPath syntax to select from a JSON object. If not selected, we will pass the entire object into the prompt."
-                                    }
+                                    title={t(
+                                      "evals.variable-mapping.jsonpath-title",
+                                      "JsonPath",
+                                    )}
+                                    description={t(
+                                      "evals.variable-mapping.jsonpath-desc-simple",
+                                      "Optional selection: Use JsonPath syntax to select from a JSON object. If not selected, we will pass the entire object into the prompt.",
+                                    )}
                                     href={
                                       "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                                     }
@@ -722,7 +812,10 @@ export const VariableMappingCard = ({
                                         {...field}
                                         value={field.value ?? ""}
                                         disabled={disabled}
-                                        placeholder="Optional"
+                                        placeholder={t(
+                                          "evals.variable-mapping.optional",
+                                          "Optional",
+                                        )}
                                       />
                                     </FormControl>
                                     <FormMessage />

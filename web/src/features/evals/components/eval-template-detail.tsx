@@ -26,8 +26,10 @@ import {
 } from "@/src/components/ui/side-panel";
 import { LangfuseIcon } from "@/src/components/LangfuseLogo";
 import { DeleteEvalTemplateButton } from "@/src/features/evals/components/delete-eval-template-button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const EvalTemplateDetail = () => {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const templateId = router.query.id as string;
@@ -94,7 +96,10 @@ export const EvalTemplateDetail = () => {
         itemType: "EVALUATOR",
         breadcrumb: [
           {
-            name: "Evaluator Library",
+            name: t(
+              "evals.template-detail.breadcrumb-library",
+              "Evaluator Library",
+            ),
             href: `/project/${router.query.projectId as string}/evals/templates`,
           },
         ],
@@ -121,7 +126,7 @@ export const EvalTemplateDetail = () => {
       }}
     >
       {allTemplates.isLoading || !allTemplates.data || !template.data ? (
-        <div className="p-3">Loading...</div>
+        <div className="p-3">{t("evals.detail.loading", "Loading...")}</div>
       ) : isEditing ? (
         <div className="overflow-y-auto p-3 pt-1">
           <EvalTemplateForm
@@ -143,10 +148,16 @@ export const EvalTemplateDetail = () => {
               setIsEditing={setIsEditing}
             />
           </div>
-          <SidePanel mobileTitle="Change history" id="change-history">
+          <SidePanel
+            mobileTitle={t(
+              "evals.template-detail.change-history",
+              "Change history",
+            )}
+            id="change-history"
+          >
             <SidePanelHeader>
               <SidePanelTitle className="text-base font-semibold">
-                Change history
+                {t("evals.template-detail.change-history", "Change history")}
               </SidePanelTitle>
             </SidePanelHeader>
             <SidePanelContent>
@@ -202,6 +213,7 @@ export function EvalVersionDropdown(props: {
   defaultOption?: EvalTemplate;
   onSelect?: (template: EvalTemplate) => void;
 }) {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const handleSelect = (value: string) => {
     const selectedTemplate = props.options?.find(
@@ -220,7 +232,9 @@ export function EvalVersionDropdown(props: {
       defaultValue={props.defaultOption ? props.defaultOption.id : undefined}
     >
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Version" />
+        <SelectValue
+          placeholder={t("evals.template-detail.version", "Version")}
+        />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -246,6 +260,7 @@ export function UpdateTemplate({
   setIsEditing: (isEditing: boolean) => void;
   isCustom: boolean;
 }) {
+  const { t } = useI18n();
   const hasAccess = useHasProjectAccess({
     projectId,
     scope: "evalTemplate:CUD",
@@ -262,7 +277,7 @@ export function UpdateTemplate({
       <div className="flex items-center gap-2">
         <LangfuseIcon size={16} />
         <span className="text-muted-foreground text-sm font-medium">
-          View only
+          {t("evals.template-detail.view-only", "View only")}
         </span>
       </div>
     );
@@ -270,7 +285,9 @@ export function UpdateTemplate({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">Edit mode</span>
+      <span className="text-sm font-medium">
+        {t("evals.template-detail.edit-mode", "Edit mode")}
+      </span>
       <Switch
         checked={isEditing}
         onCheckedChange={handlePromptEdit}

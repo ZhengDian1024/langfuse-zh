@@ -22,6 +22,7 @@ import { safeExtract } from "@/src/utils/map-utils";
 import { type Prisma } from "@langfuse/shared";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useQueryParams, withDefault, NumberParam } from "use-query-params";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type JobExecutionRow = {
   status: string;
@@ -51,6 +52,7 @@ export default function EvalLogTable({
   projectId: string;
   jobConfigurationId?: string;
 }) {
+  const { t } = useI18n();
   const [rowHeight, setRowHeight] = useRowHeightLocalStorage("evalLogs", "s");
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -79,7 +81,7 @@ export default function EvalLogTable({
   const columnHelper = createColumnHelper<JobExecutionRow>();
   const columns = [
     columnHelper.accessor("status", {
-      header: "Status",
+      header: t("evals.log.col-status", "Status"),
       id: "status",
       cell: (row) => {
         const status = row.getValue();
@@ -93,21 +95,21 @@ export default function EvalLogTable({
     }),
     columnHelper.accessor("startTime", {
       id: "startTime",
-      header: "Start Time",
+      header: t("evals.log.col-start-time", "Start Time"),
       enableHiding: true,
     }),
     columnHelper.accessor("endTime", {
       id: "endTime",
-      header: "End Time",
+      header: t("evals.log.col-end-time", "End Time"),
       enableHiding: true,
     }),
     columnHelper.accessor("scoreName", {
-      header: "Score Name",
+      header: t("evals.log.col-score-name", "Score Name"),
       id: "scoreName",
       enableHiding: true,
     }),
     columnHelper.accessor("scoreValue", {
-      header: "Score Value",
+      header: t("evals.log.col-score-value", "Score Value"),
       id: "scoreValue",
       enableHiding: true,
       cell: (row) => {
@@ -122,7 +124,7 @@ export default function EvalLogTable({
       },
     }),
     columnHelper.accessor("scoreComment", {
-      header: "Score Comment",
+      header: t("evals.log.col-score-comment", "Score Comment"),
       id: "scoreComment",
       enableHiding: true,
       cellPadding: "none",
@@ -149,7 +151,7 @@ export default function EvalLogTable({
     }),
     columnHelper.accessor("error", {
       id: "error",
-      header: "Error",
+      header: t("evals.log.col-error", "Error"),
       enableHiding: true,
       cellPadding: "none",
       loadingCell: () => (
@@ -175,7 +177,7 @@ export default function EvalLogTable({
     }),
     columnHelper.accessor("traceId", {
       id: "traceId",
-      header: "Target Trace",
+      header: t("evals.log.col-target-trace", "Target Trace"),
       cell: (row) => {
         const traceId = row.getValue();
         return traceId ? (
@@ -188,7 +190,7 @@ export default function EvalLogTable({
     }),
     columnHelper.accessor("executionTraceId", {
       id: "executionTraceId",
-      header: "Execution Trace",
+      header: t("evals.log.col-execution-trace", "Execution Trace"),
       enableHiding: true,
       cell: (row) => {
         const traceId = row.getValue();
@@ -202,7 +204,7 @@ export default function EvalLogTable({
     }),
     columnHelper.accessor("templateId", {
       id: "templateId",
-      header: "Template",
+      header: t("evals.log.col-template", "Template"),
       cell: (row) => {
         const templateId = row.getValue();
         return templateId ? (
@@ -219,7 +221,7 @@ export default function EvalLogTable({
     columns.push(
       columnHelper.accessor("evaluatorId", {
         id: "evaluatorId",
-        header: "Evaluator",
+        header: t("evals.log.col-evaluator", "Evaluator"),
         cell: (row) => {
           const evaluatorId = row.getValue();
           return evaluatorId ? (

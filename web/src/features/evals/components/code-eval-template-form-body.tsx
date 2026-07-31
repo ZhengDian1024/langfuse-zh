@@ -35,6 +35,7 @@ import {
   type CodeEvalSourceCodeLanguage,
   type CodeEvalValidationResult,
 } from "@/src/features/evals/utils/code-eval-template-validation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type CodeEvalTemplateFormBodyProps = {
   sourceCode: string;
@@ -260,14 +261,15 @@ export function CodeEvalTemplateFormBody({
   validationResult,
   headerAction,
 }: CodeEvalTemplateFormBodyProps) {
+  const { t } = useI18n();
   const { resolvedTheme } = useTheme();
   const codeMirrorViewRef = useRef<EditorView | null>(null);
   const [isFormatting, setIsFormatting] = useState(false);
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
   const languageLabel =
     sourceCodeLanguage === EvalTemplateSourceCodeLanguage.PYTHON
-      ? "Python"
-      : "TypeScript";
+      ? t("evals.python", "Python")
+      : t("evals.typescript", "TypeScript");
   const shouldShowFormatButton = editable;
 
   const handleCreateEditor = useCallback(
@@ -399,7 +401,7 @@ export function CodeEvalTemplateFormBody({
             {isFormatting && (
               <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
             )}
-            Format
+            {t("evals.code-eval.format", "Format")}
             <KeyboardShortcut
               className="ml-2 hidden h-4 sm:inline-flex"
               keys={

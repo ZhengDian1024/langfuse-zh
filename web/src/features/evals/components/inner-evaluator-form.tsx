@@ -118,6 +118,14 @@ import {
 import { CodeEvalTestRunCard } from "@/src/features/evals/components/code-eval-test-run-card";
 import { getExperimentEvalPreviewFilters } from "@/src/features/evals/utils/experiment-eval-preview-utils";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
+import type { MessageKey } from "@/src/features/i18n/messages";
+
+type TFunc = (
+  key: MessageKey,
+  defaultMessageOrValues?: string | Record<string, string>,
+  values?: Record<string, string>,
+) => string;
 
 /**
  * Adds propagation warnings to columns that require OTEL SDK with span propagation
@@ -125,6 +133,7 @@ import { cn } from "@/src/utils/tailwind";
 const addPropagationWarnings = (
   columns: ColumnDefinition[],
   allowPropagationFilters: boolean,
+  t: TFunc,
 ): ColumnDefinitionWithAlert[] => {
   return columns.map((col) => {
     if (
@@ -137,17 +146,19 @@ const addPropagationWarnings = (
           severity: "warning" as const,
           content: (
             <>
-              This filter requires JS SDK &ge; 4.0.0 or Python SDK &ge; 3.0.0
-              with attribute propagation enabled. Please{" "}
+              {t(
+                "evals.inner.propagation-warning",
+                "This filter requires JS SDK ≥ 4.0.0 or Python SDK ≥ 3.0.0 with attribute propagation enabled. Please",
+              )}{" "}
               <a
                 href="https://langfuse.com/integrations/native/opentelemetry#propagating-attributes"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-dark-blue hover:opacity-80"
               >
-                follow our docs
-              </a>{" "}
-              to configure your instrumentation to use this filter.
+                {t("evals.inner.follow-docs", "follow our docs")}
+              </a>
+              {t("evals.inner.follow-docs-after", " to configure your instrumentation to use this filter.")}
             </>
           ),
         },
@@ -178,6 +189,7 @@ const TracesPreview = memo(
     projectId: string;
     filterState: z.infer<typeof singleFilter>[];
   }) => {
+    const { t } = useI18n();
     const dateRange = useMemo(() => {
       return {
         from: getDateFromOption({
@@ -191,10 +203,13 @@ const TracesPreview = memo(
       <>
         <div className="flex flex-col items-start gap-1">
           <span className="text-sm leading-none font-medium">
-            Preview sample matched traces
+            {t("evals.inner.preview-sample-matched", "Preview sample matched traces")}
           </span>
           <FormDescription>
-            Sample over the last 24 hours that match these filters
+            {t(
+              "evals.inner.sample-24h-filters",
+              "Sample over the last 24 hours that match these filters",
+            )}
           </FormDescription>
         </div>
         <div className="mb-4 flex max-h-[30dvh] w-full flex-col overflow-hidden border-r border-b border-l">
@@ -227,6 +242,7 @@ const ObservationsPreview = memo(
     isNewCompatible: boolean;
     compatibilityCheckWasPerformed: boolean;
   }) => {
+    const { t } = useI18n();
     const { isBetaEnabled } = useV4Beta();
 
     const dateRange = useMemo(() => {
@@ -246,7 +262,10 @@ const ObservationsPreview = memo(
       <>
         <div className="flex flex-col items-start gap-1">
           <FormDescription>
-            Sample over the last 24 hours that match filters
+            {t(
+              "evals.inner.sample-24h-filters-generic",
+              "Sample over the last 24 hours that match filters",
+            )}
           </FormDescription>
         </div>
         <div className="mb-4 flex max-h-[30dvh] w-full flex-col overflow-hidden border-r border-b border-l">
@@ -256,21 +275,23 @@ const ObservationsPreview = memo(
                 <AlertTriangle className="text-dark-yellow h-8 w-8" />
                 <div className="flex flex-col gap-1">
                   <span className="text-foreground font-medium">
-                    Please verify your SDK version
+                    {t(
+                      "evals.template.verify-sdk-title",
+                      "Please verify your SDK version",
+                    )}
                   </span>
                   <span className="text-muted-foreground max-w-md text-sm">
-                    We did not find any data ingested with langfuse
-                    OTEL-compatible SDKs in the last 7 days. Observation-level
-                    evaluators require JS SDK v4+ or Python SDK v3+. You can
-                    still configure this evaluator now—it will start running
-                    once you upgrade.{" "}
+                    {t(
+                      "evals.inner.no-otel-data",
+                      "We did not find any data ingested with langfuse OTEL-compatible SDKs in the last 7 days. Observation-level evaluators require JS SDK v4+ or Python SDK v3+. You can still configure this evaluator now—it will start running once you upgrade.",
+                    )}{" "}
                     <a
                       href="https://langfuse.com/docs/observability/sdk/upgrade-path"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-dark-blue font-medium hover:opacity-80"
                     >
-                      Learn more
+                      {t("evals.learn-more", "Learn more")}
                     </a>
                     .
                   </span>
@@ -304,10 +325,11 @@ ObservationsPreview.displayName = "ObservationsPreview";
 
 function getCodeEvalSourceLanguageLabel(
   sourceCodeLanguage: EvalTemplate["sourceCodeLanguage"],
+  t: TFunc,
 ) {
   return sourceCodeLanguage === EvalTemplateSourceCodeLanguage.PYTHON
-    ? "Python"
-    : "TypeScript";
+    ? t("evals.python", "Python")
+    : t("evals.typescript", "TypeScript");
 }
 
 function CodeEvalSourceLink({
@@ -317,10 +339,11 @@ function CodeEvalSourceLink({
   projectId: string;
   evalTemplate: EvalTemplate;
 }) {
+  const { t } = useI18n();
   const sourceCodeLanguage =
     evalTemplate.sourceCodeLanguage ??
     EvalTemplateSourceCodeLanguage.TYPESCRIPT;
-  const languageLabel = getCodeEvalSourceLanguageLabel(sourceCodeLanguage);
+  const languageLabel = getCodeEvalSourceLanguageLabel(sourceCodeLanguage, t);
 
   const editButton = evalTemplate.projectId ? (
     <Button asChild variant="outline">
@@ -329,7 +352,7 @@ function CodeEvalSourceLink({
         target="_blank"
         rel="noopener noreferrer"
       >
-        Edit source code
+        {t("evals.inner.edit-source-code", "Edit source code")}
         <ExternalLink className="ml-1 h-3.5 w-3.5" />
       </Link>
     </Button>
@@ -337,9 +360,12 @@ function CodeEvalSourceLink({
     <Button
       variant="outline"
       disabled
-      title="Only user-managed templates can be edited"
+      title={t(
+        "evals.inner.only-user-managed-edit",
+        "Only user-managed templates can be edited",
+      )}
     >
-      Edit source code
+      {t("evals.inner.edit-source-code", "Edit source code")}
       <ExternalLink className="ml-1 h-3.5 w-3.5" />
     </Button>
   );
@@ -378,6 +404,7 @@ export const InnerEvaluatorForm = (props: {
   }) => React.ReactNode;
   oldConfigId?: string;
 }) => {
+  const { t } = useI18n();
   const [formError, setFormError] = useState<string | null>(null);
   const capture = usePostHogClientCapture();
   const router = useRouter();
@@ -841,7 +868,9 @@ export const InnerEvaluatorForm = (props: {
           name="scoreName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Generated Score Name</FormLabel>
+              <FormLabel>
+                {t("evals.inner.generated-score-name", "Generated Score Name")}
+              </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -855,11 +884,17 @@ export const InnerEvaluatorForm = (props: {
           {hasInvalidTraceFilters && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Unsupported filter detected</AlertTitle>
+              <AlertTitle>
+                {t(
+                  "evals.inner.unsupported-filter-title",
+                  "Unsupported filter detected",
+                )}
+              </AlertTitle>
               <AlertDescription>
-                This evaluator has a filter that is not supported for
-                trace-level evaluators. It is effectively paused. Please remove
-                all filters and re-add them from scratch to resume execution.
+                {t(
+                  "evals.inner.unsupported-filter-desc",
+                  "This evaluator has a filter that is not supported for trace-level evaluators. It is effectively paused. Please remove all filters and re-add them from scratch to resume execution.",
+                )}
               </AlertDescription>
             </Alert>
           )}
@@ -871,7 +906,7 @@ export const InnerEvaluatorForm = (props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Run on{" "}
+                      {t("evals.inner.run-on", "Run on ")}
                       {props.mode === "edit" && (
                         <Tooltip>
                           <TooltipTrigger>
@@ -879,8 +914,10 @@ export const InnerEvaluatorForm = (props: {
                           </TooltipTrigger>
                           <TooltipContent className="max-w-[200px] p-2">
                             <span className="leading-4">
-                              An evaluator&apos;s target data may only be
-                              configured at creation.
+                              {t(
+                                "evals.inner.run-on-tooltip",
+                                "An evaluator's target data may only be configured at creation.",
+                              )}
                             </span>
                           </TooltipContent>
                         </Tooltip>
@@ -903,7 +940,7 @@ export const InnerEvaluatorForm = (props: {
                             className="min-w-[100px] gap-1.5"
                           >
                             <CircleDot className="h-3.5 w-3.5" />
-                            Observations
+                            {t("evals.inner.tab-observations", "Observations")}
                           </TabsTrigger>
                           {allowLegacy && (
                             <TabsTrigger
@@ -912,13 +949,13 @@ export const InnerEvaluatorForm = (props: {
                               className="min-w-[100px] gap-1.5"
                             >
                               <ListTree className="h-3.5 w-3.5" />
-                              Traces
+                              {t("evals.inner.tab-traces", "Traces")}
                               <Badge
                                 variant="secondary"
                                 size="sm"
                                 className="border-border border font-normal"
                               >
-                                Legacy
+                                {t("evals.legacy", "Legacy")}
                               </Badge>
                             </TabsTrigger>
                           )}
@@ -928,7 +965,7 @@ export const InnerEvaluatorForm = (props: {
                             className="min-w-[100px] gap-1.5"
                           >
                             <FlaskConical className="h-3.5 w-3.5" />
-                            Experiments
+                            {t("evals.inner.tab-experiments", "Experiments")}
                           </TabsTrigger>
                         </TabsList>
                       </Tabs>
@@ -944,7 +981,9 @@ export const InnerEvaluatorForm = (props: {
               userFacingTarget === "offline-experiment" &&
               props.evalCapabilities.allowLegacy && (
                 <div className="flex flex-col gap-2">
-                  <FormLabel className="text-sm">Experiment Method</FormLabel>
+                  <FormLabel className="text-sm">
+                    {t("evals.inner.experiment-method", "Experiment Method")}
+                  </FormLabel>
                   <Tabs
                     value={useOtelDataForExperiment ? "otel" : "non-otel"}
                     onValueChange={(value) => {
@@ -984,7 +1023,10 @@ export const InnerEvaluatorForm = (props: {
                         disabled={props.mode === "edit" || props.disabled}
                       >
                         <FlaskConical className="h-3.5 w-3.5" />
-                        Experiment Runner SDK
+                        {t(
+                          "evals.inner.tab-experiment-runner-sdk",
+                          "Experiment Runner SDK",
+                        )}
                       </TabsTrigger>
                       <TabsTrigger
                         value="non-otel"
@@ -992,13 +1034,16 @@ export const InnerEvaluatorForm = (props: {
                         disabled={props.mode === "edit" || props.disabled}
                       >
                         <BetweenHorizonalStart className="h-3.5 w-3.5" />
-                        Low-level SDK methods
+                        {t(
+                          "evals.inner.tab-low-level-sdk",
+                          "Low-level SDK methods",
+                        )}
                         <Badge
                           variant="secondary"
                           size="sm"
                           className="border-border border font-normal"
                         >
-                          Legacy
+                          {t("evals.legacy", "Legacy")}
                         </Badge>
                       </TabsTrigger>
                     </TabsList>
@@ -1023,7 +1068,7 @@ export const InnerEvaluatorForm = (props: {
                   name="timeScope"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel>Evaluate</FormLabel>
+                      <FormLabel>{t("evals.inner.evaluate", "Evaluate")}</FormLabel>
                       <FormControl>
                         <div className="flex flex-col gap-2">
                           <div className="flex space-x-2">
@@ -1043,7 +1088,8 @@ export const InnerEvaluatorForm = (props: {
                                 htmlFor="newObjects"
                                 className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                New {getTargetDisplayName(form.watch("target"))}
+                                {t("evals.inner.new-target", "New ")}
+                                {getTargetDisplayName(form.watch("target"))}
                               </label>
                             </div>
                           </div>
@@ -1068,7 +1114,7 @@ export const InnerEvaluatorForm = (props: {
                                 htmlFor="existingObjects"
                                 className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Existing{" "}
+                                {t("evals.inner.existing-target", "Existing ")}
                                 {getTargetDisplayName(form.watch("target"))}
                               </label>
                               {field.value.includes("EXISTING") &&
@@ -1080,17 +1126,15 @@ export const InnerEvaluatorForm = (props: {
                                     </TooltipTrigger>
                                     <TooltipContent className="max-w-[300px] p-2">
                                       <span className="leading-4">
-                                        This evaluator has already run on
-                                        existing{" "}
-                                        {getTargetDisplayName(
-                                          form.watch("target"),
-                                        )}{" "}
-                                        once. Set up a new evaluator to re-run
-                                        on existing{" "}
-                                        {getTargetDisplayName(
-                                          form.watch("target"),
+                                        {t(
+                                          "evals.inner.already-run-tooltip",
+                                          "This evaluator has already run on existing {target} once. Set up a new evaluator to re-run on existing {target}.",
+                                          {
+                                            target: getTargetDisplayName(
+                                              form.watch("target"),
+                                            ),
+                                          },
                                         )}
-                                        .
                                       </span>
                                     </TooltipContent>
                                   </Tooltip>
@@ -1125,12 +1169,21 @@ export const InnerEvaluatorForm = (props: {
                           <div className="space-y-0.5">
                             <FormLabel>
                               {isEventTarget(target)
-                                ? "Run on live incoming observations"
-                                : "Run on new experiments"}
+                                ? t(
+                                    "evals.inner.run-on-live-observations",
+                                    "Run on live incoming observations",
+                                  )
+                                : t(
+                                    "evals.inner.run-on-new-experiments",
+                                    "Run on new experiments",
+                                  )}
                             </FormLabel>
                             <FormDescription>
-                              Automatically evaluate new incoming{" "}
-                              {getTargetDisplayName(target)}.
+                              {t(
+                                "evals.inner.auto-evaluate-new",
+                                "Automatically evaluate new incoming {target}.",
+                                { target: getTargetDisplayName(target) },
+                              )}
                             </FormDescription>
                           </div>
                           <FormControl>
@@ -1143,15 +1196,17 @@ export const InnerEvaluatorForm = (props: {
                         </FormItem>
                         {!field.value && isEventTarget(target) && (
                           <p className="text-muted-foreground text-xs">
-                            This evaluator can still be used for batched
-                            evaluation of historic observations.{" "}
+                            {t(
+                              "evals.inner.batch-historic",
+                              "This evaluator can still be used for batched evaluation of historic observations.",
+                            )}{" "}
                             <a
                               href="https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-dark-blue hover:opacity-80"
                             >
-                              Read the docs
+                              {t("evals.read-the-docs", "Read the docs")}
                             </a>
                           </p>
                         )}
@@ -1181,6 +1236,7 @@ export const InnerEvaluatorForm = (props: {
                         return addPropagationWarnings(
                           baseColumns,
                           allowPropagationFilters,
+                          t,
                         );
                       } else if (isTraceTarget(target)) {
                         return tracesTableColsWithOptions(
@@ -1203,13 +1259,18 @@ export const InnerEvaluatorForm = (props: {
 
                     return (
                       <FormItem>
-                        <FormLabel>Filter</FormLabel>
+                        <FormLabel>{t("evals.inner.filter", "Filter")}</FormLabel>
                         <FormControl>
                           <div className="max-w-[500px]">
                             {props.disabled && !hasFilters ? (
                               <p className="text-muted-foreground text-xs">
-                                All {getTargetDisplayName(target)} will be
-                                evaluated
+                                {t(
+                                  "evals.inner.all-targets-evaluated",
+                                  "All {target} will be evaluated",
+                                  {
+                                    target: getTargetDisplayName(target),
+                                  },
+                                )}
                               </p>
                             ) : (
                               <InlineFilterBuilder
@@ -1255,8 +1316,11 @@ export const InnerEvaluatorForm = (props: {
                           <div className="flex max-w-[500px] gap-1">
                             <AlertTriangle className="text-dark-yellow h-4 w-4" />
                             <AlertDescription className="text-dark-yellow">
-                              No filters set. This evaluator will run on all{" "}
-                              {getTargetDisplayName(target)}.
+                              {t(
+                                "evals.inner.no-filters-alert",
+                                "No filters set. This evaluator will run on all {target}.",
+                                { target: getTargetDisplayName(target) },
+                              )}
                             </AlertDescription>
                           </div>
                         )}
@@ -1296,7 +1360,9 @@ export const InnerEvaluatorForm = (props: {
                       name="sampling"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Sampling</FormLabel>
+                          <FormLabel>
+                            {t("evals.inner.sampling", "Sampling")}
+                          </FormLabel>
                           <FormControl>
                             <div className="max-w-[500px]">
                               <Slider
@@ -1323,14 +1389,17 @@ export const InnerEvaluatorForm = (props: {
                         name="delay"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Delay (seconds)</FormLabel>
+                            <FormLabel>
+                              {t("evals.inner.delay-seconds", "Delay (seconds)")}
+                            </FormLabel>
                             <FormControl>
                               <Input {...field} type="number" min={0} />
                             </FormControl>
                             <FormDescription>
-                              Time between first Trace/Dataset run event and
-                              evaluation execution to ensure all data is
-                              available
+                              {t(
+                                "evals.inner.delay-desc",
+                                "Time between first Trace/Dataset run event and evaluation execution to ensure all data is available",
+                              )}
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -1391,12 +1460,17 @@ export const InnerEvaluatorForm = (props: {
           loading={mutationIsLoading}
           className="mt-3 max-w-fit"
         >
-          {props.mode === "edit" ? "Update" : "Execute"}
+          {props.mode === "edit"
+            ? t("evals.default-model.update-btn", "Update")
+            : t("evals.inner.execute", "Execute")}
         </Button>
       ) : null}
       {formError ? (
         <p className="w-full text-center">
-          <span className="font-bold">Error:</span> {formError}
+          <span className="font-bold">
+            {t("evals.error-prefix", "Error:")}
+          </span>{" "}
+          {formError}
         </p>
       ) : null}
     </div>
@@ -1434,19 +1508,25 @@ export const InnerEvaluatorForm = (props: {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>You selected a legacy evaluator</DialogTitle>
+            <DialogTitle>
+              {t(
+                "evals.inner.legacy-dialog-title",
+                "You selected a legacy evaluator",
+              )}
+            </DialogTitle>
           </DialogHeader>
           <DialogBody className="text-sm">
-            We strongly recommend using observation evaluators. Trace evaluators
-            will be deprecated in the future. Only proceed if you are sure you
-            cannot upgrade your SDK version now.
+            {t(
+              "evals.inner.legacy-dialog-body",
+              "We strongly recommend using observation evaluators. Trace evaluators will be deprecated in the future. Only proceed if you are sure you cannot upgrade your SDK version now.",
+            )}
           </DialogBody>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setShowTraceConfirmDialog(false)}
             >
-              Cancel
+              {t("evals.cancel", "Cancel")}
             </Button>
             <Button
               onClick={() => {
@@ -1466,7 +1546,7 @@ export const InnerEvaluatorForm = (props: {
                 form.setValue("target", actualTarget);
               }}
             >
-              Continue
+              {t("evals.continue", "Continue")}
             </Button>
           </DialogFooter>
         </DialogContent>

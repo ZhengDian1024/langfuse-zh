@@ -14,8 +14,10 @@ import { useEntitlementLimit } from "@/src/features/entitlements/hooks";
 import { SupportOrUpgradePage } from "@/src/ee/features/billing/components/SupportOrUpgradePage";
 import { EvaluatorsOnboarding } from "@/src/components/onboarding/EvaluatorsOnboarding";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function EvaluatorsPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const capture = usePostHogClientCapture();
@@ -60,10 +62,12 @@ export default function EvaluatorsPage() {
     return (
       <Page
         headerProps={{
-          title: "Evaluators",
+          title: t("nav.evaluators", "Evaluators"),
           help: {
-            description:
+            description: t(
+              "evals.page.help",
               "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
+            ),
             href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
         }}
@@ -78,10 +82,12 @@ export default function EvaluatorsPage() {
     <>
       <Page
         headerProps={{
-          title: "Evaluators",
+          title: t("nav.evaluators", "Evaluators"),
           help: {
-            description:
+            description: t(
+              "evals.page.help",
               "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
+            ),
             href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
           tabsProps: {
@@ -102,7 +108,7 @@ export default function EvaluatorsPage() {
                 limitValue={countsQuery.data?.configActiveCount ?? 0}
                 limit={evaluatorLimit}
               >
-                Set up evaluator
+                {t("evals.page.set-up-evaluator", "Set up evaluator")}
               </ActionButton>
             </>
           ),

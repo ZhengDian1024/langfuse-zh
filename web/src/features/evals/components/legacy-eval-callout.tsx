@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Info } from "lucide-react";
 import { isLegacyEvalTarget } from "@/src/features/evals/utils/typeHelpers";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface LegacyEvalCalloutProps {
   projectId: string;
@@ -21,6 +22,7 @@ export function LegacyEvalCallout({
   evalConfigId,
   targetObject,
 }: LegacyEvalCalloutProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const isDeprecated = isLegacyEvalTarget(targetObject);
 
@@ -43,29 +45,36 @@ export function LegacyEvalCallout({
             }
             className="text-dark-blue h-7 text-xs hover:opacity-80"
           >
-            Upgrade this evaluator
+            {t("evals.legacy-callout.upgrade", "Upgrade this evaluator")}
           </Button>
         </>
       )}
     >
-      <span>This evaluator </span>
+      <span>{t("evals.legacy-callout.this-evaluator", "This evaluator ")}</span>
       <span className="text-dark-blue hover:opacity-80">
         <Link
           href="https://langfuse.com/faq/all/llm-as-a-judge-migration"
           target="_blank"
           rel="noopener noreferrer"
         >
-          requires changes{" "}
+          {t("evals.legacy-callout.requires-changes", "requires changes ")}
         </Link>
       </span>
-      <span>to benefit from new features and performance improvements.</span>
+      <span>
+        {t(
+          "evals.legacy-callout.to-benefit",
+          "to benefit from new features and performance improvements.",
+        )}
+      </span>
       <Tooltip>
         <TooltipTrigger asChild>
           <Info className="ml-1 inline h-4 w-4 cursor-help" />
         </TooltipTrigger>
         <TooltipContent>
-          Your evaluator will continue to work without upgrading, but you will
-          not benefit from improvements.
+          {t(
+            "evals.legacy-callout.continue-work-tooltip",
+            "Your evaluator will continue to work without upgrading, but you will not benefit from improvements.",
+          )}
         </TooltipContent>
       </Tooltip>
     </Callout>

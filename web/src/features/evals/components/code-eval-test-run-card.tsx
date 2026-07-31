@@ -30,6 +30,7 @@ import {
   isEventTarget,
   isExperimentTarget,
 } from "@/src/features/evals/utils/typeHelpers";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type CodeEvalTestRunResult =
   | RouterOutputs["evals"]["testRunCodeEval"]
@@ -66,6 +67,7 @@ export function CodeEvalTestRunCard({
   disabled?: boolean;
   enableExecutionTracePeek?: boolean;
 }) {
+  const { t } = useI18n();
   const { isBetaEnabled } = useV4Beta();
   const isSupportedTarget = isCodeEvalTestTarget(target);
   const canPreview = isSupportedTarget && !disabled;
@@ -118,7 +120,9 @@ export function CodeEvalTestRunCard({
       <Card className="flex min-w-0 flex-col gap-4 p-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="text-sm font-medium">Test run</span>
+            <span className="text-sm font-medium">
+              {t("evals.code-eval.test-run", "Test run")}
+            </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {evalTemplate.projectId ? (
@@ -128,7 +132,7 @@ export function CodeEvalTestRunCard({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Source code
+                  {t("evals.code-eval.source-code", "Source code")}
                   <ExternalLink className="ml-1 h-3.5 w-3.5" />
                 </Link>
               </Button>
@@ -136,9 +140,12 @@ export function CodeEvalTestRunCard({
               <Button
                 variant="outline"
                 disabled
-                title="Only user-managed templates can be edited"
+                title={t(
+                  "evals.inner.only-user-managed-edit",
+                  "Only user-managed templates can be edited",
+                )}
               >
-                Source code
+                {t("evals.code-eval.source-code", "Source code")}
                 <ExternalLink className="ml-1 h-3.5 w-3.5" />
               </Button>
             )}
@@ -168,7 +175,7 @@ export function CodeEvalTestRunCard({
               ) : (
                 <Play className="mr-1.5 h-3.5 w-3.5" />
               )}
-              Test
+              {t("evals.code-eval.test", "Test")}
             </Button>
           </div>
         </div>
@@ -193,8 +200,10 @@ export function CodeEvalTestRunCard({
         ) : null}
 
         <p className="text-muted-foreground text-xs">
-          Read-only preview. Inputs are sampled from the first matching
-          observation.
+          {t(
+            "evals.code-eval.read-only-preview",
+            "Read-only preview. Inputs are sampled from the first matching observation.",
+          )}
         </p>
       </Card>
       {enableExecutionTracePeek ? (
@@ -213,6 +222,7 @@ function CodeEvalTestRunInputPreview({
   isLoading: boolean;
   includeExperimentVariables: boolean;
 }) {
+  const { t } = useI18n();
   if (isLoading) {
     const skeletonCount = includeExperimentVariables ? 5 : 3;
     return (
@@ -227,7 +237,7 @@ function CodeEvalTestRunInputPreview({
   if (!previewData) {
     return (
       <div className="text-muted-foreground flex min-h-32 items-center justify-center rounded-md border border-dashed p-4 text-center text-sm">
-        No matching observation
+        {t("evals.code-eval.no-matching", "No matching observation")}
       </div>
     );
   }
@@ -247,6 +257,7 @@ function CodeEvalTestRunInputCards({
   previewData: CodeEvalInputPreviewData;
   includeExperimentVariables: boolean;
 }) {
+  const { t } = useI18n();
   const inputPreviewJson = useMemo(() => {
     const data = previewData.data;
 
@@ -273,7 +284,7 @@ function CodeEvalTestRunInputCards({
     <div className="bg-muted/20 min-w-0 rounded-md border">
       <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
         <span className="text-muted-foreground text-xs font-medium">
-          Evaluator input
+          {t("evals.code-eval.evaluator-input", "Evaluator input")}
         </span>
       </div>
       <PrettyJsonView
@@ -297,6 +308,7 @@ function CodeEvalTestRunResultView({
   result: Exclude<CodeEvalTestRunResult, undefined>;
   onShowExecutionTrace?: (executionTraceId: string) => void;
 }) {
+  const { t } = useI18n();
   const resultJson = result.success
     ? { scores: result.result.scores.map(toUserFacingCodeEvalScore) }
     : { error: result.error };
@@ -305,7 +317,9 @@ function CodeEvalTestRunResultView({
     <div className="flex min-w-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-3">
         <Badge variant={result.success ? "success" : "error"} className="w-fit">
-          {result.success ? "Success" : "Failed"}
+          {result.success
+            ? t("evals.code-eval.success", "Success")
+            : t("evals.code-eval.failed", "Failed")}
         </Badge>
         {onShowExecutionTrace ? (
           <Button
@@ -315,7 +329,7 @@ function CodeEvalTestRunResultView({
             onClick={() => onShowExecutionTrace(result.executionTraceId)}
           >
             <ListTree className="mr-1.5 h-3.5 w-3.5" />
-            Show execution trace
+            {t("evals.code-eval.show-execution-trace", "Show execution trace")}
           </Button>
         ) : null}
       </div>

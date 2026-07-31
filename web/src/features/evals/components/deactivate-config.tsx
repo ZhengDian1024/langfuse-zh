@@ -10,6 +10,7 @@ import {
 } from "@/src/components/ui/popover";
 import { Button } from "@/src/components/ui/button";
 import { Switch } from "@/src/components/ui/switch";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function DeactivateEvalConfig({
   projectId,
@@ -18,6 +19,7 @@ export function DeactivateEvalConfig({
   projectId: string;
   evalConfig: RouterOutputs["evals"]["configById"];
 }) {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({ projectId, scope: "evalJob:CUD" });
   const [isOpen, setIsOpen] = useState(false);
@@ -69,11 +71,19 @@ export function DeactivateEvalConfig({
         </div>
       </PopoverTrigger>
       <PopoverContent>
-        <h2 className="mb-3 font-semibold">Please confirm</h2>
+        <h2 className="mb-3 font-semibold">
+          {t("evals.deactivate.confirm-title", "Please confirm")}
+        </h2>
         <p className="mb-3 text-sm">
           {evalConfig?.status === "ACTIVE"
-            ? "This action will deactivate the evaluator. No more traces will be evaluated based on this evaluator."
-            : "This action will activate the evaluator. New traces will be evaluated based on this evaluator."}
+            ? t(
+                "evals.deactivate.deactivate-desc",
+                "This action will deactivate the evaluator. No more traces will be evaluated based on this evaluator.",
+              )
+            : t(
+                "evals.deactivate.activate-desc",
+                "This action will activate the evaluator. New traces will be evaluated based on this evaluator.",
+              )}
         </p>
         <div className="flex justify-end space-x-4">
           <Button
@@ -84,7 +94,9 @@ export function DeactivateEvalConfig({
             loading={mutEvaluator.isPending}
             onClick={onClick}
           >
-            {evalConfig?.status === "ACTIVE" ? "Deactivate" : "Activate"}
+            {evalConfig?.status === "ACTIVE"
+              ? t("evals.deactivate.deactivate", "Deactivate")
+              : t("evals.deactivate.activate", "Activate")}
           </Button>
         </div>
       </PopoverContent>
