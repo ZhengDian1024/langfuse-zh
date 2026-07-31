@@ -11,6 +11,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { type AnnotateDrawerProps } from "@/src/features/scores/types";
 import { type ScoreTarget } from "@/src/features/scores/types";
 import { AnnotationForm } from "@/src/features/scores/components/AnnotationForm";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function AnnotateDrawer<Target extends ScoreTarget>({
   projectId,
@@ -26,6 +27,7 @@ export function AnnotateDrawer<Target extends ScoreTarget>({
 }: AnnotateDrawerProps<Target> & {
   size?: "default" | "sm" | "xs" | "lg" | "icon" | "icon-xs" | "icon-sm";
 }) {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
     projectId,
@@ -62,7 +64,7 @@ export function AnnotateDrawer<Target extends ScoreTarget>({
               }
             />
           )}
-          <span>Annotate</span>
+          <span>{t("scores.annotate", "Annotate")}</span>
         </Button>
       </DrawerTrigger>
       <DrawerContent className="p-3">

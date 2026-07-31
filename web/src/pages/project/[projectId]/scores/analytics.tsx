@@ -21,6 +21,7 @@ import {
 import { ScoreAnalyticsHeader } from "@/src/features/score-analytics/components/ScoreAnalyticsHeader";
 import { ScoreAnalyticsDashboard } from "@/src/features/score-analytics/components/ScoreAnalyticsDashboard";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Score Analytics V2 - Refactored Architecture
@@ -37,6 +38,7 @@ import Spinner from "@/src/components/design-system/Spinner/Spinner";
  *
  */
 export default function ScoresAnalyticsV2Page() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -191,7 +193,7 @@ export default function ScoresAnalyticsV2Page() {
     <Page
       headerProps={{
         title: "Scores",
-        breadcrumb: [{ name: "Scores", href: `/project/${projectId}/scores` }],
+        breadcrumb: [{ name: t("nav.scores", "Scores"), href: `/project/${projectId}/scores` }],
         help: {
           description:
             "A score is an evaluation of a trace or observation. It can be created from user feedback, model-based evaluations, or manual review. See docs to learn more.",
