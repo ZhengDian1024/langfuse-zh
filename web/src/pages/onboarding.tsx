@@ -2,12 +2,14 @@
 
 import Head from "next/head";
 import { OnboardingSurvey } from "@/src/features/onboarding/components/OnboardingSurvey";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function OnboardingPage() {
+  const { t } = useI18n();
   return (
     <>
       <Head>
-        <title>Onboarding | Langfuse</title>
+        <title>{t("onboarding.document-title", "Onboarding | Langfuse")}</title>
       </Head>
       <OnboardingSurvey />
     </>

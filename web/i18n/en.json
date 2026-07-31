@@ -140,6 +140,7 @@
   "setup.new-project": "New Project",
   "setup.project-description": "Projects are used to group traces, datasets, evals and prompts. Environments can be separated using the built-in environment feature.",
   "setup.configure-tracing": "Configure Tracing",
+  "onboarding.document-title": "Onboarding | Langfuse",
   "onboarding.starter-project-name": "My Project",
   "onboarding.starter-organization-name": "{firstName}'s Organization",
   "onboarding.default-organization-name": "My Organization",

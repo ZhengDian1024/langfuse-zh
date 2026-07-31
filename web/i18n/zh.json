@@ -140,6 +140,7 @@
   "setup.new-project": "新建项目",
   "setup.project-description": "项目用于组织 traces、数据集、评估和提示词。你可以使用内置环境功能来区分不同环境。",
   "setup.configure-tracing": "配置链路追踪",
+  "onboarding.document-title": "引导 | Langfuse",
   "onboarding.starter-project-name": "我的项目",
   "onboarding.starter-organization-name": "{firstName}的组织",
   "onboarding.default-organization-name": "我的组织",
