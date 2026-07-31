@@ -9,11 +9,13 @@ import {
   TRACING_TABS,
 } from "@/src/features/navigation/utils/tracing-tabs";
 import { useQueryProject } from "@/src/features/projects/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function Events() {
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const { project } = useQueryProject();
+  const { t } = useI18n();
 
   // Check if the user has tracing configured
   // Skip polling entirely if the project flag is already set in the session
@@ -38,10 +40,12 @@ export default function Events() {
   return (
     <Page
       headerProps={{
-        title: "Tracing - Events Table (New)",
+        title: t("observations.events.title", "Tracing - Events Table (New)"),
         help: {
-          description:
+          description: t(
+            "observations.events.help-description",
             "An observation captures a single function call in an application. This view uses the new ClickHouse events table.",
+          ),
           href: "https://langfuse.com/docs/observability/data-model",
         },
         tabsProps: {

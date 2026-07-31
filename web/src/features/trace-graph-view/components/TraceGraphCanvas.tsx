@@ -10,6 +10,7 @@ import {
   LANGGRAPH_END_NODE_NAME,
 } from "../types";
 import { Button } from "@/src/components/ui/button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type TraceGraphCanvasProps = {
   graph: GraphCanvasData;
@@ -29,6 +30,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
     nodeToObservationsMap = {},
     currentObservationIndices = {},
   } = props;
+  const { t } = useI18n();
   const [isHovering, setIsHovering] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -437,7 +439,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
   if (!graphData.nodes.length) {
     return (
       <div className="flex h-full items-center justify-center">
-        No graph data available
+        {t("trace-graph.no-data", "No graph data available")}
       </div>
     );
   }
@@ -455,7 +457,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
             variant="ghost"
             size="icon"
             className="dark:shadow-border p-1.5 shadow-md"
-            title="Zoom in"
+            title={t("trace-graph.zoom-in", "Zoom in")}
           >
             <ZoomIn className="h-4 w-4" />
           </Button>
@@ -464,7 +466,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
             variant="ghost"
             size="icon"
             className="dark:shadow-border p-1.5 shadow-md"
-            title="Zoom out"
+            title={t("trace-graph.zoom-out", "Zoom out")}
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
@@ -473,7 +475,7 @@ export const TraceGraphCanvas: React.FC<TraceGraphCanvasProps> = (props) => {
             variant="ghost"
             size="icon"
             className="dark:shadow-border p-1.5 shadow-md"
-            title="Reset view"
+            title={t("trace-graph.reset-view", "Reset view")}
           >
             <RotateCcw className="h-4 w-4" />
           </Button>
