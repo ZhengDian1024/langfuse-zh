@@ -7,6 +7,7 @@ import { useUserSearch } from "@/src/hooks/useUserSearch";
 import { useSelectedUsers } from "@/src/features/annotation-queues/hooks/useSelectedUsers";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useRef } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface UserAssignmentSectionProps {
   projectId: string;
@@ -21,6 +22,7 @@ export const UserAssignmentSection = ({
   onChange,
   queueId,
 }: UserAssignmentSectionProps) => {
+  const { t } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
   const hasQueueAssignmentsReadAccess = useHasProjectAccess({
     projectId: projectId,
@@ -45,8 +47,8 @@ export const UserAssignmentSection = ({
         utils.annotationQueueAssignments.invalidate();
         utils.annotationQueues.invalidate();
         showSuccessToast({
-          title: "Removed assignment",
-          description: "User removed from queue successfully",
+          title: t("annotation-queues.removed-title", "Removed assignment"),
+          description: t("annotation-queues.removed-desc", "User removed from queue successfully"),
         });
       },
     });

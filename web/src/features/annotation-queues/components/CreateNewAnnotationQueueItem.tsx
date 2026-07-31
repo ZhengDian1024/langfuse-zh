@@ -16,6 +16,7 @@ import { ChevronDown, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, useCallback } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const CreateNewAnnotationQueueItem = ({
   projectId,
@@ -30,6 +31,7 @@ export const CreateNewAnnotationQueueItem = ({
   variant?: ButtonProps["variant"];
   size?: ButtonProps["size"];
 }) => {
+  const { t } = useI18n();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const session = useSession();
   const hasAccess = useHasProjectAccess({
@@ -137,7 +139,7 @@ export const CreateNewAnnotationQueueItem = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-h-[min(300px,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto">
-        <DropdownMenuLabel>In queue(s)</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("annotation-queues.in-queues", "In queue(s)")}</DropdownMenuLabel>
         {queues.data?.queues.length ? (
           queues.data?.queues.map((queue) => (
             <DropdownMenuCheckboxItem

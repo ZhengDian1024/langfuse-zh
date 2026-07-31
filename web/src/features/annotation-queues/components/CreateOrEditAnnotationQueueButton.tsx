@@ -48,6 +48,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { UserAssignmentSection } from "@/src/features/annotation-queues/components/UserAssignmentSection";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const CreateOrEditAnnotationQueueButton = ({
   projectId,
@@ -62,6 +63,7 @@ export const CreateOrEditAnnotationQueueButton = ({
   size?: ButtonProps["size"];
   isTableAction?: boolean;
 }) => {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const hasQueueAccess = useHasProjectAccess({
@@ -198,8 +200,8 @@ export const CreateOrEditAnnotationQueueButton = ({
       // capture posthog event
     } catch {
       showErrorToast(
-        "Operation failed",
-        "Failed to create or update queue or assign users. Please try again.",
+        t("annotation-queues.error.operation-failed", "Operation failed"),
+        t("annotation-queues.error.operation-desc", "Failed to create or update queue or assign users. Please try again."),
       );
     }
   };
@@ -226,12 +228,12 @@ export const CreateOrEditAnnotationQueueButton = ({
   const triggerButton = isTableAction ? (
     <IconOnlyButton
       icon={<Pen className="h-4 w-4" />}
-      label="Edit"
+      label={t("annotation-queues.edit", "Edit")}
       aria-label="edit"
       disabledReason={
         hasQueueAccess
           ? undefined
-          : "You don't have permission to edit this queue."
+          : t("annotation-queues.no-permission-edit", "You don't have permission to edit this queue.")
       }
       onClick={(event) => {
         event.stopPropagation();
@@ -256,7 +258,7 @@ export const CreateOrEditAnnotationQueueButton = ({
       size={size}
     >
       <span className="ml-1 text-sm font-normal">
-        {queueId ? "Edit" : "New queue"}
+        {queueId ? t("annotation-queues.edit", "Edit") : t("annotation-queues.new-queue", "New queue")}
       </span>
     </ActionButton>
   );
@@ -289,7 +291,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t("annotation-queues.name", "Name")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -309,7 +311,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description (optional)</FormLabel>
+                      <FormLabel>{t("annotation-queues.description-optional", "Description (optional)")}</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -326,14 +328,14 @@ export const CreateOrEditAnnotationQueueButton = ({
                   name="scoreConfigIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Score Configs</FormLabel>
+                      <FormLabel>{t("annotation-queues.score-configs", "Score Configs")}</FormLabel>
                       <FormDescription>
                         Define which dimensions annotators should score for the
                         given queue.
                       </FormDescription>
                       <FormControl>
                         <MultiSelectKeyValues
-                          placeholder="Value"
+                          placeholder={t("annotation-queues.value", "Value")}
                           align="end"
                           variant="outline"
                           className="grid grid-cols-[auto_1fr_auto_auto] gap-2"
@@ -384,7 +386,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                   name="newAssignmentUserIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Advanced Settings</FormLabel>
+                      <FormLabel>{t("annotation-queues.advanced-settings", "Advanced Settings")}</FormLabel>
                       <div className="mt-1 rounded-md border">
                         <Collapsible
                           open={isAdvancedOpen && hasQueueAssignmentsReadAccess}

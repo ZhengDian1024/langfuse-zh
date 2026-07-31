@@ -39,6 +39,7 @@ import { TraceAnnotationProcessor } from "./processors/TraceAnnotationProcessor"
 import { SessionAnnotationProcessor } from "./processors/SessionAnnotationProcessor";
 import { ObjectNotFoundCard } from "@/src/components/ui/object-not-found-card";
 import { useSession } from "next-auth/react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // A single row in the keyboard-shortcuts cheatsheet: label on the left, one or
 // more <KeyboardShortcut> glyphs (passed as children) on the right.
@@ -57,6 +58,7 @@ export const AnnotationQueueItemPage: React.FC<{
   projectId: string;
   queryItemId?: string;
 }> = ({ annotationQueueId, projectId, queryItemId }) => {
+  const { t } = useI18n();
   const router = useRouter();
   const { status: sessionStatus } = useSession();
   const sessionLoaded = sessionStatus !== "loading";
@@ -367,7 +369,7 @@ export const AnnotationQueueItemPage: React.FC<{
   }
 
   if (!relevantItem && !(itemId && seenItemIds.includes(itemId))) {
-    return <div>No more items left to annotate!</div>;
+    return <div>{t("annotation-queues.no-more-items", "No more items left to annotate!")}</div>;
   }
 
   const renderContent = () => {
@@ -442,14 +444,14 @@ export const AnnotationQueueItemPage: React.FC<{
                     shortcutPulse === "back" &&
                       "border-primary/60 bg-accent/60 ring-primary/20 ring-2",
                   )}
-                  aria-label="Previous item"
+                  aria-label={t("annotation-queues.previous", "Previous item")}
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <KeyboardShortcut>←</KeyboardShortcut>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <span>Previous item</span>
+                <span>{t("annotation-queues.previous", "Previous item")}</span>
                 <KeyboardShortcut className="ml-2">←</KeyboardShortcut>
               </TooltipContent>
             </Tooltip>
@@ -469,7 +471,7 @@ export const AnnotationQueueItemPage: React.FC<{
               type="button"
               onClick={() => setShowShortcuts(true)}
               className="text-muted-foreground hover:text-foreground hidden items-center gap-1 text-[11px] transition-colors lg:flex"
-              aria-label="Show keyboard shortcuts"
+              aria-label={t("annotation-queues.show-shortcuts", "Show keyboard shortcuts")}
             >
               <KeyboardShortcut className="h-4 min-w-4 px-1 text-[9px]">
                 ?
@@ -493,14 +495,14 @@ export const AnnotationQueueItemPage: React.FC<{
                       "border-primary/60 bg-accent/60 ring-primary/20 ring-2",
                   )}
                   variant="outline"
-                  aria-label="Skip to next item"
+                  aria-label={t("annotation-queues.skip-next", "Skip to next item")}
                 >
                   <ArrowRight className="h-4 w-4" />
                   <KeyboardShortcut>→</KeyboardShortcut>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <span>Skip to next item</span>
+                <span>{t("annotation-queues.skip-next", "Skip to next item")}</span>
                 <KeyboardShortcut className="ml-2">→</KeyboardShortcut>
               </TooltipContent>
             </Tooltip>
@@ -522,7 +524,7 @@ export const AnnotationQueueItemPage: React.FC<{
                       objectData.isError
                     }
                   >
-                    <span>Mark Completed</span>
+                    <span>{t("annotation-queues.mark-completed", "Mark Completed")}</span>
                     {!isSingleItem && (
                       <KeyboardShortcut
                         className="bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
