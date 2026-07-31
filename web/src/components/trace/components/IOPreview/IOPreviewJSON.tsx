@@ -317,6 +317,7 @@ function IOPreviewJSONInner({
     projectId,
     traceId,
     environment,
+    t,
   ]);
 
   // Wait for parsing to complete before rendering to avoid flicker

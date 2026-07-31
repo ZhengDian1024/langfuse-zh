@@ -649,5 +649,6 @@
   "trace.timeline.name": "名称",
   "trace.timeline.resize-name": "调整名称列宽",
   "trace.timeline.time-to-first-token": "首 token 耗时",
-  "trace.io.output-correction": "Output 修正"
+  "trace.io.output-correction": "Output 修正",
+  "trace.badge.view-model-details": "查看模型详情"
 }

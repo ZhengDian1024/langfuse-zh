@@ -87,5 +87,5 @@ export function useLogViewColumns({
         ),
       },
     ];
-  }, [indentEnabled, showMilliseconds, projectId, traceId]);
+  }, [indentEnabled, showMilliseconds, projectId, traceId, t]);
 }

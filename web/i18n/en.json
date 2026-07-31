@@ -649,5 +649,6 @@
   "trace.timeline.name": "Name",
   "trace.timeline.resize-name": "Resize name column",
   "trace.timeline.time-to-first-token": "Time to first token",
-  "trace.io.output-correction": "Output correction"
+  "trace.io.output-correction": "Output correction",
+  "trace.badge.view-model-details": "View model details"
 }

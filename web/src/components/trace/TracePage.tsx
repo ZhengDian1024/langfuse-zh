@@ -53,7 +53,7 @@ export function TracePage({
         "WARNING",
       );
     }
-  }, [trace.cutoffObservationsAfterMaxCount]);
+  }, [trace.cutoffObservationsAfterMaxCount, t]);
 
   if (trace.isUnauthorized)
     return (
