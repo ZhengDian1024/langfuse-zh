@@ -47,6 +47,7 @@ import {
 } from "@/src/features/score-configs/lib/upsertFormTypes";
 import { validateScoreConfigUpsertFormInput } from "@/src/features/score-configs/lib/validateScoreConfigUpsertFormInput";
 import { ScoreConfigDataType } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function UpsertScoreConfigDialog({
   projectId,
@@ -63,6 +64,7 @@ export function UpsertScoreConfigDialog({
 }) {
   const [formError, setFormError] = useState<string | null>(null);
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -73,13 +75,13 @@ export function UpsertScoreConfigDialog({
   const createScoreConfig = api.scoreConfigs.create.useMutation({
     onSuccess: () => utils.scoreConfigs.invalidate(),
     onError: (error) =>
-      setFormError(error.message ?? "An error occurred while creating config."),
+      setFormError(error.message ?? t("score-configs.error-creating", "An error occurred while creating config.")),
   });
 
   const updateScoreConfig = api.scoreConfigs.update.useMutation({
     onSuccess: () => utils.scoreConfigs.invalidate(),
     onError: (error) =>
-      setFormError(error.message ?? "An error occurred while updating config."),
+      setFormError(error.message ?? t("score-configs.error-updating", "An error occurred while updating config.")),
   });
 
   const form = useForm({
@@ -151,13 +153,13 @@ export function UpsertScoreConfigDialog({
         <DialogTrigger asChild>
           <Button variant="secondary" loading={createScoreConfig.isPending}>
             <PlusIcon className="mr-1.5 -ml-0.5 h-4 w-4" aria-hidden="true" />
-            {id ? "Update score config" : "Add new score config"}
+            {id ? t("score-configs.update", "Update score config") : t("score-configs.add-new", "Add new score config")}
           </Button>
         </DialogTrigger>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {id ? "Update score config" : "Add new score config"}
+              {id ? t("score-configs.update", "Update score config") : t("score-configs.add-new", "Add new score config")}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
@@ -168,7 +170,7 @@ export function UpsertScoreConfigDialog({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t("score-configs.name", "Name")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -187,7 +189,7 @@ export function UpsertScoreConfigDialog({
                   name="dataType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data type</FormLabel>
+                      <FormLabel>{t("score-configs.data-type", "Data type")}</FormLabel>
                       <Select
                         disabled={!!id}
                         defaultValue={field.value}
@@ -217,7 +219,7 @@ export function UpsertScoreConfigDialog({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a data type" />
+                            <SelectValue placeholder={t("score-configs.select-data-type", "Select a data type")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -241,7 +243,7 @@ export function UpsertScoreConfigDialog({
                       name="minValue"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Minimum (optional) </FormLabel>
+                          <FormLabel>{t("score-configs.minimum", "Minimum (optional) ")}</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -265,7 +267,7 @@ export function UpsertScoreConfigDialog({
                       name="maxValue"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Maximum (optional)</FormLabel>
+                          <FormLabel>{t("score-configs.maximum", "Maximum (optional)")}</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -294,8 +296,7 @@ export function UpsertScoreConfigDialog({
                         <>
                           {fields.length > 0 && (
                             <div className="mb-2 grid grid-cols-[1fr_3fr] items-center gap-2 text-left sm:grid-cols-[1fr_7fr]">
-                              <FormLabel className="grid grid-flow-col">
-                                Value
+                              <FormLabel className="grid grid-flow-col">{t("score-configs.value", "Value")}
                                 <DocPopup
                                   description={`This is how the ${
                                     isCategoricalDataType(
@@ -306,7 +307,7 @@ export function UpsertScoreConfigDialog({
                                   } label is mapped to an integer value internally.`}
                                 />
                               </FormLabel>
-                              <FormLabel>Label</FormLabel>
+                              <FormLabel>{t("score-configs.label", "Label")}</FormLabel>
                             </div>
                           )}
                           {fields.map((category, index) => (
@@ -398,7 +399,7 @@ export function UpsertScoreConfigDialog({
                                   })
                                 }
                               >
-                                Add category
+                                {t("score-configs.add-category", "Add category")}
                               </Button>
                             </div>
                           )}
@@ -413,11 +414,14 @@ export function UpsertScoreConfigDialog({
                   render={({ field }) => (
                     <>
                       <FormItem>
-                        <FormLabel>Description (optional)</FormLabel>
+                        <FormLabel>{t("score-configs.description-optional", "Description (optional)")}</FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
-                            placeholder="Provide an optional description of the score config..."
+                            placeholder={t(
+                              "score-configs.description-placeholder",
+                              "Provide an optional description of the score config...",
+                            )}
                             value={field.value ?? undefined}
                           />
                         </FormControl>
@@ -431,7 +435,7 @@ export function UpsertScoreConfigDialog({
                 <div className="flex w-full flex-col items-end gap-4">
                   {formError ? (
                     <p className="w-full text-center">
-                      <span className="font-bold">Error:</span> {formError}
+                      <span className="font-bold">{t("score-configs.error-prefix", "Error:")}</span> {formError}
                     </p>
                   ) : null}
                   <Button

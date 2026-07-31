@@ -10,6 +10,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { api } from "@/src/utils/api";
 import { useEmptyScoreConfigs } from "@/src/features/scores/hooks/useEmptyConfigs";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ArchiveScoreConfigButton = ({
   configId,
@@ -23,6 +24,7 @@ export const ArchiveScoreConfigButton = ({
   name: string;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const { emptySelectedConfigIds, setEmptySelectedConfigIds } =
     useEmptyScoreConfigs();
 
@@ -49,7 +51,7 @@ export const ArchiveScoreConfigButton = ({
           }}
         >
           <Archive className="mr-2 h-4 w-4"></Archive>
-          Archive
+          {t("score-configs.archive", "Archive")}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -57,13 +59,23 @@ export const ArchiveScoreConfigButton = ({
         className="max-w-[500px]"
       >
         <h2 className="mb-3 font-semibold">
-          {isArchived ? "Restore config" : "Archive config"}
+          {isArchived
+            ? t("score-configs.restore-config", "Restore config")
+            : t("score-configs.archive-config", "Archive config")}
         </h2>
         <p className="mb-3 text-sm">
-          Your config is currently{" "}
+          {t("score-configs.config-current", "Your config is currently ")}
           {isArchived
-            ? `archived. Restore if you want to use "${name}" in annotation again.`
-            : `active. Archive if you no longer want to use "${name}" in annotation. Historic "${name}" scores will still be shown and can be deleted. You can restore your config at any point.`}
+            ? t(
+                "score-configs.archived-desc",
+                'archived. Restore if you want to use "{name}" in annotation again.',
+                { name },
+              )
+            : t(
+                "score-configs.active-desc",
+                'active. Archive if you no longer want to use "{name}" in annotation. Historic "{name}" scores will still be shown and can be deleted. You can restore your config at any point.',
+                { name },
+              )}
         </p>
         <div className="flex justify-end space-x-4">
           <Button
@@ -82,7 +94,7 @@ export const ArchiveScoreConfigButton = ({
               capture("score_configs:archive_form_submit");
             }}
           >
-            Confirm
+            {t("common.confirm", "Confirm")}
           </Button>
         </div>
       </PopoverContent>
