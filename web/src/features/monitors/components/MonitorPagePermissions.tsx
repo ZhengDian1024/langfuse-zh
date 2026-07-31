@@ -21,9 +21,9 @@ export function MonitorPagePermissions({
   const projectId = useProjectIdFromURL();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const hasAccess = useHasProjectAccess({ projectId, scope });
+  const { t } = useI18n();
 
   if (!isLangfuseCloud) {
-    const { t } = useI18n();
     return <ErrorPage title={t("monitors.page-not-found", "Not found")} message={t("monitors.page-not-exist", "This page does not exist.")} />;
   }
 
