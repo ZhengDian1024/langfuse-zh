@@ -1135,7 +1135,7 @@ export function WidgetForm({
     }
 
     return validateQuery(query, viewVersion);
-  }, [query, unsupportedFilterColumns, unsupportedFilters.length, viewVersion]);
+  }, [query, unsupportedFilterColumns, unsupportedFilters.length, viewVersion, t]);
 
   const queryResult = api.dashboard.executeQuery.useQuery(
     {
