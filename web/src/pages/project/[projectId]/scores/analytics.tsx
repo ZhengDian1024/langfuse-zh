@@ -222,9 +222,9 @@ export default function ScoresAnalyticsV2Page() {
             <div className="bg-destructive/10 flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <BarChart3 className="text-destructive h-12 w-12" />
               <div className="text-center">
-                <h3 className="text-lg font-semibold">Error Loading Scores</h3>
+                <h3 className="text-lg font-semibold">{t("scores.analytics.error-title", "Error Loading Scores")}</h3>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Failed to load score data. Please try refreshing the page.
+                  {t("scores.analytics.error-desc", "Failed to load score data. Please try refreshing the page.")}
                 </p>
               </div>
             </div>
@@ -232,10 +232,9 @@ export default function ScoresAnalyticsV2Page() {
             <div className="bg-muted/20 flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <BarChart3 className="text-muted-foreground h-12 w-12" />
               <div className="text-center">
-                <h3 className="text-lg font-semibold">No Scores Available</h3>
+                <h3 className="text-lg font-semibold">{t("scores.analytics.no-scores", "No Scores Available")}</h3>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Create scores by adding evaluations to your traces and
-                  observations.
+                  {t("scores.analytics.no-scores-desc", "Create scores by adding evaluations to your traces and observations.")}
                 </p>
               </div>
             </div>
@@ -243,25 +242,23 @@ export default function ScoresAnalyticsV2Page() {
             <div className="bg-muted/20 flex flex-col items-center justify-center gap-6 rounded-lg border p-12">
               <BarChart3 className="text-muted-foreground h-16 w-16" />
               <div className="max-w-2xl text-center">
-                <h3 className="text-2xl font-semibold">Select a Score</h3>
+                <h3 className="text-2xl font-semibold">{t("scores.analytics.select-score", "Select a Score")}</h3>
                 <p className="text-muted-foreground mt-3 text-base">
-                  Choose one or two scores from the dropdowns above to view
-                  analytics
+                  {t("scores.analytics.select-desc", "Choose one or two scores from the dropdowns above to view analytics")}
                 </p>
                 <div className="text-muted-foreground mt-6 space-y-3 text-sm">
                   <div className="bg-background/50 rounded-lg p-4">
                     <p className="text-foreground mb-1 font-semibold">
-                      Single score selected:
+                      {t("scores.analytics.single", "Single score selected:")}
                     </p>
-                    <p>View distribution and trends over time</p>
+                    <p>{t("scores.analytics.single-desc", "View distribution and trends over time")}</p>
                   </div>
                   <div className="bg-background/50 rounded-lg p-4">
                     <p className="text-foreground mb-1 font-semibold">
-                      Two scores selected:
+                      {t("scores.analytics.two", "Two scores selected:")}
                     </p>
                     <p>
-                      Compare scores with heatmaps, correlation analysis, and
-                      statistical metrics
+                      {t("scores.analytics.two-desc", "Compare scores with heatmaps, correlation analysis, and statistical metrics")}
                     </p>
                   </div>
                 </div>
@@ -275,7 +272,7 @@ export default function ScoresAnalyticsV2Page() {
             <div className="flex flex-col items-center justify-center gap-4 rounded-lg border p-12">
               <Spinner size="xxl" variant="muted" />
               <p className="text-muted-foreground text-sm">
-                Loading analytics data...
+                {t("scores.analytics.loading", "Loading analytics data...")}
               </p>
             </div>
           )}
