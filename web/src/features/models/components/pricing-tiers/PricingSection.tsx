@@ -5,6 +5,7 @@ import { Accordion } from "@/src/components/ui/accordion";
 import { TierAccordionItem } from "./TierAccordionItem";
 import { TierPriceEditor } from "./TierPriceEditor";
 import { TierPrefillButtons } from "./TierPrefillButtons";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import type { UseFormReturn, UseFieldArrayReturn } from "react-hook-form";
 import type { FormUpsertModel } from "../../validation";
 
@@ -23,6 +24,7 @@ export function PricingSection({
   remove,
   addTier,
 }: PricingSectionProps) {
+  const { t } = useI18n();
   const hasMultipleTiers = fields.length > 1;
   const defaultTierIndex = fields.findIndex((f) => f.isDefault);
 
@@ -31,10 +33,9 @@ export function PricingSection({
     return (
       <div className="space-y-4">
         <div>
-          <FormLabel>Prices</FormLabel>
+          <FormLabel>{t("models.form.label-prices", "Prices")}</FormLabel>
           <FormDescription>
-            Set prices per usage type for this model. Usage types must exactly
-            match the keys of the ingested usage details.
+            {t("models.form.desc-prices-single", "Set prices per usage type for this model. Usage types must exactly match the keys of the ingested usage details.")}
           </FormDescription>
         </div>
 
@@ -47,7 +48,7 @@ export function PricingSection({
 
         <Button type="button" variant="ghost" onClick={addTier}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Custom Pricing Tier
+          {t("models.action.add-custom-pricing-tier", "Add Custom Pricing Tier")}
         </Button>
       </div>
     );
@@ -57,10 +58,9 @@ export function PricingSection({
   return (
     <div className="space-y-4">
       <div>
-        <FormLabel>Pricing Tiers</FormLabel>
+        <FormLabel>{t("models.form.label-pricing-tiers", "Pricing Tiers")}</FormLabel>
         <FormDescription>
-          Define pricing rules evaluated in priority order. Tiers are checked
-          from top to bottom until conditions match.
+          {t("models.form.desc-pricing-tiers", "Define pricing rules evaluated in priority order. Tiers are checked from top to bottom until conditions match.")}
         </FormDescription>
       </div>
 
@@ -83,7 +83,7 @@ export function PricingSection({
 
       <Button type="button" variant="outline" onClick={addTier}>
         <PlusCircle className="mr-2 h-4 w-4" />
-        Add Custom Tier
+        {t("models.action.add-custom-tier", "Add Custom Tier")}
       </Button>
     </div>
   );

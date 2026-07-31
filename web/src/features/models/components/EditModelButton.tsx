@@ -2,6 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { UpsertModelFormDialog } from "@/src/features/models/components/UpsertModelFormDialog";
 import { type GetModelResult } from "@/src/features/models/validation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const EditModelButton = ({
   modelData,
@@ -14,16 +15,17 @@ export const EditModelButton = ({
     projectId,
     scope: "models:CUD",
   });
+  const { t } = useI18n();
 
   return (
     <UpsertModelFormDialog {...{ modelData, projectId, action: "edit" }}>
       <Button
         variant="outline"
         disabled={!hasAccess}
-        title="Edit model"
+        title={t("models.aria.edit", "Edit model")}
         className="flex items-center"
       >
-        <span>Edit</span>
+        <span>{t("models.action.edit", "Edit")}</span>
       </Button>
     </UpsertModelFormDialog>
   );

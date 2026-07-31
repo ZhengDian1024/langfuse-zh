@@ -3,6 +3,7 @@ import { ActionButton } from "@/src/components/ActionButton";
 import { TestModelMatchDialog } from "./TestModelMatchDialog";
 import { FlaskConical } from "lucide-react";
 import { type ButtonProps } from "@/src/components/ui/button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type TestModelMatchButtonProps = {
   projectId: string;
@@ -16,6 +17,7 @@ export function TestModelMatchButton({
   variant,
 }: TestModelMatchButtonProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <>
@@ -25,7 +27,7 @@ export function TestModelMatchButton({
         onClick={() => setOpen(true)}
         data-testid="test-model-match-button"
       >
-        Test Model Match
+        {t("models.action.test-model-match", "Test Model Match")}
       </ActionButton>
 
       <TestModelMatchDialog
