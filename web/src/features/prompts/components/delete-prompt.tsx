@@ -9,10 +9,12 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function DeletePrompt({ promptName }: { promptName: string }) {
   const projectId = useProjectIdFromURL();
   const utils = api.useUtils();
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasAccess = useHasProjectAccess({ projectId, scope: "prompts:CUD" });
@@ -36,18 +38,13 @@ export function DeletePrompt({ promptName }: { promptName: string }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <h2 className="mb-3 font-semibold">Please confirm</h2>
+        <h2 className="mb-3 font-semibold">{t("prompts.delete.confirm-title", "Please confirm")}</h2>
         <p className="mb-3 text-sm">
-          This action permanently deletes this prompt. All requests to fetch
-          prompt{" "}
-          <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-            {promptName}
-          </code>{" "}
-          will error.
+          {t("prompts.delete.prompt-description", "This action permanently deletes this prompt. All requests to fetch prompt {promptName} will error.", { promptName })}
         </p>
         {error && (
           <div className="mb-3 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            <p className="font-medium">Error:</p>
+            <p className="font-medium">{t("prompts.form.error-prefix", "Error:")}</p>
             <p className="whitespace-pre-wrap">{error}</p>
           </div>
         )}
@@ -69,7 +66,7 @@ export function DeletePrompt({ promptName }: { promptName: string }) {
               });
             }}
           >
-            Delete Prompt
+            {t("prompts.action.delete-prompt", "Delete Prompt")}
           </Button>
         </div>
       </PopoverContent>

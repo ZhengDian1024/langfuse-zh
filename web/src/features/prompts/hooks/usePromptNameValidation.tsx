@@ -5,12 +5,14 @@ interface UsePromptNameValidationProps {
   currentName: string | undefined;
   allPrompts: { value: string }[] | undefined;
   form: UseFormReturn<any>;
+  existsMessage: string;
 }
 
 export const usePromptNameValidation = ({
   currentName,
   allPrompts,
   form,
+  existsMessage,
 }: UsePromptNameValidationProps) => {
   useEffect(() => {
     if (!currentName || !allPrompts) return;
@@ -20,12 +22,12 @@ export const usePromptNameValidation = ({
       .includes(currentName);
 
     if (!isNewPrompt) {
-      form.setError("name", { message: "Prompt name already exists." });
+      form.setError("name", { message: existsMessage });
     } else {
       const currentError = form.getFieldState("name").error;
-      if (currentError?.message === "Prompt name already exists.") {
+      if (currentError?.message === existsMessage) {
         form.clearErrors("name");
       }
     }
-  }, [currentName, allPrompts, form]);
+  }, [currentName, allPrompts, form, existsMessage]);
 };

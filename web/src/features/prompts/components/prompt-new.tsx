@@ -3,9 +3,11 @@ import { NewPromptForm } from "@/src/features/prompts/components/NewPromptForm";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { api } from "@/src/utils/api";
 import Page from "@/src/components/layouts/page";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const NewPrompt = () => {
   const projectId = useProjectIdFromURL();
+  const { t } = useI18n();
   const [initialPromptId] = useQueryParam("promptId", StringParam);
 
   const { data: initialPrompt, isLoading } = api.prompts.byId.useQuery(
@@ -21,16 +23,16 @@ export const NewPrompt = () => {
   );
 
   if (isLoading) {
-    return <div className="p-3">Loading...</div>;
+    return <div className="p-3">{t("prompts.detail.loading", "Loading...")}</div>;
   }
 
   const breadcrumb: { name: string; href?: string }[] = [
     {
-      name: "Prompts",
+      name: t("breadcrumb.prompts", "Prompts"),
       href: `/project/${projectId}/prompts/`,
     },
     {
-      name: "New prompt",
+      name: t("prompts.breadcrumb.new-prompt", "New prompt"),
     },
   ];
 
@@ -41,7 +43,7 @@ export const NewPrompt = () => {
         name: initialPrompt.name,
         href: `/project/${projectId}/prompts/${encodeURIComponent(initialPrompt.name)}`,
       },
-      { name: "New version" },
+      { name: t("prompts.breadcrumb.new-version", "New version") },
     );
   }
 
@@ -51,11 +53,10 @@ export const NewPrompt = () => {
       scrollable
       headerProps={{
         title: initialPrompt
-          ? `${initialPrompt.name} \u2014 New version`
-          : "Create new prompt",
+          ? t("prompts.page.new-version-title", "{name} \u2014 New version", { name: initialPrompt.name })
+          : t("prompts.page.new-prompt-title", "Create new prompt"),
         help: {
-          description:
-            "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
+          description: t("prompts.page.help-description", "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs."),
           href: "https://langfuse.com/docs/prompts",
         },
         breadcrumb: breadcrumb,
@@ -63,8 +64,7 @@ export const NewPrompt = () => {
     >
       {initialPrompt ? (
         <p className="text-muted-foreground text-sm">
-          Prompts are immutable in Langfuse. To update a prompt, create a new
-          version.
+          {t("prompts.detail.immutable-note", "Prompts are immutable in Langfuse. To update a prompt, create a new version.")}
         </p>
       ) : null}
       <div className="my-8">

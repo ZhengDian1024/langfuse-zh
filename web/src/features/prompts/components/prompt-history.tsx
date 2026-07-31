@@ -7,6 +7,7 @@ import { Badge } from "@/src/components/ui/badge";
 import { CommandItem } from "@/src/components/ui/command";
 import { SetPromptVersionLabels } from "@/src/features/prompts/components/SetPromptVersionLabels";
 import { CommentCountIcon } from "@/src/features/comments/CommentCountIcon";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const PromptHistoryTraceNode = (props: {
   index: number;
@@ -21,6 +22,7 @@ const PromptHistoryTraceNode = (props: {
   const [isPromptDiffOpen, setIsPromptDiffOpen] = useState(false);
   const [isLabelPopoverOpen, setIsLabelPopoverOpen] = useState(false);
   const { prompt } = props;
+  const { t } = useI18n();
 
   // Add ref for scroll into view
   const currentPromptRef = useRef<HTMLDivElement>(null);
@@ -143,8 +145,8 @@ const PromptHistoryTraceNode = (props: {
                 </div>
               )}
               <div className="text-muted-foreground flex flex-wrap gap-1 text-xs">
-                {prompt.createdAt.toLocaleString()} by{" "}
-                {prompt.creator || prompt.createdBy}
+                {prompt.createdAt.toLocaleString()}{" "}
+                {t("prompts.detail.history-by", "by {creator}", { creator: prompt.creator || prompt.createdBy || "" })}
               </div>
             </div>
             <div className="flex flex-row justify-end space-x-1">

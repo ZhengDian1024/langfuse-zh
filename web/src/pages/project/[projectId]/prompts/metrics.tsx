@@ -30,6 +30,7 @@ import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { useTableDateRange } from "@/src/hooks/useTableDateRange";
 import { toAbsoluteTimeRange } from "@/src/utils/date-range-utils";
 import { useMemo } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type PromptVersionTableRow = {
   version: number;
@@ -88,6 +89,7 @@ export default function PromptVersionTable({
 }: { promptName?: string } = {}) {
   const router = useRouter();
   const projectId = useProjectIdFromURL() ?? "";
+  const { t } = useI18n();
   const promptNameFromQuery = router.query.promptName;
   const promptName =
     promptNameProp ||
@@ -151,7 +153,7 @@ export default function PromptVersionTable({
       scoreColumnKey: "traceScores",
       projectId: projectId,
       filter: scoreFilters.forTraceLevel(),
-      prefix: "Trace",
+      prefix: t("prompts.metrics.prefix-trace", "Trace"),
     });
 
   const {
@@ -161,14 +163,14 @@ export default function PromptVersionTable({
     scoreColumnKey: "generationScores",
     projectId: projectId,
     filter: scoreFilters.forObservations(),
-    prefix: "Generation",
+    prefix: t("prompts.metrics.prefix-generation", "Generation"),
   });
 
   const columns: LangfuseColumnDef<PromptVersionTableRow>[] = [
     {
       accessorKey: "version",
       id: "version",
-      header: "Version",
+      header: t("prompts.metrics.col-version", "Version"),
       isPinnedLeft: true,
       size: 80,
       cell: ({ row }) => {
@@ -184,7 +186,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "labels",
       id: "labels",
-      header: "Labels",
+      header: t("prompts.metrics.col-labels", "Labels"),
       isPinnedLeft: true,
       size: 160,
       cell: ({ row }) => {
@@ -205,7 +207,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "medianLatency",
       id: "medianLatency",
-      header: "Median latency",
+      header: t("prompts.metrics.col-median-latency", "Median latency"),
       size: 140,
       cell: ({ row }) => {
         const latency: number | undefined | null =
@@ -224,7 +226,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "medianInputTokens",
       id: "medianInputTokens",
-      header: "Median input tokens",
+      header: t("prompts.metrics.col-median-input-tokens", "Median input tokens"),
       size: 160,
       enableHiding: true,
       cell: ({ row }) => {
@@ -240,7 +242,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "medianOutputTokens",
       id: "medianOutputTokens",
-      header: "Median output tokens",
+      header: t("prompts.metrics.col-median-output-tokens", "Median output tokens"),
       size: 170,
       enableHiding: true,
       cell: ({ row }) => {
@@ -255,7 +257,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "medianCost",
       id: "medianCost",
-      header: "Median cost",
+      header: t("prompts.metrics.col-median-cost", "Median cost"),
       size: 120,
       cell: ({ row }) => {
         const value: number | undefined | null = row.getValue("medianCost");
@@ -270,7 +272,7 @@ export default function PromptVersionTable({
     {
       accessorKey: "generationCount",
       id: "generationCount",
-      header: "Generations count",
+      header: t("prompts.metrics.col-generations-count", "Generations count"),
       size: 150,
       enableHiding: true,
       cell: ({ row }) => {
@@ -286,7 +288,7 @@ export default function PromptVersionTable({
     },
     {
       accessorKey: "traceScores",
-      header: "Trace Scores",
+      header: t("prompts.metrics.col-trace-scores", "Trace Scores"),
       id: "traceScores",
       enableHiding: true,
       columns: traceScoreColumns,
@@ -298,7 +300,7 @@ export default function PromptVersionTable({
     },
     {
       accessorKey: "generationScores",
-      header: "Generation Scores",
+      header: t("prompts.metrics.col-generation-scores", "Generation Scores"),
       id: "generationScores",
       enableHiding: true,
       columns: generationScoreColumns,
@@ -311,12 +313,11 @@ export default function PromptVersionTable({
     {
       accessorKey: "lastUsed",
       id: "lastUsed",
-      header: "Last used",
+      header: t("prompts.metrics.col-last-used", "Last used"),
       enableHiding: true,
       size: 150,
       headerTooltip: {
-        description:
-          "This is calculated based on the selected date range, not the full usage history.",
+        description: t("prompts.metrics.tooltip-date-range", "This is calculated based on the selected date range, not the full usage history."),
       },
       cell: ({ row }) => {
         const value: number | undefined | null = row.getValue("lastUsed");
@@ -329,12 +330,11 @@ export default function PromptVersionTable({
     {
       accessorKey: "firstUsed",
       id: "firstUsed",
-      header: "First used",
+      header: t("prompts.metrics.col-first-used", "First used"),
       size: 150,
       enableHiding: true,
       headerTooltip: {
-        description:
-          "This is calculated based on the selected date range, not the full usage history.",
+        description: t("prompts.metrics.tooltip-date-range", "This is calculated based on the selected date range, not the full usage history."),
       },
       cell: ({ row }) => {
         const value: number | undefined | null = row.getValue("firstUsed");
@@ -377,16 +377,16 @@ export default function PromptVersionTable({
             generationCount: prompt.observationCount,
             traceScores: addPrefixToScoreKeys(
               prompt.traceScores ?? {},
-              "Trace",
+              t("prompts.metrics.prefix-trace", "Trace"),
             ),
             generationScores: addPrefixToScoreKeys(
               prompt.observationScores ?? {},
-              "Generation",
+              t("prompts.metrics.prefix-generation", "Generation"),
             ),
             lastUsed:
-              prompt.lastUsed?.toLocaleString() ?? "No linked generation yet",
+              prompt.lastUsed?.toLocaleString() ?? t("prompts.metrics.no-linked-generation", "No linked generation yet"),
             firstUsed:
-              prompt.firstUsed?.toLocaleString() ?? "No linked generation yet",
+              prompt.firstUsed?.toLocaleString() ?? t("prompts.metrics.no-linked-generation", "No linked generation yet"),
           };
         })
       : [];
@@ -397,20 +397,19 @@ export default function PromptVersionTable({
         title: promptName,
         itemType: "PROMPT",
         help: {
-          description:
-            "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information.",
+          description: t("prompts.detail.help-description", "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information."),
           href: "https://langfuse.com/docs/prompt-management/get-started",
         },
         breadcrumb: [
           {
-            name: "Prompts",
+            name: t("breadcrumb.prompts", "Prompts"),
             href: `/project/${projectId}/prompts/`,
           },
           {
             name: promptName ?? router.query.promptName,
             href: `/project/${projectId}/prompts/${encodeURIComponent(promptName)}`,
           },
-          { name: `Metrics` },
+          { name: t("prompts.breadcrumb.metrics", "Metrics") },
         ],
         actionButtonsRight: (
           <DetailPageNav
@@ -421,7 +420,7 @@ export default function PromptVersionTable({
           />
         ),
         tabsProps: {
-          tabs: getPromptTabs(projectId, promptName),
+          tabs: getPromptTabs(projectId, promptName, t),
           activeTab: PROMPT_TABS.METRICS,
         },
       }}

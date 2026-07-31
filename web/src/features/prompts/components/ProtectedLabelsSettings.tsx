@@ -13,6 +13,7 @@ import {
 import Header from "@/src/components/layouts/header";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { XIcon, Check, ChevronsUpDown } from "lucide-react";
@@ -54,6 +55,7 @@ export default function ProtectedLabelsSettings({
     scope: "promptProtectedLabels:CUD",
   });
   const hasEntitlement = useHasEntitlement("prompt-protected-labels");
+  const { t } = useI18n();
 
   const form = useForm({
     resolver: zodResolver(AddLabelFormSchema),
@@ -108,12 +110,10 @@ export default function ProtectedLabelsSettings({
 
   return (
     <div>
-      <Header title="Protected Prompt Labels" />
+      <Header title={t("prompts.protected.title", "Protected Prompt Labels")} />
       <Card className="mb-4 p-3">
         <p className="text-primary mb-4 text-sm">
-          Protected labels can only be modified by users with admin or owner
-          access. This prevents other users from changing or removing these
-          labels from prompts.
+          {t("prompts.protected.description", "Protected labels can only be modified by users with admin or owner access. This prevents other users from changing or removing these labels from prompts.")}
         </p>
         <div className="mb-4 flex flex-wrap gap-2">
           {protectedLabels.map((label) => (
@@ -131,7 +131,7 @@ export default function ProtectedLabelsSettings({
                   onClick={() => {
                     if (
                       confirm(
-                        `Are you sure you want to remove the protected label "${label}"?`,
+                        t("prompts.protected.confirm-remove", "Are you sure you want to remove the protected label \"{label}\"?", { label }),
                       )
                     ) {
                       removeProtectedLabel.mutate({ projectId, label });
@@ -167,7 +167,7 @@ export default function ProtectedLabelsSettings({
                           )}
                           disabled={!hasAccess || !hasEntitlement}
                         >
-                          {field.value || "Select or enter a label"}
+                          {field.value || t("prompts.protected.placeholder-select", "Select or enter a label")}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -175,12 +175,12 @@ export default function ProtectedLabelsSettings({
                     <PopoverContent className="w-full p-0">
                       <Command>
                         <CommandInput
-                          placeholder="Search or enter a new label..."
+                          placeholder={t("prompts.protected.placeholder-search", "Search or enter a new label...")}
                           onValueChange={(value) => {
                             field.onChange(value);
                           }}
                         />
-                        <CommandEmpty>No label found</CommandEmpty>
+                        <CommandEmpty>{t("prompts.labels.no-label-found", "No label found")}</CommandEmpty>
                         <CommandGroup>
                           {availableLabels.map((label) => (
                             <CommandItem
@@ -217,7 +217,7 @@ export default function ProtectedLabelsSettings({
               hasAccess={hasAccess}
               hasEntitlement={hasEntitlement}
             >
-              Add
+              {t("prompts.action.add", "Add")}
             </ActionButton>
           </form>
         </Form>

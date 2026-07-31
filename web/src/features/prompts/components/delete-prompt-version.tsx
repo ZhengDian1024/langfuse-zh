@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/router";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function DeletePromptVersion({
   promptVersionId,
@@ -25,6 +26,7 @@ export function DeletePromptVersion({
   const projectId = useProjectIdFromURL();
   const utils = api.useUtils();
   const router = useRouter();
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasAccess = useHasProjectAccess({ projectId, scope: "prompts:CUD" });
@@ -73,21 +75,17 @@ export function DeletePromptVersion({
           }}
         >
           <Trash className="mr-2 h-4 w-4" />
-          Delete version
+          {t("prompts.aria.delete-version", "Delete version")}
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <h2 className="mb-3 font-semibold">Please confirm</h2>
+        <h2 className="mb-3 font-semibold">{t("prompts.delete.confirm-title", "Please confirm")}</h2>
         <p className="mb-3 text-sm">
-          This action deletes the prompt version. Requests of version{" "}
-          <code className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-            {version}
-          </code>
-          of this prompt will return an error.
+          {t("prompts.delete.version-description", "This action deletes the prompt version. Requests of version {version} of this prompt will return an error.", { version: String(version) })}
         </p>
         {error && (
           <div className="mb-3 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            <p className="font-medium">Error:</p>
+            <p className="font-medium">{t("prompts.form.error-prefix", "Error:")}</p>
             <p className="whitespace-pre-wrap">{error}</p>
           </div>
         )}
@@ -110,7 +108,7 @@ export function DeletePromptVersion({
               });
             }}
           >
-            Delete Prompt Version
+            {t("prompts.action.delete-prompt-version", "Delete Prompt Version")}
           </Button>
         </div>
       </PopoverContent>

@@ -13,9 +13,11 @@ import PromptMetrics from "./metrics";
 import { useQueryParams, StringParam } from "use-query-params";
 import React from "react";
 import { AutomationButton } from "@/src/features/automations/components/AutomationButton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function PromptsWithFolder() {
   const router = useRouter();
+  const { t } = useI18n();
   const projectId = router.query.projectId as string;
   const routeSegments = router.query.folder;
   const [queryParams] = useQueryParams({ folder: StringParam });
@@ -82,10 +84,9 @@ export default function PromptsWithFolder() {
   return (
     <Page
       headerProps={{
-        title: "Prompts",
+        title: t("prompts.page.title", "Prompts"),
         help: {
-          description:
-            "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs.",
+          description: t("prompts.page.help-description", "Manage and version your prompts in Langfuse. Edit and update them via the UI and SDK. Retrieve the production version via the SDKs. Learn more in the docs."),
           href: "https://langfuse.com/docs/prompt-management/get-started",
         },
         actionButtonsRight: (
@@ -102,7 +103,7 @@ export default function PromptsWithFolder() {
                 capture("prompts:new_form_open");
               }}
             >
-              New prompt
+              {t("prompts.action.new-prompt", "New prompt")}
             </ActionButton>
           </>
         ),

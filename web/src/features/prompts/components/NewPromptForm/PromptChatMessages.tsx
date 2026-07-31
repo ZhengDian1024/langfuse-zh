@@ -21,6 +21,7 @@ import {
   MessageSearchToolbar,
   useSyncMessageSearchMessages,
 } from "@/src/components/ChatMessages/MessageSearch";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 import type { ControllerRenderProps } from "react-hook-form";
 import type { MessagesContext } from "@/src/components/ChatMessages/types";
@@ -51,6 +52,7 @@ export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
   const [messages, setMessages] = useState<ChatMessageWithId[]>([]);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const parsedMessages =
@@ -160,7 +162,7 @@ export const PromptChatMessages: React.FC<PromptChatMessagesProps> = ({
                 onClick={() => setIsDialogOpen(true)}
               >
                 <PlusIcon className="h-4 w-4" />
-                <span className="text-xs">Add prompt reference</span>
+                <span className="text-xs">{t("prompts.action.add-prompt-reference", "Add prompt reference")}</span>
               </Button>
 
               {projectId && (

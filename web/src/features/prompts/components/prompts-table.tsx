@@ -29,6 +29,7 @@ import { useFolderPagination } from "@/src/features/folders/hooks/useFolderPagin
 import { buildFullPath } from "@/src/features/folders/utils";
 import { FolderBreadcrumb } from "@/src/features/folders/components/FolderBreadcrumb";
 import { FolderBreadcrumbLink } from "@/src/features/folders/components/FolderBreadcrumbLink";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type PromptTableRow = {
   id: string;
@@ -62,6 +63,7 @@ function createRow(
 
 export function PromptTable() {
   const projectId = useProjectIdFromURL() ?? "";
+  const { t } = useI18n();
   const { setDetailPageList } = useDetailPageLists();
   const promptMetricsTimeWindow = useMemo(() => {
     const today = new Date();
@@ -269,7 +271,7 @@ export function PromptTable() {
   const promptColumns: LangfuseColumnDef<PromptTableRow>[] = [
     {
       accessorKey: "name",
-      header: "Name",
+      header: t("prompts.table.col-name", "Name"),
       id: "name",
       enableSorting: true,
       size: 250,
@@ -297,7 +299,7 @@ export function PromptTable() {
     },
     {
       accessorKey: "version",
-      header: "Versions",
+      header: t("prompts.table.col-versions", "Versions"),
       id: "version",
       enableSorting: true,
       size: 70,
@@ -308,14 +310,14 @@ export function PromptTable() {
     },
     {
       accessorKey: "type",
-      header: "Type",
+      header: t("prompts.table.col-type", "Type"),
       id: "type",
       enableSorting: true,
       size: 60,
     },
     {
       accessorKey: "createdAt",
-      header: "Latest Version Created At",
+      header: t("prompts.table.col-latest-version-created", "Latest Version Created At"),
       id: "createdAt",
       enableSorting: true,
       size: 200,
@@ -327,7 +329,7 @@ export function PromptTable() {
     },
     {
       accessorKey: "numberOfObservations",
-      header: "Number of Observations (7d)",
+      header: t("prompts.table.col-observations-7d", "Number of Observations (7d)"),
       id: "numberOfObservations",
       size: 170,
       cell: ({ getValue, row }) => {
@@ -351,7 +353,7 @@ export function PromptTable() {
     },
     {
       accessorKey: "tags",
-      header: "Tags",
+      header: t("prompts.table.col-tags", "Tags"),
       id: "tags",
       enableSorting: true,
       size: 120,
@@ -382,7 +384,7 @@ export function PromptTable() {
     {
       accessorKey: "id",
       id: "actions",
-      header: "Actions",
+      header: t("prompts.table.col-actions", "Actions"),
       size: 70,
       enableSorting: false,
       cell: ({ row }) => {
@@ -427,8 +429,8 @@ export function PromptTable() {
             setSearchType,
             searchType,
             customDropdownLabels: {
-              metadata: "Names, Tags",
-              fullText: "Full Text",
+              metadata: t("prompts.table.search-metadata", "Names, Tags"),
+              fullText: t("prompts.table.search-fulltext", "Full Text"),
             },
             hidePerformanceWarning: true,
             availableSearchTypes: {
