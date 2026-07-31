@@ -18,6 +18,7 @@ import {
 import { SlackTestMessageButton } from "@/src/features/slack/components/SlackTestMessageButton";
 import { useState } from "react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface SlackActionFormProps {
   form: UseFormReturn<any>;
@@ -26,11 +27,13 @@ interface SlackActionFormProps {
   action?: ActionDomain;
 }
 
-export const SlackActionForm: React.FC<SlackActionFormProps> = ({
+export const SlackActionForm:
+React.FC<SlackActionFormProps> = ({
   form,
   disabled,
   projectId,
 }) => {
+  const { t } = useI18n();
   const initialChannelId = form.getValues("slack.channelId") as string;
   const initialChannelName = form.getValues("slack.channelName") as string;
   const [selectedChannel, setSelectedChannel] = useState<SlackChannel | null>(
@@ -86,7 +89,7 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
             name="slack.channelId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Channel</FormLabel>
+                <FormLabel>{t("automations.slack.channel", "Channel")}</FormLabel>
                 <FormControl>
                   <div className="max-w-md">
                     <ChannelSelector
@@ -95,7 +98,7 @@ export const SlackActionForm: React.FC<SlackActionFormProps> = ({
                       selectedChannel={selectedChannel}
                       onChannelSelect={handleChannelSelect}
                       disabled={disabled}
-                      placeholder="Select a channel"
+                      placeholder={t("automations.slack.channel.placeholder", "Select a channel")}
                       showRefreshButton={true}
                     />
                   </div>

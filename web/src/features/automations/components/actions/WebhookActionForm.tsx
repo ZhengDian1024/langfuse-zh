@@ -27,6 +27,7 @@ import {
 } from "@langfuse/shared";
 import { api } from "@/src/utils/api";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   Dialog,
   DialogBody,
@@ -78,12 +79,14 @@ interface WebhookActionFormProps {
   action?: ActionDomain | ActionDomainWithSecrets;
 }
 
-export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
+export const WebhookActionForm:
+React.FC<WebhookActionFormProps> = ({
   form,
   disabled,
   projectId,
   action,
 }) => {
+  const { t } = useI18n();
   const {
     fields: headerFields,
     append: appendHeader,
@@ -151,7 +154,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
         name="webhook.apiVersion.prompt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>API Version</FormLabel>
+            <FormLabel>{t("automations.webhook.api-version", "API Version")}</FormLabel>
             <Select
               onValueChange={field.onChange}
               value={field.value}
@@ -159,7 +162,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select API version" />
+                  <SelectValue placeholder={t("automations.webhook.api-version.placeholder", "Select API version")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -176,7 +179,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
       />
 
       <div>
-        <FormLabel>Headers</FormLabel>
+        <FormLabel>{t("automations.webhook.headers", "Headers")}</FormLabel>
 
         {/* Default Headers Section */}
         <div className="mb-4">
@@ -238,7 +241,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
                   <FormItem>
                     <FormControl>
                       <Input
-                        placeholder="Header Name"
+                        placeholder={t("automations.webhook.header-name-placeholder", "Header Name")}
                         {...field}
                         disabled={disabled}
                       />
@@ -257,7 +260,11 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
                         placeholder={
                           isSecret && displayValue
                             ? displayValue
-                            : displayValue || "Value"
+                            : displayValue ||
+                              t(
+                                "automations.webhook.header-value-placeholder",
+                                "Value",
+                              )
                         }
                         {...field}
                         disabled={disabled}
@@ -274,7 +281,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
                 size="icon"
                 onClick={() => toggleHeaderSecret(originalIndex)}
                 disabled={disabled}
-                title={isSecret ? "Make header public" : "Make header secret"}
+                title={isSecret ? t("automations.webhook.make-public", "Make header public") : t("automations.webhook.make-secret", "Make header secret")}
               >
                 {isSecret ? (
                   <Lock className="h-4 w-4 text-orange-500" />
@@ -309,7 +316,7 @@ export const WebhookActionForm: React.FC<WebhookActionFormProps> = ({
 
       {/* Webhook Secret Section */}
       <div>
-        <FormLabel>Webhook Secret</FormLabel>
+        <FormLabel>{t("automations.webhook.secret", "Webhook Secret")}</FormLabel>
         <FormDescription className="mb-2">
           Use this secret to verify webhook signatures for security. The secret
           is automatically included in the x-langfuse-signature header.
@@ -357,6 +364,7 @@ export const RegenerateWebhookSecretButton = ({
   action: ActionDomain | ActionDomainWithSecrets;
 }) => {
   const [showConfirmPopover, setShowConfirmPopover] = useState(false);
+  const { t } = useI18n();
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
   const [regeneratedSecret, setRegeneratedSecret] = useState<string | null>(
     null,
@@ -367,8 +375,8 @@ export const RegenerateWebhookSecretButton = ({
     api.automations.regenerateWebhookSecret.useMutation({
       onSuccess: (data) => {
         showSuccessToast({
-          title: "Webhook Secret Regenerated",
-          description: "Your webhook secret has been successfully regenerated.",
+          title: t("automations.webhook.toast.regenerated-title", "Webhook Secret Regenerated"),
+          description: t("automations.webhook.toast.regenerated-desc", "Your webhook secret has been successfully regenerated."),
         });
         setRegeneratedSecret(data.webhookSecret);
         setShowRegenerateDialog(true);
@@ -441,7 +449,7 @@ export const RegenerateWebhookSecretButton = ({
       >
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Webhook Secret Regenerated</DialogTitle>
+            <DialogTitle>{t("automations.webhook.toast.regenerated-title", "Webhook Secret Regenerated")}</DialogTitle>
             <DialogDescription>
               Your webhook secret has been regenerated. Please copy the new
               secret below - it will only be shown once.

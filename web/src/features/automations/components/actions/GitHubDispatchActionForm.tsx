@@ -11,6 +11,7 @@ import { type UseFormReturn } from "react-hook-form";
 import { type ActionDomain } from "@langfuse/shared";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface GitHubDispatchActionFormProps {
   form: UseFormReturn<any>;
@@ -22,6 +23,7 @@ interface GitHubDispatchActionFormProps {
 export const GitHubDispatchActionForm: React.FC<
   GitHubDispatchActionFormProps
 > = ({ form, disabled }) => {
+  const { t } = useI18n();
   const displayGitHubToken = form.watch("githubDispatch.displayGitHubToken");
 
   return (
@@ -29,7 +31,7 @@ export const GitHubDispatchActionForm: React.FC<
       <FormField
         control={form.control}
         name="githubDispatch.url"
-        rules={{ required: "Repository Dispatch URL is required" }}
+        rules={{ required: t("automations.github.url-required", "Repository Dispatch URL is required") }}
         render={({ field }) => (
           <FormItem>
             <FormLabel className="flex items-center">
