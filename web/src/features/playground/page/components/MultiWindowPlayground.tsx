@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
 import { useIsMobile } from "@/src/hooks/use-mobile";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * MultiWindowPlayground Component
@@ -157,6 +158,7 @@ function PlaygroundWindowContent({
   const { registerPageTarget, unregisterPageTarget } =
     useMessageSearchActions();
   const windowContainerRef = useRef<HTMLDivElement | null>(null);
+  const { t } = useI18n();
 
   const handleRemove = useCallback(() => {
     onRemove(windowId);
@@ -203,11 +205,11 @@ function PlaygroundWindowContent({
                         className="h-7 gap-1.5 px-2.5 text-xs @xl:hidden"
                       >
                         <Plus size={14} />
-                        <span className="sr-only">New split window</span>
+                        <span className="sr-only">{t("playground.aria.new-split-window", "New split window")}</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs">
-                      New split window
+                      {t("playground.aria.new-split-window", "New split window")}
                     </TooltipContent>
                   </Tooltip>
                   <Button
@@ -216,7 +218,7 @@ function PlaygroundWindowContent({
                     className="hidden h-7 gap-1.5 px-2.5 text-xs @xl:flex"
                   >
                     <Plus size={14} />
-                    <span>New split window</span>
+                    <span>{t("playground.aria.new-split-window", "New split window")}</span>
                   </Button>
                 </>
               )}
@@ -229,11 +231,11 @@ function PlaygroundWindowContent({
                       className="hover:bg-destructive/10 hover:text-destructive h-6 w-6 p-0"
                     >
                       <X size={14} />
-                      <span className="sr-only">Remove window</span>
+                      <span className="sr-only">{t("playground.aria.remove-window", "Remove window")}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="text-xs">
-                    Remove window
+                    {t("playground.aria.remove-window", "Remove window")}
                   </TooltipContent>
                 </Tooltip>
               )}

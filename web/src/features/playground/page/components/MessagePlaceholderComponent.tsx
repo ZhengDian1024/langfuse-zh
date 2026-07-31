@@ -7,6 +7,7 @@ import { type ChatMessage } from "@langfuse/shared";
 import { usePlaygroundContext } from "../context";
 import { type PlaceholderMessageFillIn } from "../types";
 import { useNamingConflicts } from "../hooks/useNamingConflicts";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const MessagePlaceholderComponent: React.FC<{
   messagePlaceholder: PlaceholderMessageFillIn;
@@ -19,6 +20,7 @@ export const MessagePlaceholderComponent: React.FC<{
   } = usePlaygroundContext();
   const { name, value, isUsed } = messagePlaceholder;
   const [error, setError] = useState<string | null>(null);
+  const { t } = useI18n();
   const { isPlaceholderConflicting } = useNamingConflicts(
     promptVariables,
     messagePlaceholders,
@@ -32,7 +34,7 @@ export const MessagePlaceholderComponent: React.FC<{
 
         // Basic validation: must be an array of objects
         if (!Array.isArray(parsed)) {
-          setError("Input must be an array of objects");
+          setError(t("playground.placeholders.error-must-be-array", "Input must be an array of objects"));
           return;
         }
 
@@ -43,7 +45,7 @@ export const MessagePlaceholderComponent: React.FC<{
         );
 
         if (!allObjects) {
-          setError("All items must be objects");
+          setError(t("playground.placeholders.error-all-objects", "All items must be objects"));
           return;
         }
 
@@ -51,10 +53,10 @@ export const MessagePlaceholderComponent: React.FC<{
         updateMessagePlaceholderValue(name, parsed as ChatMessage[]);
         setError(null);
       } catch {
-        setError("Invalid JSON format");
+        setError(t("playground.placeholders.error-invalid-json", "Invalid JSON format"));
       }
     },
-    [name, updateMessagePlaceholderValue],
+    [name, updateMessagePlaceholderValue, t],
   );
 
   const UsedIcon = isUsed ? CheckCircle2 : Circle;
@@ -69,13 +71,13 @@ export const MessagePlaceholderComponent: React.FC<{
             className={`min-w-[90px] truncate font-mono ${hasConflict ? "text-red-500" : ""}`}
             title={name}
           >
-            {name ? name : "Unnamed placeholder"}
+            {name ? name : t("playground.placeholders.unnamed", "Unnamed placeholder")}
           </p>
         </span>
         <Button
           variant="ghost"
           size="icon"
-          title="Delete placeholder"
+          title={t("playground.aria.delete-placeholder", "Delete placeholder")}
           disabled={isUsed}
           onClick={() => deleteMessagePlaceholder(name)}
           className="p-0"
@@ -101,7 +103,7 @@ export const MessagePlaceholderComponent: React.FC<{
 
       {hasConflict && (
         <p className="mt-1 text-xs text-red-500">
-          Placeholder name conflicts with variable. Names must be unique.
+          {t("playground.placeholders.conflict", "Placeholder name conflicts with variable. Names must be unique.")}
         </p>
       )}
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}

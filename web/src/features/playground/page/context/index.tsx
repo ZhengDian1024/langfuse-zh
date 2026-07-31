@@ -50,6 +50,7 @@ import {
 import { useSyncMessageSearchMessages } from "@/src/components/ChatMessages/MessageSearch";
 import { getFinalModelParams } from "@/src/utils/getFinalModelParams";
 import { STREAMING_PREF_KEY } from "@/src/features/playground/page/storage/keys";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type PlaygroundContextType = {
   windowId: string;
@@ -137,6 +138,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
     providerModelCombinations,
   } = useModelParams(windowId);
   const { registerWindow, unregisterWindow } = useWindowCoordination();
+  const { t } = useI18n();
 
   const toolCallIds = messages.reduce((acc, m) => {
     if (m.type === ChatMessageType.AssistantToolCall) {
@@ -329,7 +331,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
         );
 
         if (finalMessages.length === 0) {
-          throw new Error("Please add at least one message with content.");
+          throw new Error(t("playground.error.add-message", "Please add at least one message with content."));
         }
 
         const leftOverVariables = extractVariables(
@@ -339,16 +341,16 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
         );
 
         if (!modelParams.provider.value || !modelParams.model.value) {
-          throw new Error("Please select a model");
+          throw new Error(t("playground.error.select-model", "Please select a model"));
         }
 
         if (leftOverVariables.length > 0) {
-          throw Error("Error replacing variables. Please check your inputs.");
+          throw Error(t("playground.error.replace-variables", "Error replacing variables. Please check your inputs."));
         }
 
         if (tools.length > 0 && structuredOutputSchema) {
           throw new Error(
-            "Cannot use both tools and structured output at the same time",
+            t("playground.error.tools-and-schema", "Cannot use both tools and structured output at the same time"),
           );
         }
 
@@ -437,8 +439,8 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
         });
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : "An error occurred";
-        showErrorToast("Error", errorMessage);
+          err instanceof Error ? err.message : t("playground.error.generic", "An error occurred");
+        showErrorToast(t("playground.error.title", "Error"), errorMessage);
       } finally {
         setIsStreaming(false);
       }
@@ -453,6 +455,7 @@ export const PlaygroundProvider: React.FC<PlaygroundProviderProps> = ({
       setPlaygroundCache,
       structuredOutputSchema,
       projectId,
+      t,
     ],
   );
 

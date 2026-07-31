@@ -46,6 +46,7 @@ import {
   type MetadataDomainClient,
   type WithStringifiedMetadata,
 } from "@/src/utils/clientSideDomainTypes";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type JumpToPlaygroundButtonProps = (
   | {
@@ -77,6 +78,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
   const capture = usePostHogClientCapture();
   const projectId = useProjectIdFromURL();
   const { addWindowWithId, clearAllCache } = usePersistedWindowIds();
+  const { t } = useI18n();
   const [capturedState, setCapturedState] = useState<PlaygroundCache>(null);
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
   const [includeOutput, setIncludeOutput] = useState<boolean>(false);
@@ -186,8 +188,8 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
   };
 
   const tooltipMessage = isAvailable
-    ? "Test in LLM playground"
-    : "Test in LLM playground is not available since messages are not in valid ChatML format or tool calls have been used. If you think this is not correct, please open a GitHub issue.";
+    ? t("playground.aria.test-in-playground", "Test in LLM playground")
+    : t("playground.aria.test-in-playground-unavailable", "Test in LLM playground is not available since messages are not in valid ChatML format or tool calls have been used. If you think this is not correct, please open a GitHub issue.");
 
   return (
     <DropdownMenu>
@@ -206,7 +208,7 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
             className={props.size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"}
           />
           <span className={cn("hidden md:inline", props.className)}>
-            Playground
+            {t("playground.playground-label", "Playground")}
           </span>
           <ChevronDown className="h-3 w-3" />
         </Button>
@@ -214,17 +216,17 @@ export const JumpToPlaygroundButton: React.FC<JumpToPlaygroundButtonProps> = (
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => handlePlaygroundAction(true)}>
           <Terminal className="mr-2 h-4 w-4" />
-          Fresh playground
+          {t("playground.action.fresh-playground", "Fresh playground")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handlePlaygroundAction(false)}>
           <Terminal className="mr-2 h-4 w-4" />
-          Add to existing
+          {t("playground.action.add-to-existing", "Add to existing")}
         </DropdownMenuItem>
         {props.source === "generation" && (
           <>
             <DropdownMenuSeparator />
             <div className="flex items-center justify-between px-2 py-1.5">
-              <span className="text-sm">Include output</span>
+              <span className="text-sm">{t("playground.include-output", "Include output")}</span>
               <Switch
                 checked={includeOutput}
                 onCheckedChange={setIncludeOutput}

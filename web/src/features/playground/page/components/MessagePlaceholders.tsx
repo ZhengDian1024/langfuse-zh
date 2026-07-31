@@ -1,18 +1,19 @@
 import { Separator } from "@/src/components/ui/separator";
 import { usePlaygroundContext } from "../context";
 import { MessagePlaceholderComponent } from "./MessagePlaceholderComponent";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const MessagePlaceholders = () => {
   const { messagePlaceholders } = usePlaygroundContext();
+  const { t } = useI18n();
 
   return (
     <div className="flex h-full flex-col">
       {messagePlaceholders.length === 0 ? (
         <div className="text-xs">
-          <p className="mb-2">No message placeholders defined.</p>
+          <p className="mb-2">{t("playground.placeholders.no-placeholders", "No message placeholders defined.")}</p>
           <p>
-            Placeholders can be used to e.g. inject message histories into
-            prompts.
+            {t("playground.placeholders.hint", "Placeholders can be used to e.g. inject message histories into prompts.")}
           </p>
         </div>
       ) : (

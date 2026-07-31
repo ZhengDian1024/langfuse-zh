@@ -16,6 +16,7 @@ import {
 } from "./StructuredOutputSchemaSection";
 import { Variables } from "./Variables";
 import { MessagePlaceholders } from "./MessagePlaceholders";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ConfigurationDropdowns: React.FC = () => {
   const { containerRef, width, isVeryCompact, isCompact } =
@@ -26,6 +27,7 @@ export const ConfigurationDropdowns: React.FC = () => {
     promptVariables,
     messagePlaceholders,
   } = usePlaygroundContext();
+  const { t } = useI18n();
 
   const toolsCount = tools.length;
   const hasSchema = structuredOutputSchema ? 1 : 0;
@@ -65,7 +67,7 @@ export const ConfigurationDropdowns: React.FC = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              {getResponsiveContent("Tools", Wrench)}
+              {getResponsiveContent(t("playground.config.tools", "Tools"), Wrench)}
               {toolsCount > 0 && (
                 <Badge variant="secondary" className="h-4 text-xs">
                   {toolsCount}
@@ -80,9 +82,9 @@ export const ConfigurationDropdowns: React.FC = () => {
             style={toolsPopoverWidth ? { width: toolsPopoverWidth } : undefined}
           >
             <div className="mb-3">
-              <h4 className="mb-1 text-sm font-medium">Tools</h4>
+              <h4 className="mb-1 text-sm font-medium">{t("playground.config.tools", "Tools")}</h4>
               <p className="text-muted-foreground text-xs">
-                Configure tools for your model to use.
+                {t("playground.config.tools-description", "Configure tools for your model to use.")}
               </p>
             </div>
             {toolsCount > 0 ? (
@@ -92,7 +94,7 @@ export const ConfigurationDropdowns: React.FC = () => {
             ) : (
               <div className="mb-3">
                 <p className="text-muted-foreground text-xs">
-                  No tools attached.
+                  {t("playground.config.no-tools", "No tools attached.")}
                 </p>
               </div>
             )}
@@ -106,7 +108,7 @@ export const ConfigurationDropdowns: React.FC = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              {getResponsiveContent("Schema", Braces)}
+              {getResponsiveContent(t("playground.config.schema", "Schema"), Braces)}
               {hasSchema > 0 && (
                 <Badge variant="secondary" className="h-4 text-xs">
                   {hasSchema}
@@ -117,9 +119,9 @@ export const ConfigurationDropdowns: React.FC = () => {
           </PopoverTrigger>
           <PopoverContent className="w-80 p-4" align="start">
             <div className="mb-3">
-              <h4 className="mb-1 text-sm font-medium">Structured Output</h4>
+              <h4 className="mb-1 text-sm font-medium">{t("playground.config.structured-output", "Structured Output")}</h4>
               <p className="text-muted-foreground text-xs">
-                Configure JSON schema for structured output.
+                {t("playground.config.structured-output-description", "Configure JSON schema for structured output.")}
               </p>
             </div>
             {structuredOutputSchema ? (
@@ -129,7 +131,7 @@ export const ConfigurationDropdowns: React.FC = () => {
             ) : (
               <div className="mb-3">
                 <p className="text-muted-foreground text-xs">
-                  No schema provided.
+                  {t("playground.config.no-schema", "No schema provided.")}
                 </p>
               </div>
             )}
@@ -143,7 +145,7 @@ export const ConfigurationDropdowns: React.FC = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-2">
-              {getResponsiveContent("Variables", Variable, "Vars")}
+              {getResponsiveContent(t("playground.config.variables", "Variables"), Variable, t("playground.config.variables-abbrev", "Vars"))}
               {variablesCount > 0 && (
                 <Badge variant="secondary" className="h-4 text-xs">
                   {variablesCount}
@@ -155,10 +157,10 @@ export const ConfigurationDropdowns: React.FC = () => {
           <PopoverContent className="w-80 p-4" align="start">
             <div className="mb-3">
               <h4 className="mb-1 text-sm font-medium">
-                Variables & Message Placeholders
+                {t("playground.config.variables-placeholders-title", "Variables & Message Placeholders")}
               </h4>
               <p className="text-muted-foreground text-xs">
-                Configure variables and message placeholders for your prompts.
+                {t("playground.config.variables-placeholders-description", "Configure variables and message placeholders for your prompts.")}
               </p>
             </div>
             {variablesCount > 0 ? (
@@ -168,12 +170,12 @@ export const ConfigurationDropdowns: React.FC = () => {
               >
                 <div className="space-y-4">
                   <div>
-                    <h5 className="mb-2 text-xs font-medium">Variables</h5>
+                    <h5 className="mb-2 text-xs font-medium">{t("playground.config.variables", "Variables")}</h5>
                     <Variables />
                   </div>
                   <div>
                     <h5 className="mb-2 text-xs font-medium">
-                      Message Placeholders
+                      {t("playground.config.message-placeholders", "Message Placeholders")}
                     </h5>
                     <MessagePlaceholders />
                   </div>
@@ -182,7 +184,7 @@ export const ConfigurationDropdowns: React.FC = () => {
             ) : (
               <div className="mb-3">
                 <p className="text-muted-foreground text-xs">
-                  No variables or message placeholders defined.
+                  {t("playground.config.no-variables", "No variables or message placeholders defined.")}
                 </p>
               </div>
             )}

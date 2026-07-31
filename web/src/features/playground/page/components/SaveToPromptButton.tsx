@@ -30,6 +30,7 @@ import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
 import DocPopup from "@/src/components/layouts/doc-popup";
 import { PromptType } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface SaveToPromptButtonProps {
   className?: string;
@@ -45,6 +46,7 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
   const router = useRouter();
   const projectId = useProjectIdFromURL();
   const { setPlaygroundCache } = usePlaygroundCache();
+  const { t } = useI18n();
 
   const allChatPromptNamesWithIds =
     api.prompts.allNames
@@ -104,11 +106,11 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
                 )}
               >
                 <Save size={14} />
-                <span className="sr-only">Save as prompt</span>
+                <span className="sr-only">{t("playground.aria.save-as-prompt", "Save as prompt")}</span>
               </Button>
             </PopoverTrigger>
           </TooltipTrigger>
-          <TooltipContent className="text-xs">Save as prompt</TooltipContent>
+          <TooltipContent className="text-xs">{t("playground.aria.save-as-prompt", "Save as prompt")}</TooltipContent>
         </Tooltip>
         <PopoverTrigger asChild>
           <Button
@@ -119,22 +121,22 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
             )}
           >
             <Save size={14} />
-            <span>Save as prompt</span>
+            <span>{t("playground.aria.save-as-prompt", "Save as prompt")}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent>
           <Button className="mt-2 w-full" onClick={handleNewPrompt}>
-            Save as new prompt
+            {t("playground.action.save-as-new-prompt", "Save as new prompt")}
           </Button>
           <Divider />
           <InputCommand className="min-h-32">
             <InputCommandInput
-              placeholder="Search chat prompts..."
+              placeholder={t("playground.save.search-placeholder", "Search chat prompts...")}
               variant="bottom"
             />
             <InputCommandEmpty>
-              No chat prompt found
-              <DocPopup description="Prompts from the playground can only be saved to 'chat' prompts as they include multiple system/user messages." />
+              {t("playground.save.no-chat-prompt", "No chat prompt found")}
+              <DocPopup description={t("playground.save.only-chat-note", "Prompts from the playground can only be saved to 'chat' prompts as they include multiple system/user messages.")} />
             </InputCommandEmpty>
             <InputCommandGroup className="mt-2">
               <InputCommandList>
@@ -175,7 +177,7 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
             disabled={!Boolean(selectedPromptId)}
             onClick={handleNewPromptVersion}
           >
-            Save as new prompt version
+            {t("playground.action.save-as-new-prompt-version", "Save as new prompt version")}
           </Button>
         </PopoverContent>
       </Popover>
@@ -184,13 +186,14 @@ export const SaveToPromptButton: React.FC<SaveToPromptButtonProps> = ({
 };
 
 export function Divider() {
+  const { t } = useI18n();
   return (
     <div className="my-3 flex flex-row justify-center align-middle">
       <div className="flex flex-1 flex-col">
         <div className="flex-1 border-b-2 border-gray-200" />
         <div className="flex-1" />
       </div>
-      <p className="mx-2 text-sm text-gray-400">or</p>
+      <p className="mx-2 text-sm text-gray-400">{t("playground.save.or", "or")}</p>
       <div className="flex flex-1 flex-col">
         <div className="flex-1 border-b-2 border-gray-200" />
         <div className="flex-1" />

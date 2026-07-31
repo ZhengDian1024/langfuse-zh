@@ -16,6 +16,7 @@ import {
 } from "@/src/components/ChatMessages/MessageSearch";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * PlaygroundPage Component
@@ -40,6 +41,7 @@ import Spinner from "@/src/components/design-system/Spinner/Spinner";
  */
 export default function PlaygroundPage() {
   const [isMac, setIsMac] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     setIsMac(window.navigator.userAgent.includes("Mac"));
@@ -97,8 +99,8 @@ export default function PlaygroundPage() {
 
   const getMessageSearchPageLabel = useCallback(
     (_pageId: string, pageIndex: number) =>
-      windowIds.length > 1 ? `Window ${pageIndex + 1}` : null,
-    [windowIds.length],
+      windowIds.length > 1 ? t("playground.page.window-label", "Window {index}", { index: String(pageIndex + 1) }) : null,
+    [windowIds.length, t],
   );
 
   // Don't render until window IDs are loaded
@@ -107,10 +109,9 @@ export default function PlaygroundPage() {
       <Page
         withPadding={false}
         headerProps={{
-          title: "Playground",
+          title: t("playground.page.title", "Playground"),
           help: {
-            description:
-              "A sandbox to test and iterate your prompts across multiple windows",
+            description: t("playground.page.help-description", "A sandbox to test and iterate your prompts across multiple windows"),
             href: "https://langfuse.com/docs/prompt-management/features/playground",
           },
         }}
@@ -125,7 +126,7 @@ export default function PlaygroundPage() {
   // Execution status and control states
   const executionStatus = globalIsExecutingAll
     ? getExecutionStatus() ||
-      `Executing ${windowIds.length} window${windowIds.length === 1 ? "" : "s"}`
+      t(windowIds.length === 1 ? "playground.page.executing" : "playground.page.executing-plural", "Executing {count} window", { count: String(windowIds.length) })
     : getExecutionStatus();
   const isRunAllDisabled = globalIsExecutingAll || !hasAnyModelConfigured;
 
@@ -143,10 +144,9 @@ export default function PlaygroundPage() {
         scrollable={false}
         withPadding={false}
         headerProps={{
-          title: "Playground",
+          title: t("playground.page.title", "Playground"),
           help: {
-            description:
-              "A sandbox to test and iterate your prompts across multiple windows",
+            description: t("playground.page.help-description", "A sandbox to test and iterate your prompts across multiple windows"),
             href: "https://langfuse.com/docs/prompt-management/features/playground",
           },
           actionButtonsRight: (
@@ -156,8 +156,7 @@ export default function PlaygroundPage() {
               {/* Window Count Display - Hidden on mobile */}
               <div className="text-muted-foreground hidden items-center gap-2 text-sm md:flex">
                 <span className="whitespace-nowrap">
-                  {windowIds.length} window
-                  {windowIds.length === 1 ? "" : "s"}
+                  {t(windowIds.length === 1 ? "playground.page.window-count" : "playground.page.window-count-plural", "{count} window", { count: String(windowIds.length) })}
                 </span>
                 {executionStatus && (
                   <>
@@ -180,8 +179,8 @@ export default function PlaygroundPage() {
                 className="hidden shrink-0 gap-1 md:flex"
                 title={
                   !hasAnyModelConfigured
-                    ? "Please configure a model in Project Settings first"
-                    : "Execute all playground windows simultaneously"
+                    ? t("playground.page.run-all-title-disabled", "Please configure a model in Project Settings first")
+                    : t("playground.page.run-all-title", "Execute all playground windows simultaneously")
                 }
               >
                 {globalIsExecutingAll ? (
@@ -190,7 +189,7 @@ export default function PlaygroundPage() {
                   <Play className="h-3 w-3" />
                 )}
                 <span className="hidden items-center gap-1 lg:inline-flex">
-                  <span>Run All</span>
+                  <span>{t("playground.page.run-all", "Run All")}</span>
                   <KeyboardShortcut keys={[isMac ? "⌘" : "Ctrl", "Enter"]} />
                 </span>
               </Button>

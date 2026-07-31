@@ -5,6 +5,7 @@ import { CodeMirrorEditor } from "@/src/components/editor";
 
 import { usePlaygroundContext } from "../context";
 import { useNamingConflicts } from "../hooks/useNamingConflicts";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const PromptVariableComponent: React.FC<{
   promptVariable: PromptVariable;
@@ -16,6 +17,7 @@ export const PromptVariableComponent: React.FC<{
     messagePlaceholders,
   } = usePlaygroundContext();
   const { name, value, isUsed } = promptVariable;
+  const { t } = useI18n();
   const { isVariableConflicting } = useNamingConflicts(
     promptVariables,
     messagePlaceholders,
@@ -34,8 +36,8 @@ export const PromptVariableComponent: React.FC<{
     <Circle size={16} color="grey" />
   );
   const isUsedTooltip = isUsed
-    ? "Variable is in use"
-    : "Variable is not in use";
+    ? t("playground.variables.in-use", "Variable is in use")
+    : t("playground.variables.not-in-use", "Variable is not in use");
 
   return (
     <div className="p-1">
@@ -52,7 +54,7 @@ export const PromptVariableComponent: React.FC<{
         <Button
           variant="ghost"
           size="icon"
-          title="Delete variable"
+          title={t("playground.aria.delete-variable", "Delete variable")}
           disabled={isUsed}
           onClick={handleDeleteVariable}
           className="p-0"
@@ -74,7 +76,7 @@ export const PromptVariableComponent: React.FC<{
 
       {hasConflict && (
         <p className="mt-1 text-xs text-red-500">
-          Variable name conflicts with placeholder. Names must be unique.
+          {t("playground.variables.conflict", "Variable name conflicts with placeholder. Names must be unique.")}
         </p>
       )}
     </div>

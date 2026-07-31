@@ -11,6 +11,7 @@ import { Settings } from "lucide-react";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { env } from "@/src/env.mjs";
 import { STREAMING_PREF_KEY } from "@/src/features/playground/page/storage/keys";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 import { GenerationOutput } from "./GenerationOutput";
 import { ChatMessages } from "@/src/components/ChatMessages";
@@ -44,6 +45,7 @@ export const Messages: React.FC<MessagesContext> = (props) => {
 
 const SubmitButton = () => {
   const { handleSubmit, isStreaming } = usePlaygroundContext();
+  const { t } = useI18n();
   const defaultStreamingEnabled =
     env.NEXT_PUBLIC_LANGFUSE_PLAYGROUND_STREAMING_ENABLED_DEFAULT === "true";
   const [streamingEnabled, setStreamingEnabled] = useLocalStorage(
@@ -60,7 +62,7 @@ const SubmitButton = () => {
         }}
         loading={isStreaming}
       >
-        <p>Submit</p>
+        <p>{t("playground.action.submit", "Submit")}</p>
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -79,11 +81,11 @@ const SubmitButton = () => {
             onClick={(e) => e.preventDefault()}
           >
             <div className="flex flex-col">
-              <span className="font-medium">Stream responses</span>
+              <span className="font-medium">{t("playground.messages.stream-responses", "Stream responses")}</span>
               <span className="text-muted-foreground text-xs">
                 {streamingEnabled
-                  ? "Real-time response streaming"
-                  : "Complete response at once"}
+                  ? t("playground.messages.stream-realtime", "Real-time response streaming")
+                  : t("playground.messages.stream-complete", "Complete response at once")}
               </span>
             </div>
             <Switch
