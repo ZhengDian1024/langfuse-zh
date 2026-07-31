@@ -29,6 +29,7 @@ import {
   type DatasetSchema,
 } from "../utils/datasetItemUtils";
 import { isValidDatasetJson } from "../utils/parseDatasetJson";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const formSchema = z.object({
   input: z.string().refine(
@@ -75,6 +76,7 @@ export const EditDatasetItemDialog = ({
   datasetItem,
   dataset,
 }: EditDatasetItemDialogProps) => {
+  const { t } = useI18n();
   const [formError, setFormError] = useState<string | null>(null);
   const hasAccess = useHasProjectAccess({
     projectId: projectId,
@@ -137,7 +139,7 @@ export const EditDatasetItemDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="xl">
         <DialogHeader>
-          <DialogTitle>Edit Dataset Item</DialogTitle>
+          <DialogTitle>{t("datasets.edit-item.dialog-title", "Edit Dataset Item")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -147,7 +149,7 @@ export const EditDatasetItemDialog = ({
             <DialogBody>
               {formError ? (
                 <p className="text-destructive mb-4">
-                  <span className="font-bold">Error:</span> {formError}
+                  <span className="font-bold">{t("datasets.error-prefix", "Error:")}</span> {formError}
                 </p>
               ) : null}
               <DatasetItemFields
@@ -168,7 +170,7 @@ export const EditDatasetItemDialog = ({
                 onClick={() => onOpenChange(false)}
                 disabled={updateDatasetItemMutation.isPending}
               >
-                Cancel
+                {t("datasets.cancel", "Cancel")}
               </Button>
               <SaveChangesButton
                 control={form.control}
@@ -204,6 +206,7 @@ const SaveChangesButton = ({
   isPending: boolean;
   pendingUploads: PendingMediaUpload[];
 }) => {
+  const { t } = useI18n();
   const [input, expectedOutput] = useWatch({
     control,
     name: ["input", "expectedOutput"],
@@ -226,7 +229,7 @@ const SaveChangesButton = ({
         pendingUploads.length > 0
       }
     >
-      Save changes
+      {t("datasets.edit-item.save-changes", "Save changes")}
     </Button>
   );
 };

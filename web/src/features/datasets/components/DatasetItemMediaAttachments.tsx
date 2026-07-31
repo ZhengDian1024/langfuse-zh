@@ -18,6 +18,7 @@ import {
   MEDIA_REFERENCE_PATTERN,
   MediaReferenceStringSchema,
 } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Extracts media references from live dataset item fields, deduped by media id.
@@ -143,6 +144,7 @@ export function DatasetItemMediaUploadButton({
   onSelectFile: (file: File) => void | Promise<void>;
   disabled?: boolean;
 }) {
+  const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -170,7 +172,7 @@ export function DatasetItemMediaUploadButton({
         size="icon-xs"
         className="text-muted-foreground"
         disabled={disabled || isUploading}
-        title="Attach media"
+        title={t("datasets.media.attach-media", "Attach media")}
         onClick={() => inputRef.current?.click()}
       >
         {isUploading ? (
@@ -189,6 +191,7 @@ export function DatasetItemMediaUploadButton({
  * confirmation.
  */
 function CopyFieldValueButton({ value }: { value: string }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   return (
@@ -197,7 +200,7 @@ function CopyFieldValueButton({ value }: { value: string }) {
       variant="ghost"
       size="icon-xs"
       className="text-muted-foreground"
-      title="Copy to clipboard"
+      title={t("datasets.media.copy-to-clipboard", "Copy to clipboard")}
       onClick={async () => {
         await copyTextToClipboard(value);
         setCopied(true);
@@ -264,6 +267,7 @@ function DatasetItemAttachments({
   referenceStrings?: string[];
   pendingUploads?: PendingMediaUpload[];
 }) {
+  const { t } = useI18n();
   if (
     media.length === 0 &&
     referenceStrings.length === 0 &&
@@ -272,7 +276,7 @@ function DatasetItemAttachments({
     return null;
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium">Attachments</span>
+      <span className="text-sm font-medium">{t("datasets.media.attachments", "Attachments")}</span>
       <div className="flex flex-wrap gap-2">
         {referenceStrings.map((referenceString) => (
           <LangfuseMediaView

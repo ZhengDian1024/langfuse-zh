@@ -1,6 +1,7 @@
 import { Info } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/src/components/ui/button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DatasetVersionWarningBannerProps = {
   selectedVersion: Date;
@@ -18,6 +19,7 @@ export function DatasetVersionWarningBanner({
   className = "",
   changeCounts,
 }: DatasetVersionWarningBannerProps) {
+  const { t } = useI18n();
   const totalChanges = changeCounts
     ? changeCounts.upserts + changeCounts.deletes
     : 0;
@@ -31,7 +33,7 @@ export function DatasetVersionWarningBanner({
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <p className="text-muted-foreground text-sm wrap-break-word">
-            Viewing version from{" "}
+            {t("datasets.version.viewing-version", "Viewing version from ")}{" "}
             <span className="text-foreground font-medium">
               {format(selectedVersion, "MMM d, yyyy 'at' h:mm a")}
             </span>
@@ -41,17 +43,12 @@ export function DatasetVersionWarningBanner({
             variant="link"
             className="h-auto shrink-0 p-0 text-sm underline-offset-4"
           >
-            Return to latest
+            {t("datasets.version.return-to-latest", "Return to latest")}
           </Button>
         </div>
         {changeCounts && hasChanges && (
           <p className="text-muted-foreground text-xs">
-            {totalChanges} change{totalChanges !== 1 ? "s" : ""} since this
-            version,
-            {changeCounts.upserts > 0 &&
-              ` ${changeCounts.upserts} upsert${changeCounts.upserts !== 1 ? "s" : ""}`}
-            {changeCounts.deletes > 0 &&
-              ` ${changeCounts.deletes} delete${changeCounts.deletes !== 1 ? "s" : ""}`}
+            {t("datasets.version.changes-since", "{changes} change(s) since this version, {upserts} upsert(s), {deletes} delete(s)", { changes: String(totalChanges), upserts: String(changeCounts.upserts), deletes: String(changeCounts.deletes) })}
           </p>
         )}
       </div>

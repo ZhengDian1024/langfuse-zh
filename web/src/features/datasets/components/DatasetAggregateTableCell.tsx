@@ -23,6 +23,7 @@ import { type BaselineDiff } from "@/src/features/datasets/lib/calculateBaseline
 import { DiffLabel } from "@/src/features/datasets/components/DiffLabel";
 import { useResourceMetricsDiff } from "@/src/features/datasets/hooks/useResourceMetricsDiff";
 import { NotFoundCard } from "@/src/features/datasets/components/NotFoundCard";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const DatasetAggregateCellContent = ({
   projectId,
@@ -39,6 +40,7 @@ const DatasetAggregateCellContent = ({
   scoreDiffs?: Record<string, BaselineDiff>;
   baselineRunValue?: EnrichedDatasetRunItem;
 }) => {
+  const { t } = useI18n();
   const router = useRouter();
   const silentHttpCodes = [404];
   const { selectedFields } = useDatasetCompareFields();
@@ -186,7 +188,9 @@ const DatasetAggregateCellContent = ({
                 />
               ))
             ) : (
-              <span className="text-muted-foreground text-xs">No scores</span>
+              <span className="text-muted-foreground text-xs">
+                {t("datasets.aggregate.no-scores", "No scores")}
+              </span>
             )}
           </div>
         </div>
@@ -239,14 +243,17 @@ const DatasetAggregateCellContent = ({
                 className="h-6 px-1 text-xs"
                 onClick={handleOpenReview}
               >
-                Annotate
+                {t("datasets.aggregate.annotate", "Annotate")}
               </Button>
               {/* Triggers peek view */}
               <Button
                 variant="outline"
                 size="icon"
                 className="h-6 w-6 p-0"
-                title="View trace/observation"
+                title={t(
+                  "datasets.aggregate.view-trace-tooltip",
+                  "View trace/observation",
+                )}
                 onClick={handleOpenPeek}
               >
                 <ListTree className="h-3 w-3" />

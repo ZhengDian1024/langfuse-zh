@@ -5,6 +5,7 @@ import {
   type DatasetSchema,
 } from "../utils/datasetItemUtils";
 import { DatasetItemFields } from "@/src/features/datasets/components/DatasetItemFields";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DatasetItemVersionedContentProps = {
   itemAtVersion: DatasetItemDomain | null;
@@ -30,9 +31,10 @@ export const DatasetItemVersionedContent = ({
   itemChangedAtVersion,
   dataset,
 }: DatasetItemVersionedContentProps) => {
+  const { t } = useI18n();
   // Loading states
   if (isLoadingVersioned) {
-    return <div className="text-muted-foreground text-sm">Loading...</div>;
+    return <div className="text-muted-foreground text-sm">{t("datasets.loading", "Loading...")}</div>;
   }
 
   // Item doesn't exist at this version
@@ -41,11 +43,10 @@ export const DatasetItemVersionedContent = ({
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <div className="text-muted-foreground">
           <p className="text-lg font-medium">
-            Item does not exist at this version
+            {t("datasets.version.not-exist-title", "Item does not exist at this version")}
           </p>
           <p className="mt-2 text-sm">
-            This dataset item either had not been created yet or was deleted at
-            the selected version timestamp.
+            {t("datasets.version.not-exist-body", "This dataset item either had not been created yet or was deleted at the selected version timestamp.")}
           </p>
         </div>
       </div>
@@ -55,7 +56,7 @@ export const DatasetItemVersionedContent = ({
   // Show diff mode if enabled and item changed at this version
   if (showDiffMode && itemChangedAtVersion) {
     if (isLoadingLatest) {
-      return <div className="text-muted-foreground text-sm">Loading...</div>;
+      return <div className="text-muted-foreground text-sm">{t("datasets.loading", "Loading...")}</div>;
     }
 
     // Can't show diff if latest doesn't exist
@@ -63,9 +64,9 @@ export const DatasetItemVersionedContent = ({
       return (
         <div className="flex flex-col items-center justify-center p-12 text-center">
           <div className="text-muted-foreground">
-            <p className="text-lg font-medium">Cannot show diff</p>
+            <p className="text-lg font-medium">{t("datasets.version.cannot-show-diff-title", "Cannot show diff")}</p>
             <p className="mt-2 text-sm">
-              The latest version of this item does not exist (has been deleted).
+              {t("datasets.version.cannot-show-diff-body", "The latest version of this item does not exist (has been deleted).")}
             </p>
           </div>
         </div>

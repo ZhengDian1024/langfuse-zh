@@ -24,6 +24,7 @@ import { type DatasetRunItemByRunRowData } from "@/src/features/datasets/lib/typ
 import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { useQueryFilterState } from "@/src/features/filters/hooks/useFilterState";
 import { useDebounce } from "@/src/hooks/useDebounce";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function DatasetRunItemsByRunTable(props: {
   projectId: string;
@@ -39,6 +40,7 @@ export function DatasetRunItemsByRunTable(props: {
     datasetVersion,
     onLoadingChange,
   } = props;
+  const { t } = useI18n();
   const { setDetailPageList } = useDetailPageLists();
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
@@ -115,7 +117,7 @@ export function DatasetRunItemsByRunTable(props: {
   const columns: LangfuseColumnDef<DatasetRunItemByRunRowData>[] = [
     {
       accessorKey: "datasetItemId",
-      header: "Dataset Item",
+      header: t("datasets.run-items-by-run.col-dataset-item", "Dataset Item"),
       id: "datasetItemId",
       size: 110,
       isPinnedLeft: true,
@@ -134,7 +136,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "runAt",
-      header: "Run At",
+      header: t("datasets.run-items-by-run.col-run-at", "Run At"),
       id: "runAt",
       size: 150,
       cell: ({ row }) => {
@@ -145,7 +147,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "trace",
-      header: "Trace",
+      header: t("datasets.run-items-by-run.col-trace", "Trace"),
       id: "trace",
       size: 60,
       cell: ({ row }) => {
@@ -169,7 +171,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "latency",
-      header: "Latency",
+      header: t("datasets.run-items-by-run.col-latency", "Latency"),
       id: "latency",
       size: 70,
       enableHiding: true,
@@ -181,7 +183,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "totalCost",
-      header: "Cost",
+      header: t("datasets.run-items-by-run.col-cost", "Cost"),
       id: "totalCost",
       size: 60,
       enableHiding: true,
@@ -193,7 +195,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "scores",
-      header: "Scores",
+      header: t("datasets.run-items-by-run.col-scores", "Scores"),
       id: "scores",
       enableHiding: true,
       defaultHidden: true,
@@ -204,7 +206,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "input",
-      header: "Trace Input",
+      header: t("datasets.run-items-by-run.col-trace-input", "Trace Input"),
       id: "input",
       size: 200,
       enableHiding: true,
@@ -227,7 +229,7 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "output",
-      header: "Output",
+      header: t("datasets.run-items-by-run.col-output", "Output"),
       id: "output",
       size: 200,
       enableHiding: true,
@@ -250,7 +252,10 @@ export function DatasetRunItemsByRunTable(props: {
     },
     {
       accessorKey: "expectedOutput",
-      header: "Expected Output",
+      header: t(
+        "datasets.run-items-by-run.col-expected-output",
+        "Expected Output",
+      ),
       id: "expectedOutput",
       size: 200,
       enableHiding: true,

@@ -13,6 +13,7 @@ import { type ScoreColumn } from "@/src/features/scores/types";
 import { Toggle } from "@/src/components/ui/toggle";
 import { useRouter } from "next/router";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function DatasetAggregateCellWithBaselineDetection({
   value,
@@ -46,6 +47,7 @@ function DatasetAggregateCellWithBaselineDetection({
 }
 
 function BaselineToggle({ runId }: { runId: string }) {
+  const { t } = useI18n();
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const justSetBaselineRef = useRef(false);
@@ -88,12 +90,16 @@ function BaselineToggle({ runId }: { runId: string }) {
 
   let text: string;
   if (!hasBaseline) {
-    text = "Set as baseline";
+    text = t("datasets.aggregate.set-baseline", "Set as baseline");
   } else if (isBaseline) {
     text =
-      isHovered && !justSetBaselineRef.current ? "Clear baseline" : "Baseline";
+      isHovered && !justSetBaselineRef.current
+        ? t("datasets.aggregate.clear-baseline", "Clear baseline")
+        : t("datasets.aggregate.baseline", "Baseline");
   } else {
-    text = isHovered ? "Set as baseline" : "Comparison";
+    text = isHovered
+      ? t("datasets.aggregate.set-baseline", "Set as baseline")
+      : t("datasets.aggregate.comparison", "Comparison");
   }
 
   return (
@@ -229,9 +235,12 @@ export const constructDatasetRunAggregateColumns = ({
   });
 };
 
-export const getDatasetRunAggregateColumnProps = (isLoading: boolean) => ({
+export const getDatasetRunAggregateColumnProps = (
+  isLoading: boolean,
+  headerLabel = "Experiments",
+) => ({
   accessorKey: "runs",
-  header: "Experiments",
+  header: headerLabel,
   id: "runs",
   isFixedPosition: true,
   cell: () => {

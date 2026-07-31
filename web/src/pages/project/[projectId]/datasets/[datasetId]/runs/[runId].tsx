@@ -26,8 +26,10 @@ import { LocalIsoDate } from "@/src/components/LocalIsoDate";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { V4IntroDialog } from "@/src/features/events/components/V4IntroDialog";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function Dataset() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
@@ -80,13 +82,16 @@ export default function Dataset() {
         title: run.data?.name ?? runId,
         itemType: "DATASET_RUN",
         breadcrumb: [
-          { name: "Datasets", href: `/project/${projectId}/datasets` },
+          {
+            name: t("breadcrumb.datasets", "Datasets"),
+            href: `/project/${projectId}/datasets`,
+          },
           {
             name: dataset.data?.name ?? datasetId,
             href: `/project/${projectId}/datasets/${datasetId}`,
           },
           {
-            name: "Experiments",
+            name: t("nav.experiments", "Experiments"),
             href: `/project/${projectId}/datasets/${datasetId}`,
           },
         ],
@@ -100,7 +105,7 @@ export default function Dataset() {
             >
               <Button>
                 <Columns3 className="mr-2 h-4 w-4" />
-                <span>Compare</span>
+                <span>{t("datasets.runs.compare", "Compare")}</span>
               </Button>
             </Link>
             <DetailPageNav
@@ -137,11 +142,17 @@ export default function Dataset() {
             <Alert variant="info" className="m-3 mb-0 w-auto shrink-0">
               <Info className="h-4 w-4" />
               <AlertTitle>
-                Loading dataset run items is taking longer than usual
+                {t(
+                  "datasets.runs.loading-slow-title",
+                  "Loading dataset run items is taking longer than usual",
+                )}
               </AlertTitle>
               <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <span>
-                  Enable Fast Preview for a more performant experiment run view.
+                  {t(
+                    "datasets.runs.loading-slow-desc",
+                    "Enable Fast Preview for a more performant experiment run view.",
+                  )}
                 </span>
                 <Button
                   type="button"
@@ -151,7 +162,10 @@ export default function Dataset() {
                   onClick={() => enableWithIntro()}
                   disabled={isFastPreviewToggleLoading}
                 >
-                  Enable Fast Preview
+                  {t(
+                    "datasets.runs.enable-fast-preview",
+                    "Enable Fast Preview",
+                  )}
                 </Button>
               </AlertDescription>
             </Alert>
@@ -165,11 +179,16 @@ export default function Dataset() {
           />
         </div>
         <SidePanel
-          mobileTitle="Experiment run details"
+          mobileTitle={t(
+            "datasets.runs.details-title",
+            "Experiment run details",
+          )}
           id="experiment-run-details"
         >
           <SidePanelHeader>
-            <SidePanelTitle>Experiment run details</SidePanelTitle>
+            <SidePanelTitle>
+              {t("datasets.runs.details-title", "Experiment run details")}
+            </SidePanelTitle>
           </SidePanelHeader>
           <SidePanelContent>
             {run.isPending ? (
@@ -178,7 +197,9 @@ export default function Dataset() {
               <>
                 {run.data?.datasetVersion && (
                   <div className="flex flex-col gap-2 p-1">
-                    <span className="text-sm font-medium">Dataset Version</span>
+                    <span className="text-sm font-medium">
+                      {t("datasets.runs.dataset-version", "Dataset Version")}
+                    </span>
                     <Link
                       href={`/project/${projectId}/datasets/${datasetId}/items?version=${run.data.datasetVersion.toISOString()}`}
                       className="text-accent-dark-blue hover:text-primary-accent/60 text-sm"
@@ -190,20 +211,23 @@ export default function Dataset() {
                 {!!run.data?.description && (
                   <JSONView
                     json={run.data.description}
-                    title="Description"
+                    title={t("datasets.runs.description", "Description")}
                     className="w-full overflow-y-auto"
                   />
                 )}
                 {!!run.data?.metadata && (
                   <JSONView
                     json={run.data.metadata}
-                    title="Metadata"
+                    title={t("datasets.runs.metadata", "Metadata")}
                     className="w-full overflow-y-auto"
                   />
                 )}
                 {!run.data?.description && !run.data?.metadata && (
                   <div className="text-muted-foreground mt-1 px-1 text-sm">
-                    No description or metadata for this run
+                    {t(
+                      "datasets.runs.no-desc-metadata",
+                      "No description or metadata for this run",
+                    )}
                   </div>
                 )}
               </>

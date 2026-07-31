@@ -14,6 +14,7 @@ import {
   DropzoneEmptyState,
 } from "@/src/components/ui/shadcn-io/dropzone";
 import type { CsvPreviewResult } from "@/src/features/datasets/lib/csv/types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const MAX_FILE_SIZE_BYTES = 1024 * 1024 * 1 * 10; // 10MB
 const ACCEPTED_FILE_TYPES = ["text/csv"] as const;
@@ -30,18 +31,25 @@ export const UploadDatasetCsv = ({
   setPreview: (preview: CsvPreviewResult | null) => void;
   setCsvFile: (file: File | null) => void;
 }) => {
+  const { t } = useI18n();
   const handleFiles = async (files: File[]) => {
     const file = files[0];
     if (!file) return;
 
     const result = FileSchema.safeParse(file);
     if (!result.success) {
-      showErrorToast("Invalid file type", "Please select a valid CSV file");
+      showErrorToast(
+        t("datasets.csv.invalid-file-type-title", "Invalid file type"),
+        t("datasets.csv.invalid-file-type-desc", "Please select a valid CSV file"),
+      );
       return;
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      showErrorToast("File too large", "Maximum file size is 10MB");
+      showErrorToast(
+        t("datasets.csv.file-too-large-title", "File too large"),
+        t("datasets.csv.file-too-large-desc", "Maximum file size is 10MB"),
+      );
       return;
     }
 
@@ -53,14 +61,17 @@ export const UploadDatasetCsv = ({
       });
 
       if (!Boolean(preview.columns.length)) {
-        showErrorToast("Invalid CSV", "CSV must have at least 1 column");
+        showErrorToast(
+          t("datasets.csv.invalid-csv-title", "Invalid CSV"),
+          t("datasets.csv.invalid-csv-desc", "CSV must have at least 1 column"),
+        );
         return;
       }
 
       setPreview(preview);
     } catch (error) {
       showErrorToast(
-        "Failed to parse CSV",
+        t("datasets.csv.parse-failed-title", "Failed to parse CSV"),
         error instanceof Error ? error.message : "Unknown error",
       );
     }
@@ -70,10 +81,14 @@ export const UploadDatasetCsv = ({
     <DialogBody className="border-t">
       <Card className="h-full items-center justify-center border-none">
         <CardHeader className="text-center">
-          <CardTitle className="text-lg">Add items to dataset</CardTitle>
+          <CardTitle className="text-lg">
+            {t("datasets.csv.add-items-title", "Add items to dataset")}
+          </CardTitle>
           <CardDescription>
-            Add items to dataset by uploading a file, add items manually or via
-            our SDKs/API
+            {t(
+              "datasets.csv.add-items-desc",
+              "Add items to dataset by uploading a file, add items manually or via our SDKs/API",
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent>

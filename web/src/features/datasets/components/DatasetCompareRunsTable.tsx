@@ -29,6 +29,7 @@ import { type Prisma } from "@langfuse/shared";
 import { type EnrichedDatasetRunItem } from "@langfuse/shared/src/server";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { TablePeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type DatasetCompareRunRowData = {
   id: string;
@@ -44,6 +45,7 @@ function DatasetCompareRunsTableInternal(props: {
   datasetId: string;
   runIds: string[];
 }) {
+  const { t } = useI18n();
   const { toggleField, isFieldSelected } = useDatasetCompareFields();
   const [isFieldsDropdownOpen, setIsFieldsDropdownOpen] = useState(false);
   const {
@@ -133,7 +135,7 @@ function DatasetCompareRunsTableInternal(props: {
   const columns: LangfuseColumnDef<DatasetCompareRunRowData>[] = [
     {
       accessorKey: "id",
-      header: "Item id",
+      header: t("datasets.compare-runs.col-item-id", "Item id"),
       id: "id",
       size: 90,
       enableHiding: true,
@@ -150,7 +152,7 @@ function DatasetCompareRunsTableInternal(props: {
     },
     {
       accessorKey: "input",
-      header: "Input",
+      header: t("datasets.compare-runs.col-input", "Input"),
       id: "input",
       size: 200,
       enableHiding: true,
@@ -167,7 +169,10 @@ function DatasetCompareRunsTableInternal(props: {
     },
     {
       accessorKey: "expectedOutput",
-      header: "Expected Output",
+      header: t(
+        "datasets.compare-runs.col-expected-output",
+        "Expected Output",
+      ),
       id: "expectedOutput",
       size: 200,
       enableHiding: true,
@@ -187,7 +192,7 @@ function DatasetCompareRunsTableInternal(props: {
     },
     {
       accessorKey: "metadata",
-      header: "Metadata",
+      header: t("datasets.compare-runs.col-metadata", "Metadata"),
       id: "metadata",
       size: 200,
       enableHiding: true,
@@ -200,7 +205,10 @@ function DatasetCompareRunsTableInternal(props: {
       },
     },
     {
-      ...getDatasetRunAggregateColumnProps(cellsLoading),
+      ...getDatasetRunAggregateColumnProps(
+        cellsLoading,
+        t("datasets.aggregate.experiments", "Experiments"),
+      ),
       columns: runAggregateColumns,
     },
   ];
@@ -233,7 +241,7 @@ function DatasetCompareRunsTableInternal(props: {
                 onClick={() => setIsFieldsDropdownOpen(!isFieldsDropdownOpen)}
               >
                 <LayoutList className="mr-2 h-4 w-4" />
-                <span>Fields</span>
+                <span>{t("datasets.compare-runs.fields", "Fields")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -243,19 +251,22 @@ function DatasetCompareRunsTableInternal(props: {
                 checked={isFieldSelected("output")}
                 onCheckedChange={() => toggleField("output")}
               >
-                Output
+                {t("datasets.compare-runs.field-output", "Output")}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={isFieldSelected("scores")}
                 onCheckedChange={() => toggleField("scores")}
               >
-                Scores
+                {t("datasets.compare-runs.field-scores", "Scores")}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={isFieldSelected("resourceMetrics")}
                 onCheckedChange={() => toggleField("resourceMetrics")}
               >
-                Latency and cost
+                {t(
+                  "datasets.compare-runs.field-latency-and-cost",
+                  "Latency and cost",
+                )}
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>

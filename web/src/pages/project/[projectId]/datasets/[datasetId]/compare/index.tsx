@@ -25,8 +25,10 @@ import {
 import { SidePanel, SidePanelContent } from "@/src/components/ui/side-panel";
 import { AnnotationPanel } from "@/src/features/datasets/components/AnnotationPanel";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function DatasetCompareInternal() {
+  const { t } = useI18n();
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const projectId = router.query.projectId as string;
@@ -92,10 +94,12 @@ function DatasetCompareInternal() {
   return (
     <Page
       headerProps={{
-        title: `Compare runs: ${dataset.data?.name ?? datasetId}`,
+        title: t("datasets.compare.title", "Compare runs: {name}", {
+          name: dataset.data?.name ?? datasetId,
+        }),
         breadcrumb: [
           {
-            name: "Datasets",
+            name: t("breadcrumb.datasets", "Datasets"),
             href: `/project/${projectId}/datasets`,
           },
           {
@@ -104,7 +108,10 @@ function DatasetCompareInternal() {
           },
         ],
         help: {
-          description: "Compare your dataset runs side by side",
+          description: t(
+            "datasets.compare.help",
+            "Compare your dataset runs side by side",
+          ),
         },
         tabsProps: {
           tabs: getDatasetRunCompareTabs(projectId, datasetId),
@@ -124,7 +131,9 @@ function DatasetCompareInternal() {
                   onClick={() => capture("dataset_run:new_form_open")}
                 >
                   <FlaskConical className="h-4 w-4" />
-                  <span className="ml-2 hidden md:block">New experiment</span>
+                  <span className="ml-2 hidden md:block">
+                    {t("datasets.compare.new-experiment", "New experiment")}
+                  </span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -142,9 +151,12 @@ function DatasetCompareInternal() {
             </Dialog>
             <MultiSelectKeyValues
               key="select-runs"
-              title="Experiments"
+              title={t("datasets.compare.experiments", "Experiments")}
               showSelectedValueStrings={false}
-              placeholder="Select runs to compare"
+              placeholder={t(
+                "datasets.compare.select-runs",
+                "Select runs to compare",
+              )}
               className="w-fit"
               variant="outline"
               hideClearButton
@@ -206,7 +218,7 @@ function DatasetCompareInternal() {
             open: isAnnotationPanelOpen,
             onOpenChange: handlePanelOpenChange,
           }}
-          mobileTitle="Annotate"
+          mobileTitle={t("datasets.compare.annotate", "Annotate")}
         >
           <SidePanelContent className="h-full">
             {activeCell ? (
@@ -214,7 +226,10 @@ function DatasetCompareInternal() {
             ) : (
               <div className="flex items-center justify-center p-4">
                 <span className="text-muted-foreground text-sm">
-                  Loading annotation data...
+                  {t(
+                    "datasets.compare.loading-annotation",
+                    "Loading annotation data...",
+                  )}
                 </span>
               </div>
             )}

@@ -6,6 +6,7 @@ import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePos
 import { api } from "@/src/utils/api";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const DeleteDatasetRunButton = ({
   projectId,
@@ -18,6 +19,7 @@ export const DeleteDatasetRunButton = ({
   redirectUrl?: string;
   datasetId: string;
 }) => {
+  const { t } = useI18n();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const capture = usePostHogClientCapture();
   const hasAccess = useHasProjectAccess({
@@ -41,7 +43,9 @@ export const DeleteDatasetRunButton = ({
     >
       <div className="flex w-full flex-row items-center gap-1">
         <Trash className="h-4 w-4" />
-        <span className="text-sm font-normal">Delete</span>
+        <span className="text-sm font-normal">
+          {t("datasets.delete", "Delete")}
+        </span>
       </div>
     </Button>
   );
@@ -51,9 +55,15 @@ export const DeleteDatasetRunButton = ({
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}
       trigger={button}
-      title="Please confirm"
-      description="This action cannot be undone. Traces linked to this run must be deleted manually."
-      confirmLabel="Delete Dataset Run"
+      title={t("datasets.delete-run.confirm-title", "Please confirm")}
+      description={t(
+        "datasets.delete-run.confirm-desc",
+        "This action cannot be undone. Traces linked to this run must be deleted manually.",
+      )}
+      confirmLabel={t(
+        "datasets.delete-run.confirm-label",
+        "Delete Dataset Run",
+      )}
       loading={mutDelete.isPending}
       onConfirm={async () => {
         capture("dataset_run:delete_form_submit");

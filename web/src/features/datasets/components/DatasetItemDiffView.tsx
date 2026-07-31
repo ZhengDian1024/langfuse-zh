@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
 import { stringifyDatasetItemData } from "../utils/datasetItemUtils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DatasetItemDiffViewProps = {
   selectedVersion: DatasetItemDomain;
@@ -17,6 +18,7 @@ export const DatasetItemDiffView = ({
   selectedVersion,
   latestVersion,
 }: DatasetItemDiffViewProps) => {
+  const { t } = useI18n();
   return (
     <div className="space-y-4">
       <Accordion
@@ -25,39 +27,39 @@ export const DatasetItemDiffView = ({
         className="w-full"
       >
         <AccordionItem value="input">
-          <AccordionTrigger>Input</AccordionTrigger>
+          <AccordionTrigger>{t("datasets.compare-runs.col-input", "Input")}</AccordionTrigger>
           <AccordionContent>
             <DiffViewer
               oldString={stringifyDatasetItemData(selectedVersion.input)}
               newString={stringifyDatasetItemData(latestVersion.input)}
-              oldLabel="Selected Version"
-              newLabel="Latest Version"
+              oldLabel={t("datasets.diff.selected-version", "Selected Version")}
+              newLabel={t("datasets.diff.latest-version", "Latest Version")}
             />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="output">
-          <AccordionTrigger>Expected Output</AccordionTrigger>
+          <AccordionTrigger>{t("datasets.compare-runs.col-expected-output", "Expected Output")}</AccordionTrigger>
           <AccordionContent>
             <DiffViewer
               oldString={stringifyDatasetItemData(
                 selectedVersion.expectedOutput,
               )}
               newString={stringifyDatasetItemData(latestVersion.expectedOutput)}
-              oldLabel="Selected Version"
-              newLabel="Latest Version"
+              oldLabel={t("datasets.diff.selected-version", "Selected Version")}
+              newLabel={t("datasets.diff.latest-version", "Latest Version")}
             />
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="metadata">
-          <AccordionTrigger>Metadata</AccordionTrigger>
+          <AccordionTrigger>{t("datasets.compare-runs.col-metadata", "Metadata")}</AccordionTrigger>
           <AccordionContent>
             <DiffViewer
               oldString={stringifyDatasetItemData(selectedVersion.metadata)}
               newString={stringifyDatasetItemData(latestVersion.metadata)}
-              oldLabel="Selected Version"
-              newLabel="Latest Version"
+              oldLabel={t("datasets.diff.selected-version", "Selected Version")}
+              newLabel={t("datasets.diff.latest-version", "Latest Version")}
             />
           </AccordionContent>
         </AccordionItem>

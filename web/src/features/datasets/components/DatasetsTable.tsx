@@ -42,6 +42,7 @@ import {
 } from "@langfuse/shared";
 import { type TableAction } from "@/src/features/table/types";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DatasetTableRow = {
   id: string;
@@ -103,6 +104,7 @@ function DatasetsMultiSelectActionMenu({
   searchQuery: string | null;
   store: DatasetsTableStore;
 }) {
+  const { t } = useI18n();
   const selectAll = useStore(store, (state) => state.selectAll);
   const selectedCount = useStore(
     store,
@@ -121,9 +123,11 @@ function DatasetsMultiSelectActionMenu({
   const deleteManyMutation = api.datasets.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Datasets deleted",
-        description:
+        title: t("datasets.table.deleted-title", "Datasets deleted"),
+        description: t(
+          "datasets.table.deleted-desc",
           "Selected datasets will be deleted. Associated run items and media links are cleaned up asynchronously.",
+        ),
       });
     },
     onSettled: () => {
@@ -137,9 +141,11 @@ function DatasetsMultiSelectActionMenu({
     {
       id: ActionId.DatasetDelete,
       type: BatchActionType.Delete,
-      label: "Delete",
-      description:
+      label: t("datasets.table.delete-action", "Delete"),
+      description: t(
+        "datasets.table.delete-action-desc",
         "This action cannot be undone. Selected folders delete all datasets contained in them.",
+      ),
       accessCheck: {
         scope: "datasets:CUD",
       },
@@ -200,6 +206,7 @@ function DatasetsTableToolbar({
   totalCount: number | null;
   viewControllers: DatasetTableViewControllers;
 }) {
+  const { t } = useI18n();
   const selectAll = useStore(store, (state) => state.selectAll);
   const selectedPageRowIds = useStore(
     store,
@@ -217,7 +224,7 @@ function DatasetsTableToolbar({
       rowHeight={rowHeight}
       setRowHeight={setRowHeight}
       searchConfig={{
-        metadataSearchFields: ["Name"],
+        metadataSearchFields: [t("datasets.table.col-name", "Name")],
         updateQuery: setSearchQuery,
         currentQuery: searchQuery ?? undefined,
         tableAllowsFullTextSearch: false,
@@ -254,6 +261,7 @@ function DatasetsTableToolbar({
 }
 
 export function DatasetsTable(props: { projectId: string }) {
+  const { t } = useI18n();
   const { setDetailPageList } = useDetailPageLists();
   const [rowHeight, setRowHeight] = useRowHeightLocalStorage("datasets", "s");
   const [datasetsTableStore] = useState(() => createDatasetsTableStore());
@@ -317,7 +325,7 @@ export function DatasetsTable(props: { projectId: string }) {
     selectActionColumn,
     {
       accessorKey: "key",
-      header: "Name",
+      header: t("datasets.table.col-name", "Name"),
       id: "key",
       size: 150,
       isFixedPosition: true,
@@ -344,7 +352,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "description",
-      header: "Description",
+      header: t("datasets.table.col-description", "Description"),
       id: "description",
       enableHiding: true,
       size: 200,
@@ -356,21 +364,21 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "countItems",
-      header: "Items",
+      header: t("datasets.table.col-items", "Items"),
       id: "countItems",
       enableHiding: true,
       size: 60,
     },
     {
       accessorKey: "countRuns",
-      header: "Experiments",
+      header: t("datasets.table.col-experiments", "Experiments"),
       id: "countRuns",
       enableHiding: true,
       size: 60,
     },
     {
       accessorKey: "createdAt",
-      header: "Created",
+      header: t("datasets.table.col-created", "Created"),
       id: "createdAt",
       enableHiding: true,
       size: 150,
@@ -381,7 +389,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "lastRunAt",
-      header: "Last Run",
+      header: t("datasets.table.col-last-run", "Last Run"),
       id: "lastRunAt",
       enableHiding: true,
       size: 150,
@@ -392,7 +400,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "inputSchema",
-      header: "Input Schema",
+      header: t("datasets.table.col-input-schema", "Input Schema"),
       id: "inputSchema",
       enableHiding: true,
       size: 80,
@@ -409,7 +417,10 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "expectedOutputSchema",
-      header: "Expected Output Schema",
+      header: t(
+        "datasets.table.col-expected-output-schema",
+        "Expected Output Schema",
+      ),
       id: "expectedOutputSchema",
       enableHiding: true,
       size: 90,
@@ -429,7 +440,7 @@ export function DatasetsTable(props: { projectId: string }) {
     },
     {
       accessorKey: "metadata",
-      header: "Metadata",
+      header: t("datasets.table.col-metadata", "Metadata"),
       id: "metadata",
       enableHiding: true,
       size: 300,
@@ -443,7 +454,7 @@ export function DatasetsTable(props: { projectId: string }) {
     {
       id: "actions",
       accessorKey: "actions",
-      header: "Actions",
+      header: t("datasets.table.col-actions", "Actions"),
       size: 70,
       cell: ({ row }) => {
         const key: DatasetTableRow["key"] = row.getValue("key");

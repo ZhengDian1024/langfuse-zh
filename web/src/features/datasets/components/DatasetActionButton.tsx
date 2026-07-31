@@ -17,6 +17,7 @@ import { type Prisma } from "@langfuse/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { IconOnlyButton } from "@/src/components/IconOnlyButton";
 import { api } from "@/src/utils/api";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface BaseDatasetButtonProps {
   mode: "create" | "update" | "delete";
@@ -58,6 +59,7 @@ export const DatasetActionButton = forwardRef<
   HTMLButtonElement,
   DatasetActionButtonProps
 >((props, ref) => {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const [open, setOpen] = useState(false);
   const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
@@ -74,12 +76,15 @@ export const DatasetActionButton = forwardRef<
         <IconOnlyButton
           ref={ref}
           icon={<Pen className="h-4 w-4" />}
-          label="Edit"
+          label={t("datasets.action.edit", "Edit")}
           aria-label="edit"
           disabledReason={
             hasAccess
               ? undefined
-              : "You don't have permission to edit this dataset."
+              : t(
+                  "datasets.action.edit-disabled",
+                  "You don't have permission to edit this dataset.",
+                )
           }
           variant={props.variant}
           size={props.size}
@@ -111,7 +116,7 @@ export const DatasetActionButton = forwardRef<
           ) : (
             <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />
           )}
-          Edit
+          {t("datasets.action.edit", "Edit")}
         </Button>
       )
     ) : props.mode === "delete" ? (
@@ -119,12 +124,15 @@ export const DatasetActionButton = forwardRef<
         <IconOnlyButton
           ref={ref}
           icon={<Trash className="h-4 w-4" />}
-          label="Delete"
+          label={t("datasets.delete", "Delete")}
           aria-label="delete"
           disabledReason={
             hasAccess
               ? undefined
-              : "You don't have permission to delete this dataset."
+              : t(
+                  "datasets.action.delete-disabled",
+                  "You don't have permission to delete this dataset.",
+                )
           }
           variant={props.variant}
           size={props.size}
@@ -157,7 +165,7 @@ export const DatasetActionButton = forwardRef<
           ) : (
             <LockIcon className="mr-2 h-4 w-4" aria-hidden="true" />
           )}
-          Delete
+          {t("datasets.delete", "Delete")}
         </Button>
       )
     ) : (
@@ -174,7 +182,7 @@ export const DatasetActionButton = forwardRef<
         ) : (
           <LockIcon className="mr-1.5 -ml-0.5 h-3 w-3" aria-hidden="true" />
         )}
-        New dataset
+        {t("datasets.action.new-dataset", "New dataset")}
       </Button>
     );
 
@@ -207,16 +215,26 @@ export const DatasetActionButton = forwardRef<
           }}
           trigger={isIconMode ? undefined : actionButton}
           size="lg"
-          title="Please confirm"
-          description="This action cannot be undone and removes all the data associated with this dataset."
-          confirmLabel="Delete dataset"
+          title={t("datasets.action.confirm-title", "Please confirm")}
+          description={t(
+            "datasets.action.confirm-desc",
+            "This action cannot be undone and removes all the data associated with this dataset.",
+          )}
+          confirmLabel={t(
+            "datasets.action.confirm-delete",
+            "Delete dataset",
+          )}
           confirmDisabled={deleteConfirmationInput !== datasetName}
           loading={deleteMutation.isPending}
           onConfirm={handleDelete}
         >
           <div className="grid w-full gap-1.5">
             <Label htmlFor="delete-confirmation">
-              Type &quot;{datasetName}&quot; to confirm deletion
+              {t(
+                "datasets.action.confirm-input",
+                'Type "{name}" to confirm deletion',
+                { name: datasetName },
+              )}
             </Label>
             <Input
               id="delete-confirmation"
@@ -239,7 +257,9 @@ export const DatasetActionButton = forwardRef<
       <DialogContent className="max-h-[90vh] sm:max-w-2xl md:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
-            {props.mode === "create" ? "Create new dataset" : "Update dataset"}
+            {props.mode === "create"
+              ? t("datasets.action.create-new-title", "Create new dataset")
+              : t("datasets.action.update-title", "Update dataset")}
           </DialogTitle>
         </DialogHeader>
 

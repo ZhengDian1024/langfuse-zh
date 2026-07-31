@@ -60,6 +60,7 @@ import {
   isValidDatasetJson,
   parseDatasetJson,
 } from "../utils/parseDatasetJson";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const formSchema = z.object({
   datasetIds: z.array(z.string()).min(1, "Select at least one dataset"),
@@ -129,6 +130,7 @@ export const NewDatasetItemForm = (props: {
   onFormSuccess?: () => void;
   currentDatasetId?: string;
 }) => {
+  const { t } = useI18n();
   const [formError, setFormError] = useState<string | null>(null);
   const capture = usePostHogClientCapture();
   const form = useForm({
@@ -177,14 +179,14 @@ export const NewDatasetItemForm = (props: {
     async (file: File): Promise<string | null> => {
       if (!uploadDatasetId) {
         showErrorToast(
-          "Select a dataset first",
-          "Choose a dataset before attaching media.",
+          t("datasets.new-item.select-dataset-first-title", "Select a dataset first"),
+          t("datasets.new-item.select-dataset-first-desc", "Choose a dataset before attaching media."),
         );
         return null;
       }
       return uploadFile(file, "input");
     },
-    [uploadDatasetId, uploadFile],
+    [uploadDatasetId, uploadFile, t],
   );
 
   const handleFileUpload =
@@ -347,7 +349,7 @@ export const NewDatasetItemForm = (props: {
               name="datasetIds"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Target datasets</FormLabel>
+                  <FormLabel>{t("datasets.new-item.target-datasets", "Target datasets")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -360,8 +362,8 @@ export const NewDatasetItemForm = (props: {
                           )}
                         >
                           {field.value.length > 0
-                            ? `${field.value.length} dataset${field.value.length > 1 ? "s" : ""} selected`
-                            : "Select datasets"}
+                            ? t("datasets.new-item.datasets-selected", "{n} dataset(s) selected", { n: String(field.value.length) })
+                            : t("datasets.new-item.select-datasets", "Select datasets")}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
@@ -369,11 +371,11 @@ export const NewDatasetItemForm = (props: {
                     <PopoverContent className="p-0">
                       <InputCommand>
                         <InputCommandInput
-                          placeholder="Search datasets..."
+                          placeholder={t("datasets.new-item.search-datasets", "Search datasets...")}
                           variant="bottom"
                         />
                         <InputCommandEmpty>
-                          No datasets found.
+                          {t("datasets.new-item.no-datasets", "No datasets found.")}
                         </InputCommandEmpty>
                         <InputCommandGroup>
                           <ScrollArea className="h-fit">
@@ -403,7 +405,7 @@ export const NewDatasetItemForm = (props: {
                                 {dataset.name}
                                 {dataset.id === props.currentDatasetId && (
                                   <span className="text-muted-foreground ml-1">
-                                    (current)
+                                    {t("datasets.new-item.current", "(current)")}
                                   </span>
                                 )}
                               </InputCommandItem>
@@ -444,7 +446,7 @@ export const NewDatasetItemForm = (props: {
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Input</FormLabel>
+                      <FormLabel>{t("datasets.compare-runs.col-input", "Input")}</FormLabel>
                       {hasInputSchema &&
                         selectedDatasets
                           .filter((d) => d.inputSchema)
@@ -490,7 +492,7 @@ export const NewDatasetItemForm = (props: {
                 render={({ field }) => (
                   <FormItem className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <FormLabel>Expected output</FormLabel>
+                      <FormLabel>{t("datasets.fields.expected-output", "Expected output")}</FormLabel>
                       {hasOutputSchema &&
                         selectedDatasets
                           .filter((d) => d.expectedOutputSchema)
@@ -540,7 +542,7 @@ export const NewDatasetItemForm = (props: {
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <FormLabel>Metadata</FormLabel>
+                    <FormLabel>{t("datasets.compare-runs.col-metadata", "Metadata")}</FormLabel>
                     <DatasetItemFieldToolbar
                       copyValue={field.value}
                       onSelectFile={handleFileUpload(metadataEditorRef)}
@@ -577,7 +579,7 @@ export const NewDatasetItemForm = (props: {
             />
             {formError ? (
               <p className="mt-2 text-center">
-                <span className="font-bold">Error:</span> {formError}
+                <span className="font-bold">{t("datasets.error-prefix", "Error:")}</span> {formError}
               </p>
             ) : null}
           </div>
@@ -662,6 +664,7 @@ const AddItemsButton = ({
   isPending: boolean;
   pendingUploads: PendingMediaUpload[];
 }) => {
+  const { t } = useI18n();
   const [input, expectedOutput] = useWatch({
     control,
     name: ["input", "expectedOutput"],
@@ -683,10 +686,9 @@ const AddItemsButton = ({
         pendingUploads.length > 0
       }
     >
-      Add
       {selectedDatasetCount > 1
-        ? ` to ${selectedDatasetCount} datasets`
-        : " to dataset"}
+        ? t("datasets.new-item.add-to-n-datasets", "Add to {n} datasets", { n: String(selectedDatasetCount) })
+        : t("datasets.new-item.add-to-dataset", "Add to dataset")}
     </Button>
   );
 };

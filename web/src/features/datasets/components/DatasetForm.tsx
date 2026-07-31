@@ -28,6 +28,7 @@ import {
   type Prisma,
 } from "@langfuse/shared";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useRouter } from "next/router";
 import { useUniqueNameValidation } from "@/src/hooks/useUniqueNameValidation";
 import { DialogBody, DialogFooter } from "@/src/components/ui/dialog";
@@ -125,6 +126,7 @@ const formSchema = z.object({
 
 export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
   (props, ref) => {
+    const { t } = useI18n();
     const [formError, setFormError] = useState<string | null>(null);
     const [
       serverSideSchemaValidationErrors,
@@ -332,10 +334,12 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t("datasets.form.name", "Name")}</FormLabel>
                     <FormDescription>
-                      Use slashes &apos;/&apos; in dataset names to organize
-                      them into <em>folders</em>.
+                      {t(
+                        "datasets.form.name-desc",
+                        "Use slashes '/' in dataset names to organize them into folders.",
+                      )}
                     </FormDescription>
                     <FormControl>
                       <Input {...field} />
@@ -349,7 +353,9 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description (optional)</FormLabel>
+                    <FormLabel>
+                      {t("datasets.form.description-optional", "Description (optional)")}
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -362,7 +368,9 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                 name="metadata"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Metadata (optional)</FormLabel>
+                    <FormLabel>
+                      {t("datasets.form.metadata-optional", "Metadata (optional)")}
+                    </FormLabel>
                     <FormControl>
                       <CodeMirrorEditor
                         mode="json"
@@ -381,8 +389,11 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                 name="inputSchema"
                 render={({ field }) => (
                   <DatasetSchemaInput
-                    label="Input schema"
-                    description="Validate dataset item inputs against a JSON Schema. All new and existing items must conform to this schema."
+                    label={t("datasets.form.input-schema", "Input schema")}
+                    description={t(
+                      "datasets.form.input-schema-desc",
+                      "Validate dataset item inputs against a JSON Schema. All new and existing items must conform to this schema.",
+                    )}
                     value={field.value}
                     onChange={field.onChange}
                     initialValue={inputSchemaString}
@@ -394,8 +405,14 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                 name="expectedOutputSchema"
                 render={({ field }) => (
                   <DatasetSchemaInput
-                    label="Expected output schema"
-                    description="Validate dataset item expected outputs against a JSON Schema. All new and existing items must conform to this schema."
+                    label={t(
+                      "datasets.form.expected-output-schema",
+                      "Expected output schema",
+                    )}
+                    description={t(
+                      "datasets.form.expected-output-schema-desc",
+                      "Validate dataset item expected outputs against a JSON Schema. All new and existing items must conform to this schema.",
+                    )}
                     value={field.value}
                     onChange={field.onChange}
                     initialValue={expectedOutputSchemaString}
@@ -428,12 +445,15 @@ export const DatasetForm = forwardRef<DatasetFormRef, DatasetFormProps>(
                   className="w-full"
                 >
                   {props.mode === "create"
-                    ? "Create dataset"
-                    : "Update dataset"}
+                    ? t("datasets.form.create", "Create dataset")
+                    : t("datasets.form.update", "Update dataset")}
                 </Button>
                 {formError && (
                   <p className="mt-4 text-center text-sm text-red-500">
-                    <span className="font-bold">Error:</span> {formError}
+                    <span className="font-bold">
+                      {t("datasets.error-prefix", "Error:")}
+                    </span>{" "}
+                    {formError}
                   </p>
                 )}
               </div>

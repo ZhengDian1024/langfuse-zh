@@ -14,8 +14,10 @@ import { Button } from "@/src/components/ui/button";
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { History, PanelRightOpen } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function DatasetItemContent() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
@@ -103,19 +105,31 @@ function DatasetItemContent() {
               onClick={() => setIsVersionPanelOpen(!isVersionPanelOpen)}
               title={
                 isVersionPanelOpen
-                  ? "Hide version history"
-                  : "Show version history"
+                  ? t(
+                      "datasets.items.hide-version-history",
+                      "Hide version history",
+                    )
+                  : t(
+                      "datasets.items.show-version-history",
+                      "Show version history",
+                    )
               }
             >
               {isVersionPanelOpen ? (
                 <>
                   <History className="mr-2 h-4 w-4" />
-                  Hide Version History
+                  {t(
+                    "datasets.items.hide-version-history-btn",
+                    "Hide Version History",
+                  )}
                 </>
               ) : (
                 <>
                   <PanelRightOpen className="mr-2 h-4 w-4" />
-                  Show Version History
+                  {t(
+                    "datasets.items.show-version-history-btn",
+                    "Show Version History",
+                  )}
                 </>
               )}
             </Button>
@@ -133,7 +147,10 @@ function DatasetItemContent() {
                     onCheckedChange={setShowDiffMode}
                   />
                   <Label htmlFor="diff-mode" className="cursor-pointer text-sm">
-                    Show diff with latest version
+                    {t(
+                      "datasets.items.show-diff-latest",
+                      "Show diff with latest version",
+                    )}
                   </Label>
                 </div>
               </div>
@@ -144,7 +161,10 @@ function DatasetItemContent() {
               selectedVersion &&
               !itemChangedAtVersion && (
                 <div className="text-muted-foreground mb-4 text-sm">
-                  Item unchanged in this version
+                  {t(
+                    "datasets.items.unchanged",
+                    "Item unchanged in this version",
+                  )}
                 </div>
               )}
 

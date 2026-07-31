@@ -37,6 +37,7 @@ import { useDebounce } from "@/src/hooks/useDebounce";
 import { useFullTextSearch } from "@/src/components/table/use-cases/useFullTextSearch";
 import { useDatasetVersion } from "../hooks/useDatasetVersion";
 import { EditDatasetItemDialog } from "./EditDatasetItemDialog";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type RowData = {
   id: string;
@@ -60,6 +61,7 @@ export function DatasetItemsTable({
   datasetId: string;
   menuItems?: React.ReactNode;
 }) {
+  const { t } = useI18n();
   const { setDetailPageList } = useDetailPageLists();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
@@ -144,7 +146,7 @@ export function DatasetItemsTable({
   const columns: LangfuseColumnDef<RowData>[] = [
     {
       accessorKey: "id",
-      header: "Item id",
+      header: t("datasets.items-table.col-item-id", "Item id"),
       id: "id",
       size: 90,
       isFixedPosition: true,
@@ -163,10 +165,12 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "source",
-      header: "Source",
+      header: t("datasets.items-table.col-source", "Source"),
       headerTooltip: {
-        description:
+        description: t(
+          "datasets.items-table.col-source-tooltip",
           "Link to the source trace based on which this item was added",
+        ),
       },
       id: "source",
       size: 90,
@@ -190,7 +194,7 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("datasets.items-table.col-status", "Status"),
       id: "status",
       size: 80,
       cell: ({ row }) => {
@@ -206,7 +210,7 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: t("datasets.items-table.col-created-at", "Created At"),
       id: "createdAt",
       size: 150,
       enableHiding: true,
@@ -217,7 +221,7 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "input",
-      header: "Input",
+      header: t("datasets.items-table.col-input", "Input"),
       id: "input",
       size: 200,
       enableHiding: true,
@@ -230,7 +234,10 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "expectedOutput",
-      header: "Expected Output",
+      header: t(
+        "datasets.items-table.col-expected-output",
+        "Expected Output",
+      ),
       id: "expectedOutput",
       size: 200,
       enableHiding: true,
@@ -249,7 +256,7 @@ export function DatasetItemsTable({
     },
     {
       accessorKey: "metadata",
-      header: "Metadata",
+      header: t("datasets.items-table.col-metadata", "Metadata"),
       id: "metadata",
       size: 200,
       enableHiding: true,
@@ -263,7 +270,7 @@ export function DatasetItemsTable({
     {
       id: "actions",
       accessorKey: "actions",
-      header: "Actions",
+      header: t("datasets.items-table.col-actions", "Actions"),
       size: 70,
       cell: ({ row }) => {
         const id: string = row.getValue("id");
@@ -272,12 +279,16 @@ export function DatasetItemsTable({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only relative">Open menu</span>
+                <span className="sr-only relative">
+                  {t("datasets.items-table.open-menu", "Open menu")}
+                </span>
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("datasets.items-table.actions-label", "Actions")}
+              </DropdownMenuLabel>
               <DropdownMenuItem
                 disabled={!hasAccess || !!selectedVersion}
                 onClick={() => {
@@ -286,7 +297,7 @@ export function DatasetItemsTable({
                 }}
               >
                 <Edit className="mr-2 h-4 w-4" />
-                Edit
+                {t("datasets.edit", "Edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={!hasAccess || !!selectedVersion}
@@ -309,7 +320,9 @@ export function DatasetItemsTable({
                 }}
               >
                 <Archive className="mr-2 h-4 w-4" />
-                {status === DatasetStatus.ARCHIVED ? "Unarchive" : "Archive"}
+                {status === DatasetStatus.ARCHIVED
+                  ? t("datasets.unarchive", "Unarchive")
+                  : t("datasets.archive", "Archive")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 disabled={!hasAccess || !!selectedVersion}
@@ -317,7 +330,10 @@ export function DatasetItemsTable({
                 onClick={() => {
                   if (
                     window.confirm(
-                      "Are you sure you want to delete this item? This will also delete all run items that belong to this item.",
+                      t(
+                        "datasets.items-table.delete-confirm",
+                        "Are you sure you want to delete this item? This will also delete all run items that belong to this item.",
+                      ),
                     )
                   ) {
                     capture("dataset_item:delete");
@@ -330,7 +346,7 @@ export function DatasetItemsTable({
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t("datasets.delete", "Delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -403,15 +419,15 @@ export function DatasetItemsTable({
         setRowHeight={setRowHeight}
         actionButtons={[menuItems, batchExportButton].filter(Boolean)}
         searchConfig={{
-          metadataSearchFields: ["ID"],
+          metadataSearchFields: [t("datasets.items-table.col-item-id", "ID")],
           updateQuery: setSearchQueryWithDebounce,
           currentQuery: searchQuery ?? undefined,
           tableAllowsFullTextSearch: true,
           setSearchType,
           searchType,
           customDropdownLabels: {
-            metadata: "IDs",
-            fullText: "Full Text",
+            metadata: t("datasets.items-table.ids", "IDs"),
+            fullText: t("datasets.items-table.full-text", "Full Text"),
           },
           hidePerformanceWarning: true,
         }}

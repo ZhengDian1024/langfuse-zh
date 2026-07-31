@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { Button } from "@/src/components/ui/button";
 import { type BulkDatasetItemValidationError } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type CsvImportValidationErrorProps = {
   errors: BulkDatasetItemValidationError[];
@@ -11,6 +12,7 @@ type CsvImportValidationErrorProps = {
 export const CsvImportValidationError: React.FC<
   CsvImportValidationErrorProps
 > = ({ errors }) => {
+  const { t } = useI18n();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const errorCount = errors.length;
@@ -19,17 +21,27 @@ export const CsvImportValidationError: React.FC<
   return (
     <Alert variant="destructive" className="mt-4">
       <AlertTitle className="text-base font-semibold">
-        Schema Validation Failed
+        {t("datasets.csv.validation-failed-title", "Schema Validation Failed")}
       </AlertTitle>
       <AlertDescription className="mt-2 space-y-3">
         <p className="text-sm">
           {hasMoreThan10
-            ? `${errorCount}+ items failed validation. Showing first ${errorCount} errors.`
-            : `${errorCount} item${errorCount === 1 ? "" : "s"} failed validation.`}
+            ? t(
+                "datasets.csv.validation-failed-many",
+                "{count}+ items failed validation. Showing first {count} errors.",
+                { count: String(errorCount) },
+              )
+            : t(
+                "datasets.csv.validation-failed-single",
+                "{count} item failed validation.",
+                { count: String(errorCount) },
+              )}
         </p>
         <p className="text-muted-foreground text-sm">
-          The CSV data does not match the required schema for this dataset. Fix
-          the errors in your CSV file and try importing again.
+          {t(
+            "datasets.csv.validation-failed-desc",
+            "The CSV data does not match the required schema for this dataset. Fix the errors in your CSV file and try importing again.",
+          )}
         </p>
 
         <Button
@@ -44,7 +56,10 @@ export const CsvImportValidationError: React.FC<
           ) : (
             <ChevronRight className="mr-1 h-4 w-4" />
           )}
-          {isExpanded ? "Hide" : "Show"} error details
+          {isExpanded
+            ? t("datasets.csv.hide", "Hide")
+            : t("datasets.csv.show", "Show")}
+          {t("datasets.csv.error-details", " error details")}
         </Button>
 
         {isExpanded && (
@@ -59,12 +74,17 @@ export const CsvImportValidationError: React.FC<
                     #{idx + 1}
                   </span>
                   <span className="text-sm font-medium">
-                    CSV Row {error.itemIndex + 2}:{" "}
+                    {t("datasets.csv.row-prefix", "CSV Row {n}:", {
+                      n: String(error.itemIndex + 2),
+                    })}{" "}
                     {error.field === "input"
-                      ? "Input"
+                      ? t("datasets.compare-runs.col-input", "Input")
                       : error.field === "metadata"
-                        ? "Metadata"
-                        : "Expected Output"}
+                        ? t("datasets.compare-runs.col-metadata", "Metadata")
+                        : t(
+                            "datasets.compare-runs.col-expected-output",
+                            "Expected Output",
+                          )}
                   </span>
                 </div>
 
@@ -85,8 +105,10 @@ export const CsvImportValidationError: React.FC<
 
             {hasMoreThan10 && (
               <p className="text-muted-foreground pt-2 text-xs">
-                Fix these errors to see if there are additional validation
-                issues.
+                {t(
+                  "datasets.csv.fix-errors",
+                  "Fix these errors to see if there are additional validation issues.",
+                )}
               </p>
             )}
           </div>

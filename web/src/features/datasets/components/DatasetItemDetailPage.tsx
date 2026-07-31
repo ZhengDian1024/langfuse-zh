@@ -28,6 +28,7 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { EditDatasetItemDialog } from "@/src/features/datasets/components/EditDatasetItemDialog";
 import { useDatasetVersion } from "@/src/features/datasets/hooks/useDatasetVersion";
 import { toDatasetSchema } from "@/src/features/datasets/utils/datasetItemUtils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 export const DatasetItemDetailPage = ({
   activeTab,
   withPadding = true,
@@ -38,6 +39,7 @@ export const DatasetItemDetailPage = ({
   children: ReactNode;
 }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const projectId = router.query.projectId as string;
   const datasetId = router.query.datasetId as string;
   const itemId = router.query.itemId as string;
@@ -101,7 +103,7 @@ export const DatasetItemDetailPage = ({
     if (!hasAccess || mutDelete.isPending) return;
     if (
       window.confirm(
-        "Are you sure you want to delete this item? This will also delete all run items that belong to this item.",
+        t("datasets.item-detail.delete-confirm", "Are you sure you want to delete this item? This will also delete all run items that belong to this item."),
       )
     ) {
       capture("dataset_item:delete");
@@ -120,13 +122,13 @@ export const DatasetItemDetailPage = ({
         title: itemId,
         itemType: "DATASET_ITEM",
         breadcrumb: [
-          { name: "Datasets", href: `/project/${projectId}/datasets` },
+          { name: t("breadcrumb.datasets", "Datasets"), href: `/project/${projectId}/datasets` },
           {
             name: dataset.data?.name ?? datasetId,
             href: `/project/${projectId}/datasets/${datasetId}`,
           },
           {
-            name: "Items",
+            name: t("datasets.item-detail.breadcrumb-items", "Items"),
             href: `/project/${projectId}/datasets/${datasetId}/items`,
           },
         ],
@@ -151,13 +153,13 @@ export const DatasetItemDetailPage = ({
                     <div className="space-y-2">
                       <h4 className="leading-none font-medium">
                         {item.data.status === DatasetStatus.ACTIVE
-                          ? "Archive this item?"
-                          : "Unarchive this item?"}
+                          ? t("datasets.item-detail.archive-title", "Archive this item?")
+                          : t("datasets.item-detail.unarchive-title", "Unarchive this item?")}
                       </h4>
                       <p className="text-muted-foreground text-sm">
                         {item.data.status === DatasetStatus.ACTIVE
-                          ? "Archiving an item will exclude it from new dataset runs."
-                          : "Unarchiving an item will include it back in new dataset runs."}
+                          ? t("datasets.item-detail.archive-body", "Archiving an item will exclude it from new dataset runs.")
+                          : t("datasets.item-detail.unarchive-body", "Unarchiving an item will include it back in new dataset runs.")}
                       </p>
                     </div>
                     <Button
@@ -171,10 +173,10 @@ export const DatasetItemDetailPage = ({
                       size="sm"
                     >
                       {mutUpdate.isPending
-                        ? "Processing..."
+                        ? t("datasets.processing", "Processing...")
                         : item.data.status === DatasetStatus.ACTIVE
-                          ? "Archive"
-                          : "Unarchive"}
+                          ? t("datasets.archive", "Archive")
+                          : t("datasets.unarchive", "Unarchive")}
                     </Button>
                   </div>
                 </PopoverContent>
@@ -184,7 +186,9 @@ export const DatasetItemDetailPage = ({
               <Button variant="ghost" size="icon-xs" asChild>
                 <Link
                   href={`/project/${projectId}/traces/${item.data.sourceTraceId}`}
-                  title={`View source ${item.data.sourceObservationId ? "observation" : "trace"}`}
+                  title={item.data.sourceObservationId
+                    ? t("datasets.item-detail.view-source-observation", "View source observation")
+                    : t("datasets.item-detail.view-source-trace", "View source trace")}
                 >
                   <ListTree className="h-4 w-4" />
                 </Link>
@@ -229,7 +233,7 @@ export const DatasetItemDetailPage = ({
                   disabled={!hasAccess || isViewingOldVersion || !item.data}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {t("datasets.edit", "Edit")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleDelete}
@@ -242,7 +246,7 @@ export const DatasetItemDetailPage = ({
                   className="text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  {mutDelete.isPending ? "Deleting..." : "Delete"}
+                  {mutDelete.isPending ? t("datasets.item-detail.deleting", "Deleting...") : t("datasets.delete", "Delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
