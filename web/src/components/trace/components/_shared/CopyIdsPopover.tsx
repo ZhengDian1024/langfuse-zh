@@ -8,6 +8,7 @@ import {
 } from "@/src/components/ui/popover";
 import { cn } from "@/src/utils/tailwind";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface IdItem {
   name: string;
@@ -22,6 +23,7 @@ export const CopyIdsPopover = ({
   className?: string;
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const { t } = useI18n();
 
   const handleCopy = (textToCopy: string) => {
     copyTextToClipboard(textToCopy);
@@ -34,7 +36,7 @@ export const CopyIdsPopover = ({
     return (
       <Button
         variant="ghost"
-        title="Copy ID"
+        title={t("trace.common.copy-id", "Copy ID")}
         className={cn("h-fit p-1", className)}
         onClick={() => handleCopy(idItems[0].id)}
       >
@@ -43,7 +45,7 @@ export const CopyIdsPopover = ({
         ) : (
           <CopyIcon className="h-3 w-3" />
         )}
-        <span className="ml-1 text-xs">ID</span>
+        <span className="ml-1 text-xs">{t("trace.common.id", "ID")}</span>
       </Button>
     );
   }
@@ -53,11 +55,11 @@ export const CopyIdsPopover = ({
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          title="Copy ID"
+          title={t("trace.common.copy-id", "Copy ID")}
           className={cn("h-fit px-1", className)}
         >
           <CopyIcon className="h-3 w-3" />
-          <span className="ml-1 text-xs">ID</span>
+          <span className="ml-1 text-xs">{t("trace.common.id", "ID")}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent

@@ -16,6 +16,7 @@ import {
 import { copyTextToClipboard } from "@/src/utils/clipboard";
 import { type ObservationType } from "@langfuse/shared";
 import { WebCalloutMenuItem } from "@/src/features/web-callouts/components/WebCalloutMenuItem";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type IdItem = {
   name: string;
@@ -43,6 +44,7 @@ export function DetailHeaderActionsMenu({
 }: DetailHeaderActionsMenuProps) {
   const router = useRouter();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const { t } = useI18n();
 
   const handleCopy = (textToCopy: string) => {
     copyTextToClipboard(textToCopy);
@@ -74,10 +76,10 @@ export function DetailHeaderActionsMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label="Options"
+          aria-label={t("trace.common.options", "Options")}
           className="mt-0.5 shrink-0"
           size="icon-xs"
-          title="Options"
+          title={t("trace.common.options", "Options")}
           variant="ghost"
         >
           <EllipsisVertical className="h-4 w-4" />
@@ -103,7 +105,7 @@ export function DetailHeaderActionsMenu({
                 onSelect={() => router.push(href)}
               >
                 <span className="max-w-[260px] truncate" title={spanName}>
-                  filter by{" "}
+                  {t("trace.common.filter-by-prefix", "filter by ")}
                   <span className="font-semibold">name:{spanName}</span>
                 </span>
               </DropdownMenuItem>
@@ -117,7 +119,7 @@ export function DetailHeaderActionsMenu({
                   className="max-w-[260px] truncate"
                   title={filterTypeLabel}
                 >
-                  filter by{" "}
+                  {t("trace.common.filter-by-prefix", "filter by ")}
                   <span className="font-semibold">{filterTypeLabel}</span>
                 </span>
               </DropdownMenuItem>
@@ -137,7 +139,7 @@ export function DetailHeaderActionsMenu({
               <CopyIcon className="mr-2 h-4 w-4" />
             )}
             <span className="max-w-[260px] truncate" title={item.id}>
-              Copy {item.name}
+              {t("trace.common.copy-name", "Copy {name}", { name: item.name })}
             </span>
           </DropdownMenuItem>
         ))}

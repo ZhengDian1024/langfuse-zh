@@ -511,5 +511,13 @@
   "trace.common.metadata": "Metadata",
   "trace.common.output": "Output",
   "trace.common.preview": "预览",
-  "trace.common.search": "搜索"
+  "trace.common.search": "搜索",
+  "trace.actions.annotate": "标注",
+  "trace.common.copy-id": "复制 ID",
+  "trace.common.id": "ID",
+  "trace.id.observation": "Observation ID",
+  "trace.id.trace": "Trace ID",
+  "trace.common.copy-name": "复制 {name}",
+  "trace.common.filter-by-prefix": "筛选：",
+  "trace.common.options": "选项"
 }

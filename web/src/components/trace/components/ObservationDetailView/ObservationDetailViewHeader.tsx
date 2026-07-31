@@ -49,6 +49,7 @@ import { type AggregatedTraceMetrics } from "@/src/components/trace/lib/trace-ag
 import type Decimal from "decimal.js";
 import { DetailHeaderActionsMenu } from "@/src/components/trace/components/_shared/DetailHeaderActionsMenu";
 import { useViewPreferences } from "@/src/components/trace/contexts/ViewPreferencesContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useTraceData } from "@/src/components/trace/contexts/TraceDataContext";
 import { Button } from "@/src/components/ui/button";
@@ -103,6 +104,7 @@ export const ObservationDetailViewHeader = memo(
   }: ObservationDetailViewHeaderProps) {
     const { isAnnotationMode } = useViewPreferences();
     const { isBetaEnabled: isV4Enabled } = useV4Beta();
+    const { t } = useI18n();
     const { trace, serverScores } = useTraceData();
 
     // Get trace-level scores for V4 dual annotation
@@ -134,8 +136,11 @@ export const ObservationDetailViewHeader = memo(
             </span>
             <DetailHeaderActionsMenu
               idItems={[
-                { id: traceId, name: "Trace ID" },
-                { id: observation.id, name: "Observation ID" },
+                { id: traceId, name: t("trace.id.trace", "Trace ID") },
+                {
+                  id: observation.id,
+                  name: t("trace.id.observation", "Observation ID"),
+                },
               ]}
               observationType={observation.type}
               projectId={projectId}
@@ -178,7 +183,7 @@ export const ObservationDetailViewHeader = memo(
                         ) : (
                           <SquarePen className="mr-1.5 h-3.5 w-3.5" />
                         )}
-                        <span>Annotate</span>
+                        <span>{t("trace.actions.annotate", "Annotate")}</span>
                       </Button>
                     </DrawerTrigger>
                     <DrawerContent className="p-3">

@@ -42,6 +42,7 @@ import {
 import { aggregateTraceMetrics } from "@/src/components/trace/lib/trace-aggregation";
 import { resolveEvalExecutionMetadata } from "@/src/components/trace/lib/resolve-metadata";
 import { useViewPreferences } from "@/src/components/trace/contexts/ViewPreferencesContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface TraceDetailViewHeaderProps {
   trace: Omit<WithStringifiedMetadata<TraceDomain>, "input" | "output"> & {
@@ -74,6 +75,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
   onCommentDrawerOpenChange,
 }: TraceDetailViewHeaderProps) {
   const { isAnnotationMode } = useViewPreferences();
+  const { t } = useI18n();
   const aggregatedMetrics = useMemo(
     () => aggregateTraceMetrics(observations),
     [observations],
@@ -94,7 +96,7 @@ export const TraceDetailViewHeader = memo(function TraceDetailViewHeader({
             {trace.name || trace.id}
           </span>
           <DetailHeaderActionsMenu
-            idItems={[{ id: trace.id, name: "Trace ID" }]}
+            idItems={[{ id: trace.id, name: t("trace.id.trace", "Trace ID") }]}
             projectId={projectId}
             webCallout={{
               traceId: trace.id,
