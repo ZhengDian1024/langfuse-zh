@@ -6,6 +6,7 @@ import { Button } from "@/src/components/ui/button";
 import { SplashScreen } from "@/src/components/ui/splash-screen";
 import { automationCreateHref } from "@/src/features/automations/components/automationForm";
 import { type ActionTypes } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /** OnboardingChannel describes one notification-channel CTA shown in step 1 of the splash. */
 type OnboardingChannel = {
@@ -39,20 +40,18 @@ const channels: OnboardingChannel[] = [
 export function MonitorsOnboarding({
   projectId,
   hasCUDAccess,
-}: {
-  projectId: string;
-  hasCUDAccess: boolean;
-}) {
+}: { projectId: string; hasCUDAccess: boolean }) {
+  const { t } = useI18n();
   return (
     <div className="mx-auto w-full max-w-xl pt-12">
       <SplashScreen
-        title="Catch issues before they impact your users"
-        description="Get notified when cost, quality, latency, or other key metrics move outside of expected ranges."
+        title={t("monitors.onboarding.title", "Catch issues before they impact your users")}
+        description={t("monitors.onboarding.description", "Get notified when cost, quality, latency, or other key metrics move outside of expected ranges.")}
         steps={[
           {
-            title: "Choose where alerts should go",
+            title: t("monitors.onboarding.step1-title", "Choose where alerts should go"),
             description:
-              "Send alerts to Slack, Webhooks, or GitHub Actions so your team and your workflows can respond automatically.",
+              t("monitors.onboarding.step1-desc", "Send alerts to Slack, Webhooks, or GitHub Actions so your team and your workflows can respond automatically."),
             content: (
               <div className="flex flex-col gap-2">
                 {channels.map((channel) => (
@@ -82,9 +81,9 @@ export function MonitorsOnboarding({
             ),
           },
           {
-            title: "Decide what to monitor",
+            title: t("monitors.onboarding.step2-title", "Decide what to monitor"),
             description:
-              "Create monitors for sudden cost spikes, quality drops, latency changes, or other important changes.",
+              t("monitors.onboarding.step2-desc", "Create monitors for sudden cost spikes, quality drops, latency changes, or other important changes."),
             content: (
               <ActionButton
                 hasAccess={hasCUDAccess}

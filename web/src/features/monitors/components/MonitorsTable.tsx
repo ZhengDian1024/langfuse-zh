@@ -39,6 +39,7 @@ import {
 } from "@langfuse/shared/monitors";
 
 import { MonitorSeverityBadge } from "./MonitorSeverityBadge";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /** monitorsRefetchInterval keeps the list's severity and paused state current without a manual reload. */
 const monitorsRefetchInterval = 5_000;
@@ -55,6 +56,7 @@ type MonitorsOrderBy = RouterInputs["monitors"]["all"]["orderBy"];
 
 /** MonitorsTable renders the project's monitors as a sortable, filterable, paginated table with row navigation to the edit page. */
 export function MonitorsTable() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = useProjectIdFromURL() ?? "";
   const { setDetailPageList } = useDetailPageLists();
@@ -73,7 +75,7 @@ export function MonitorsTable() {
       await utils.monitors.invalidate();
       showSuccessToast({
         title:
-          variables.status === "PAUSED" ? "Monitor paused" : "Monitor resumed",
+          variables.status === "PAUSED" ? t("monitors.toast.paused", "Monitor paused") : t("monitors.toast.resumed", "Monitor resumed"),
         description:
           variables.status === "PAUSED"
             ? "Evaluations are halted until you resume."
@@ -81,7 +83,7 @@ export function MonitorsTable() {
       });
     },
     onError: (e) =>
-      showErrorToast("Failed to update monitor status", e.message),
+      showErrorToast(t("monitors.toast.status-failed", "Failed to update monitor status"), e.message),
   });
 
   /** paginationState is the bound page index + size, defaulting to 50 per page and synced to the `pageIndex`/`pageSize` URL params. */
@@ -314,6 +316,7 @@ function MonitorRowActions({
   /** onToggleStatus flips the monitor between ACTIVE and PAUSED. */
   onToggleStatus: () => void;
 }) {
+  const { t } = useI18n();
   const isPaused = monitor.status === "PAUSED";
 
   const editButton = (
@@ -322,8 +325,8 @@ function MonitorRowActions({
       variant="ghost"
       size={collapsed ? "default" : "icon"}
       disabled={!hasCUDAccess}
-      aria-label="Edit monitor"
-      title="Edit"
+      aria-label={t("monitors.aria.edit-monitor", "Edit monitor")}
+      title={t("monitors.aria.edit", "Edit")}
       className={cn(!collapsed && rowActionIconColors)}
     >
       <Link
@@ -341,7 +344,7 @@ function MonitorRowActions({
       variant="ghost"
       size={collapsed ? "default" : "icon"}
       disabled={!hasCUDAccess || isStatusPending}
-      aria-label={isPaused ? "Resume monitor" : "Pause monitor"}
+      aria-label={isPaused ? t("monitors.aria.resume", "Resume monitor") : t("monitors.aria.pause", "Pause monitor")}
       title={isPaused ? "Resume" : "Pause"}
       className={cn(!collapsed && rowActionIconColors)}
       onClick={(e) => {
@@ -367,7 +370,7 @@ function MonitorRowActions({
       isTableAction
       icon={!collapsed}
       variant="ghost"
-      title="Delete"
+      title={t("monitors.aria.delete", "Delete")}
       className={cn(!collapsed && rowActionIconColors)}
     />
   );

@@ -93,6 +93,7 @@ import {
   aggregationLabel,
   renderNamePlaceholder,
 } from "../helpers/renderMonitorLabels";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /** createDefaults returns the form defaults for a brand-new monitor. */
 const createDefaults = (projectId: string): Partial<CreateMonitor> => ({
@@ -150,6 +151,7 @@ export const MonitorForm = ({
   /** onNameChange fires on every form change so the host (e.g. the edit page header) can mirror the live name. */
   onNameChange?: (name: string) => void;
 }) => {
+  const { t } = useI18n();
   /** router is the Next router used to redirect after a successful create. */
   const router = useRouter();
   /** isEdit is true when the form is bound to an existing monitor. */
@@ -199,12 +201,12 @@ export const MonitorForm = ({
     onSuccess: async (_data, variables) => {
       await utils.monitors.invalidate();
       showSuccessToast({
-        title: "Monitor created",
+        title: t("monitors.toast.created", "Monitor created"),
         description: `"${variables.name}" is now active.`,
       });
       router.replace(`/project/${projectId}/monitors`);
     },
-    onError: (e) => showErrorToast("Failed to create monitor", e.message),
+    onError: (e) => showErrorToast(t("monitors.toast.create-failed", "Failed to create monitor"), e.message),
   });
 
   /** updateMutation saves edits to an existing monitor and returns to the monitors list on success. */
@@ -212,12 +214,12 @@ export const MonitorForm = ({
     onSuccess: async (_data, variables) => {
       await utils.monitors.invalidate();
       showSuccessToast({
-        title: "Monitor saved",
+        title: t("monitors.toast.saved", "Monitor saved"),
         description: `Your changes to "${variables.name}" have been applied.`,
       });
       router.replace(`/project/${projectId}/monitors`);
     },
-    onError: (e) => showErrorToast("Failed to save monitor", e.message),
+    onError: (e) => showErrorToast(t("monitors.toast.save-failed", "Failed to save monitor"), e.message),
   });
 
   /** onSubmit normalizes filter columns into view-space and dispatches the create or update mutation. */
@@ -403,7 +405,7 @@ export const MonitorForm = ({
         <div className="h-full min-h-0 w-full min-w-107.5 md:w-1/3">
           <Card className="flex h-full flex-col">
             <CardHeader>
-              <CardTitle>Monitor Configuration</CardTitle>
+              <CardTitle>{t("monitors.form.configuration", "Monitor Configuration")}</CardTitle>
               <CardDescription>
                 Receive notifications when a metric crosses a threshold. (eg.
                 &ldquo;sudden cost increase&rdquo;, &ldquo;accuracy has
@@ -411,13 +413,13 @@ export const MonitorForm = ({
               </CardDescription>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-0">
-              <Section title="Metric Definition" step={1}>
+              <Section title={t("monitors.form.metric-definition", "Metric Definition")} step={1}>
                 <FormField
                   control={form.control}
                   name="view"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>View</FormLabel>
+                      <FormLabel>{t("monitors.form.view", "View")}</FormLabel>
                       <Select
                         value={field.value}
                         onValueChange={(next) => {
@@ -479,7 +481,7 @@ export const MonitorForm = ({
                     const measures = viewDeclarations.v2[view]?.measures ?? {};
                     return (
                       <FormItem>
-                        <FormLabel>Measure</FormLabel>
+                        <FormLabel>{t("monitors.form.measure", "Measure")}</FormLabel>
                         <Select
                           value={field.value}
                           onValueChange={(next) => {
@@ -537,7 +539,7 @@ export const MonitorForm = ({
                     name="metric.aggregation"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Aggregation</FormLabel>
+                        <FormLabel>{t("monitors.form.aggregation", "Aggregation")}</FormLabel>
                         <Select
                           value={field.value}
                           onValueChange={field.onChange}
@@ -566,7 +568,7 @@ export const MonitorForm = ({
                   name="filters"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Filters</FormLabel>
+                      <FormLabel>{t("monitors.form.filters", "Filters")}</FormLabel>
                       <FormControl>
                         <InlineFilterBuilder
                           columns={filterColumns}
@@ -586,7 +588,7 @@ export const MonitorForm = ({
                 )}
               </Section>
 
-              <Section title="Alert Conditions" step={2}>
+              <Section title={t("monitors.form.alert-conditions", "Alert Conditions")} step={2}>
                 <FormField
                   control={form.control}
                   name="thresholdOperator"
@@ -789,7 +791,7 @@ export const MonitorForm = ({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>{t("monitors.form.name", "Name")}</FormLabel>
                       <FormControl>
                         <Input
                           maxLength={200}
@@ -842,7 +844,7 @@ export const MonitorForm = ({
                   name="triggerIds"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Automations</FormLabel>
+                      <FormLabel>{t("automations.title", "Automations")}</FormLabel>
                       <FormMessage />
                       <FormDescription>
                         Send Alerts to Slack, Webhooks, and GitHub Actions.
@@ -868,7 +870,7 @@ export const MonitorForm = ({
                   className="w-full"
                   disabled={!hasAccess || submitting}
                 >
-                  {isEdit ? "Save Monitor" : "Create Monitor"}
+                  {isEdit ? t("monitors.save", "Save Monitor") : t("monitors.create", "Create Monitor")}
                 </Button>
               </div>
             </CardFooter>
