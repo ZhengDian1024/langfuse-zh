@@ -5,6 +5,7 @@ import { PrettyJsonView } from "@/src/components/ui/PrettyJsonView";
 import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Tool definition extracted from messages
 export interface ToolDefinition {
@@ -37,6 +38,7 @@ export function ToolCallDefinitionCard({
   className,
 }: ToolCallDefinitionCardProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const { t } = useI18n();
   const [currentView, setCurrentView] = useLocalStorage<"formatted" | "json">(
     "toolCallPillViewPreference",
     "formatted",
@@ -55,10 +57,12 @@ export function ToolCallDefinitionCard({
         const toolDefinitionNumber = toolNameToDefinitionNumber?.get(tool.name);
         const statusText =
           callCount === 0
-            ? "not called"
+            ? t("trace.tool-call.not-called", "not called")
             : callCount === 1
-              ? "called"
-              : `called ${callCount}x`;
+              ? t("trace.tool-call.called", "called")
+              : t("trace.tool-call.called-count", "called {count}x", {
+                  count: String(callCount),
+                });
 
         return (
           <div
@@ -122,10 +126,10 @@ export function ToolCallDefinitionCard({
                         value="formatted"
                         className="h-fit px-1 text-xs"
                       >
-                        Formatted
+                        {t("trace.common.formatted", "Formatted")}
                       </TabsTrigger>
                       <TabsTrigger value="json" className="h-fit px-1 text-xs">
-                        JSON
+                        {t("trace.common.json", "JSON")}
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>
@@ -138,7 +142,7 @@ export function ToolCallDefinitionCard({
                     {tool.description && (
                       <div>
                         <div className="text-muted-foreground mb-1.5 text-xs font-medium">
-                          Description
+                          {t("trace.tool-call.description", "Description")}
                         </div>
                         <div className="text-foreground text-sm">
                           {tool.description}
@@ -150,7 +154,7 @@ export function ToolCallDefinitionCard({
                     {tool.parameters && (
                       <div>
                         <div className="text-muted-foreground mb-1.5 text-xs font-medium">
-                          Parameters
+                          {t("trace.tool-call.parameters", "Parameters")}
                         </div>
                         <PrettyJsonView
                           json={tool.parameters}
@@ -163,7 +167,7 @@ export function ToolCallDefinitionCard({
                     {/* Show message if no additional details */}
                     {!tool.description && !tool.parameters && (
                       <div className="text-muted-foreground text-sm">
-                        No additional details available
+                        {t("trace.tool-call.no-details", "No additional details available")}
                       </div>
                     )}
                   </div>

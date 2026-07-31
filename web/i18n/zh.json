@@ -519,5 +519,16 @@
   "trace.id.trace": "Trace ID",
   "trace.common.copy-name": "复制 {name}",
   "trace.common.filter-by-prefix": "筛选：",
-  "trace.common.options": "选项"
+  "trace.common.options": "选项",
+  "trace.common.media": "媒体",
+  "trace.common.tools": "工具",
+  "trace.thinking": "思考",
+  "trace.thinking-redacted": "思考（已脱敏）",
+  "trace.tool-call.called": "已调用",
+  "trace.tool-call.called-count": "已调用 {count} 次",
+  "trace.tool-call.description": "描述",
+  "trace.tool-call.no-details": "无其他可用详情",
+  "trace.tool-call.not-called": "未调用",
+  "trace.tool-call.parameters": "参数",
+  "trace.thinking-encrypted": "[加密的思考数据]"
 }
