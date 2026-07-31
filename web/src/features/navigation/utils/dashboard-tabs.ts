@@ -1,3 +1,5 @@
+import type { MessageKey } from "@/src/features/i18n/messages";
+
 export const DASHBOARD_TABS = {
   DASHBOARDS: "dashboards",
   WIDGETS: "widgets",
@@ -5,15 +7,23 @@ export const DASHBOARD_TABS = {
 
 export type DashboardTab = (typeof DASHBOARD_TABS)[keyof typeof DASHBOARD_TABS];
 
-export const getDashboardTabs = (projectId: string) => [
+type TranslateFn = (
+  key: MessageKey,
+  defaultMessage?: string,
+) => string;
+
+export const getDashboardTabs = (
+  projectId: string,
+  t: TranslateFn,
+) => [
   {
     value: DASHBOARD_TABS.DASHBOARDS,
-    label: "Dashboards",
+    label: t("nav.dashboards", "Dashboards"),
     href: `/project/${projectId}/dashboards`,
   },
   {
     value: DASHBOARD_TABS.WIDGETS,
-    label: "Widgets",
+    label: t("nav.widgets", "Widgets"),
     href: `/project/${projectId}/widgets`,
   },
 ];

@@ -22,6 +22,7 @@ import {
 import startCase from "lodash/startCase";
 import { getChartTypeDisplayName } from "@/src/features/widgets/chart-library/utils";
 import { type DashboardWidgetChartType } from "@langfuse/shared/src/db";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type WidgetItem = {
   id: string;
@@ -50,6 +51,7 @@ export function SelectWidgetDialog({
 }: SelectWidgetDialogProps) {
   const router = useRouter();
   const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
+  const { t } = useI18n();
 
   // Fetch widgets
   const widgets = api.dashboardWidgets.all.useQuery(
@@ -85,29 +87,29 @@ export function SelectWidgetDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Select widget to add</DialogTitle>
+          <DialogTitle>{t("widgets.dialog.select-title", "Select widget to add")}</DialogTitle>
         </DialogHeader>
 
         <DialogBody>
           <div className="max-h-[400px] overflow-y-auto">
             {widgets.isPending ? (
-              <div className="py-8 text-center">Loading widgets...</div>
+              <div className="py-8 text-center">{t("widgets.dialog.loading", "Loading widgets...")}</div>
             ) : widgets.isError ? (
               <div className="text-destructive py-8 text-center">
-                Error: {widgets.error.message}
+                {t("widgets.dialog.error-prefix", "Error: {message}", { message: widgets.error.message })}
               </div>
             ) : widgets.data?.widgets.length === 0 ? (
               <div className="text-muted-foreground py-8 text-center">
-                No widgets found. Create a new widget to get started.
+                {t("widgets.dialog.no-widgets", "No widgets found. Create a new widget to get started.")}
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>View Type</TableHead>
-                    <TableHead>Chart Type</TableHead>
+                    <TableHead>{t("widgets.table.col-name", "Name")}</TableHead>
+                    <TableHead>{t("widgets.table.col-description", "Description")}</TableHead>
+                    <TableHead>{t("widgets.table.col-view-type", "View Type")}</TableHead>
+                    <TableHead>{t("widgets.table.col-chart-type", "Chart Type")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -135,6 +137,7 @@ export function SelectWidgetDialog({
                       <TableCell density="comfortable">
                         {getChartTypeDisplayName(
                           widget.chartType as DashboardWidgetChartType,
+                          t,
                         )}
                       </TableCell>
                     </TableRow>
@@ -148,14 +151,14 @@ export function SelectWidgetDialog({
         <DialogFooter className="mt-4 flex justify-between">
           <Button onClick={handleNavigateToNewWidget} variant="outline">
             <PlusIcon className="mr-2 h-4 w-4" />
-            Create New Widget
+            {t("widgets.dialog.create-new", "Create New Widget")}
           </Button>
           <div className="flex gap-2">
             <Button onClick={() => onOpenChange(false)} variant="outline">
-              Cancel
+              {t("dashboard.action.cancel", "Cancel")}
             </Button>
             <Button onClick={handleAddWidget} disabled={!selectedWidgetId}>
-              Add Selected Widget
+              {t("widgets.dialog.add-selected", "Add Selected Widget")}
             </Button>
           </div>
         </DialogFooter>

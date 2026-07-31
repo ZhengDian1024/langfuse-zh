@@ -17,6 +17,7 @@ import {
   TableBody,
   TableCell,
 } from "@/src/components/ui/table";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface SelectDashboardDialogProps {
   open: boolean;
@@ -36,6 +37,7 @@ export function SelectDashboardDialog({
   const [selectedDashboardId, setSelectedDashboardId] = useState<string | null>(
     null,
   );
+  const { t } = useI18n();
 
   const dashboards = api.dashboard.allDashboards.useQuery(
     {
@@ -68,27 +70,27 @@ export function SelectDashboardDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Select dashboard to add widget to</DialogTitle>
+          <DialogTitle>{t("dashboard.dialog.select-title", "Select dashboard to add widget to")}</DialogTitle>
         </DialogHeader>
         <DialogBody>
           <div className="mt-4 max-h-[400px] overflow-y-auto">
             {dashboards.isLoading ? (
-              <div className="py-8 text-center">Loading dashboards...</div>
+              <div className="py-8 text-center">{t("dashboard.dialog.loading", "Loading dashboards...")}</div>
             ) : dashboards.isError ? (
               <div className="text-destructive py-8 text-center">
-                Error: {dashboards.error.message}
+                {t("dashboard.dialog.error-prefix", "Error: {message}", { message: dashboards.error.message })}
               </div>
             ) : dashboards.data?.dashboards.length === 0 ? (
               <div className="text-muted-foreground py-8 text-center">
-                No dashboards found.
+                {t("dashboard.dialog.no-dashboards", "No dashboards found.")}
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Updated</TableHead>
+                    <TableHead>{t("dashboard.table.col-name", "Name")}</TableHead>
+                    <TableHead>{t("dashboard.table.col-description", "Description")}</TableHead>
+                    <TableHead>{t("dashboard.table.col-updated", "Updated")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -127,10 +129,10 @@ export function SelectDashboardDialog({
         </DialogBody>
         <DialogFooter className="mt-4 flex justify-between">
           <Button variant="outline" onClick={handleSkip}>
-            Skip
+            {t("dashboard.dialog.skip", "Skip")}
           </Button>
           <Button onClick={handleAdd} disabled={!selectedDashboardId}>
-            Add to Dashboard
+            {t("dashboard.dialog.add-to-dashboard", "Add to Dashboard")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -6,6 +6,7 @@ import {
 } from "@/src/components/ui/hover-card";
 import { SelectItem } from "@/src/components/ui/select";
 import * as React from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface PropertyHoverCardProps {
   label: string;
@@ -22,6 +23,7 @@ export const PropertyHoverCard = ({
   type,
   children,
 }: PropertyHoverCardProps) => {
+  const { t } = useI18n();
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger asChild>{children}</HoverCardTrigger>
@@ -32,12 +34,12 @@ export const PropertyHoverCard = ({
             <div className="mb-2 flex flex-wrap gap-2 text-xs">
               {unit && (
                 <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5">
-                  Unit: {unit}
+                  {t("widgets.property.unit-prefix", "Unit: ")}{unit}
                 </span>
               )}
               {type && (
                 <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5">
-                  Type: {type}
+                  {t("widgets.property.type-prefix", "Type: ")}{type}
                 </span>
               )}
             </div>

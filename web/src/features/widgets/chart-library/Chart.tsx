@@ -22,6 +22,7 @@ import { BigNumber } from "@/src/features/widgets/chart-library/BigNumber";
 import { PivotTable } from "@/src/features/widgets/chart-library/PivotTable";
 import { type OrderByState } from "@langfuse/shared";
 import { type ChartConfig } from "@/src/components/ui/chart";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const DEFAULT_METRIC_THEME = {
   light: "hsl(var(--chart-1))",
@@ -112,6 +113,8 @@ export const Chart = ({
       return { ...item, time_dimension };
     });
   }, [data]);
+
+  const { t } = useI18n();
 
   const resolvedConfig = useMemo(() => {
     if (!config) return undefined;
@@ -246,19 +249,16 @@ export const Chart = ({
   const renderWarning = () => (
     <div className="flex flex-col items-center justify-center p-6 text-center">
       <AlertCircle className="mb-4 h-12 w-12" />
-      <h3 className="mb-2 text-lg font-semibold">Large Dataset Warning</h3>
+      <h3 className="mb-2 text-lg font-semibold">{t("widgets.chart.large-dataset-title", "Large Dataset Warning")}</h3>
       <p className="text-muted-foreground mb-6 text-sm">
-        This chart has more than 2,000 unique data points. Rendering it may be
-        slow or may crash your browser. Try to reduce the number of dimensions
-        by adding more selective filters or choosing a coarser breakdown
-        dimension.
+        {t("widgets.chart.large-dataset-description", "This chart has more than 2,000 unique data points. Rendering it may be slow or may crash your browser. Try to reduce the number of dimensions by adding more selective filters or choosing a coarser breakdown dimension.")}
       </p>
       <Button
         variant="outline"
         onClick={() => setForceRender(true)}
         className="font-medium"
       >
-        I understand, proceed to render the chart
+        {t("widgets.chart.large-dataset-confirm", "I understand, proceed to render the chart")}
       </Button>
     </div>
   );

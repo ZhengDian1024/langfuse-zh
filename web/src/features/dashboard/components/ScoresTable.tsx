@@ -20,6 +20,7 @@ import {
 } from "@/src/features/scores/lib/helpers";
 import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { NoDataOrLoading } from "@/src/components/NoDataOrLoading";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const dropValuesForCategoricalScores = (
   value: number,
@@ -56,6 +57,7 @@ export const ScoresTable = ({
   isLoading?: boolean;
   metricsVersion?: ViewVersion;
 }) => {
+  const { t } = useI18n();
   const localFilters = createTracesTimeFilter(
     globalFilterState,
     "scoreTimestamp",
@@ -146,7 +148,7 @@ export const ScoresTable = ({
 
   if (!zeroValueScores || !oneValueScores) {
     return (
-      <DashboardCard title={"Scores"} isLoading={false}>
+      <DashboardCard title={t("dashboard.chart.scores-title", "Scores")} isLoading={false}>
         <NoDataOrLoading isLoading={false} />
       </DashboardCard>
     );
@@ -194,7 +196,7 @@ export const ScoresTable = ({
   return (
     <DashboardCard
       className={className}
-      title="Scores"
+      title={t("dashboard.chart.scores-title", "Scores")}
       isLoading={
         isLoading ||
         metrics.isPending ||
@@ -204,7 +206,7 @@ export const ScoresTable = ({
     >
       <DashboardTable
         headers={[
-          "Name",
+          t("dashboard.table.col-name", "Name"),
           <RightAlignedCell key="count">#</RightAlignedCell>,
           <RightAlignedCell key="average">Avg</RightAlignedCell>,
           <RightAlignedCell key="zero">0</RightAlignedCell>,
@@ -241,14 +243,13 @@ export const ScoresTable = ({
           oneValueScores.isPending
         }
         noDataProps={{
-          description:
-            "Scores evaluate LLM quality and can be created manually or using the SDK.",
+          description: t("dashboard.chart.scores-empty", "Scores evaluate LLM quality and can be created manually or using the SDK."),
           href: "https://langfuse.com/docs/evaluation/overview",
         }}
       >
         <TotalMetric
           metric={totalScores ? compactNumberFormatter(totalScores) : "0"}
-          description="Total scores tracked"
+          description={t("dashboard.chart.total-scores-tracked", "Total scores tracked")}
         />
       </DashboardTable>
     </DashboardCard>

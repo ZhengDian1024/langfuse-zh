@@ -25,6 +25,7 @@ import { type DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ModelUsageChart = ({
   className,
@@ -67,6 +68,7 @@ export const ModelUsageChart = ({
       queryId: `${schedulerId ?? "home:model-usage"}:all-models`,
     },
   );
+  const { t } = useI18n();
   const hasModelSelection = selectedModels.length > 0 && allModels.length > 0;
   const isModelUsageEnabled = !isLoading && hasModelSelection;
 
@@ -297,39 +299,39 @@ export const ModelUsageChart = ({
 
   const data = [
     {
-      tabTitle: "Cost by model",
+      tabTitle: t("dashboard.chart.cost-by-model", "Cost by model"),
       data: costByModel,
       totalMetric: costFormatter(totalCost),
-      metricDescription: `Cost`,
-      chartMetricLabel: "USD",
+      metricDescription: t("dashboard.chart.metric-cost", "Cost"),
+      chartMetricLabel: t("dashboard.chart.metric-usd", "USD"),
       chartUnit: "USD",
     },
     {
-      tabTitle: "Cost by type",
+      tabTitle: t("dashboard.chart.cost-by-type", "Cost by type"),
       data: costByType,
       totalMetric: costFormatter(totalCost),
-      metricDescription: `Cost`,
-      chartMetricLabel: "USD",
+      metricDescription: t("dashboard.chart.metric-cost", "Cost"),
+      chartMetricLabel: t("dashboard.chart.metric-usd", "USD"),
       chartUnit: "USD",
     },
     {
-      tabTitle: "Usage by model",
+      tabTitle: t("dashboard.chart.usage-by-model", "Usage by model"),
       data: unitsByModel,
       totalMetric: totalTokens
         ? compactNumberFormatter(totalTokens)
         : compactNumberFormatter(0),
-      metricDescription: `Units`,
-      chartMetricLabel: "Tokens",
+      metricDescription: t("dashboard.chart.metric-units", "Units"),
+      chartMetricLabel: t("dashboard.chart.metric-tokens", "Tokens"),
       chartUnit: "tokens",
     },
     {
-      tabTitle: "Usage by type",
+      tabTitle: t("dashboard.chart.usage-by-type", "Usage by type"),
       data: unitsByType,
       totalMetric: totalTokens
         ? compactNumberFormatter(totalTokens)
         : compactNumberFormatter(0),
-      metricDescription: `Units`,
-      chartMetricLabel: "Tokens",
+      metricDescription: t("dashboard.chart.metric-units", "Units"),
+      chartMetricLabel: t("dashboard.chart.metric-tokens", "Tokens"),
       chartUnit: "tokens",
     },
   ];
@@ -337,7 +339,7 @@ export const ModelUsageChart = ({
   return (
     <DashboardCard
       className={className}
-      title="Model Usage"
+      title={t("dashboard.chart.model-usage-title", "Model Usage")}
       isLoading={
         isLoading || (queryResult.isPending && selectedModels.length > 0)
       }

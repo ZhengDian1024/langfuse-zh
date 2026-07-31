@@ -40,6 +40,7 @@ import {
 } from "@/src/features/widgets/chart-library/chartLoadingStateUtils";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface WidgetPlacement {
   id: string;
@@ -73,6 +74,7 @@ export function DashboardWidget({
   const router = useRouter();
   const utils = api.useUtils();
   const { isBetaEnabled } = useV4Beta();
+  const { t } = useI18n();
   const widget = api.dashboardWidgets.get.useQuery(
     {
       widgetId: placement.widgetId,
@@ -334,7 +336,7 @@ export function DashboardWidget({
       });
     },
     onError: (e) => {
-      showErrorToast("Failed to clone widget", e.message);
+      showErrorToast(t("widgets.toast.error-clone", "Failed to clone widget"), e.message);
     },
   });
   const handleCopy = () => {
@@ -347,7 +349,7 @@ export function DashboardWidget({
   };
 
   const handleDelete = () => {
-    if (onDeleteWidget && confirm("Please confirm deletion")) {
+    if (onDeleteWidget && confirm(t("widgets.delete.confirm-deletion", "Please confirm deletion"))) {
       onDeleteWidget(placement.id);
     }
   };
@@ -357,7 +359,7 @@ export function DashboardWidget({
       <div
         className={`bg-background flex items-center justify-center rounded-lg border p-4`}
       >
-        <div className="text-muted-foreground">Loading...</div>
+        <div className="text-muted-foreground">{t("widgets.widget.loading", "Loading...")}</div>
       </div>
     );
   }
@@ -367,7 +369,7 @@ export function DashboardWidget({
       <div
         className={`bg-background flex items-center justify-center rounded-lg border p-4`}
       >
-        <div className="text-muted-foreground">Widget not found</div>
+        <div className="text-muted-foreground">{t("widgets.widget.not-found", "Widget not found")}</div>
       </div>
     );
   }
@@ -394,7 +396,7 @@ export function DashboardWidget({
                 <button
                   onClick={handleEdit}
                   className="text-muted-foreground hover:text-foreground hidden group-hover:block"
-                  aria-label="Edit widget"
+                  aria-label={t("widgets.widget.aria-edit", "Edit widget")}
                 >
                   <PencilIcon size={16} />
                 </button>
@@ -402,7 +404,7 @@ export function DashboardWidget({
                 <button
                   onClick={handleCopy}
                   className="text-muted-foreground hover:text-foreground hidden group-hover:block"
-                  aria-label="Copy widget"
+                  aria-label={t("widgets.widget.aria-copy", "Copy widget")}
                 >
                   <CopyIcon size={16} />
                 </button>
@@ -410,7 +412,7 @@ export function DashboardWidget({
               <button
                 onClick={handleDelete}
                 className="text-muted-foreground hover:text-destructive hidden group-hover:block"
-                aria-label="Delete widget"
+                aria-label={t("widgets.widget.aria-delete", "Delete widget")}
               >
                 <TrashIcon size={16} />
               </button>

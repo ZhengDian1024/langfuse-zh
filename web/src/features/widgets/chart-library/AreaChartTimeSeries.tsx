@@ -15,6 +15,7 @@ import {
   toFullMetricString,
 } from "@/src/features/widgets/chart-library/utils";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const AreaChartTimeSeries: React.FC<ChartProps> = ({
   data,
@@ -32,6 +33,7 @@ export const AreaChartTimeSeries: React.FC<ChartProps> = ({
   legendSummary = "none",
   subtleFill = false,
 }) => {
+  const { t } = useI18n();
   const [highlightedDimension, setHighlightedDimension] = useState<
     string | null
   >(null);
@@ -75,7 +77,7 @@ export const AreaChartTimeSeries: React.FC<ChartProps> = ({
                   )}
                   aria-pressed={isHighlighted}
                   aria-label={
-                    isHighlighted ? `Show only ${dimension}` : "Show all series"
+                    isHighlighted ? t("widgets.chart.show-only", "Show only {dimension}", { dimension }) : t("widgets.chart.show-all-series", "Show all series")
                   }
                 >
                   <div

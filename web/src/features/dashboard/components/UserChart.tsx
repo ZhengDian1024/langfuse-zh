@@ -13,6 +13,7 @@ import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { barListToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { traceViewQuery } from "@/src/features/dashboard/lib/dashboard-utils";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type BarChartDataPoint = {
   name: string;
@@ -40,6 +41,7 @@ export const UserChart = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const maxNumberOfEntries = { collapsed: 5, expanded: 20 } as const;
+  const { t } = useI18n();
 
   const userCostQuery: QueryType = {
     view: "observations",
@@ -143,7 +145,7 @@ export const UserChart = ({
         .filter((item) => item.userId !== undefined)
         .map((item) => {
           return {
-            name: (item.userId as string | null | undefined) ?? "Unknown",
+            name: (item.userId as string | null | undefined) ?? t("dashboard.placeholder.unknown", "Unknown"),
             value: item.sum_totalCost ? Number(item.sum_totalCost) : 0,
           };
         })
@@ -164,25 +166,25 @@ export const UserChart = ({
 
   const data = [
     {
-      tabTitle: "Token cost",
+      tabTitle: t("dashboard.chart.token-cost", "Token cost"),
       data: isExpanded
         ? transformedCost.slice(0, maxNumberOfEntries.expanded)
         : transformedCost.slice(0, maxNumberOfEntries.collapsed),
       totalMetric: costFormatter(totalCost),
-      metricDescription: "Total cost",
-      chartMetricLabel: "USD",
+      metricDescription: t("dashboard.chart.total-cost", "Total cost"),
+      chartMetricLabel: t("dashboard.chart.metric-usd", "USD"),
       chartUnit: "USD",
     },
     {
-      tabTitle: "Count of Traces",
+      tabTitle: t("dashboard.chart.count-of-traces", "Count of Traces"),
       data: isExpanded
         ? transformedNumberOfTraces.slice(0, maxNumberOfEntries.expanded)
         : transformedNumberOfTraces.slice(0, maxNumberOfEntries.collapsed),
       totalMetric: totalTraces
         ? compactNumberFormatter(totalTraces)
         : compactNumberFormatter(0),
-      metricDescription: "Total traces",
-      chartMetricLabel: "Traces",
+      metricDescription: t("dashboard.chart.total-traces", "Total traces"),
+      chartMetricLabel: t("dashboard.chart.metric-traces", "Traces"),
       chartUnit: "traces",
     },
   ] as const;
@@ -190,7 +192,7 @@ export const UserChart = ({
   return (
     <DashboardCard
       className={className}
-      title="User consumption"
+      title={t("dashboard.chart.user-consumption-title", "User consumption")}
       isLoading={isLoading || user.isPending}
     >
       <TabComponent
@@ -238,7 +240,7 @@ export const UserChart = ({
                 ) : (
                   <NoDataOrLoading
                     isLoading={isLoading || user.isPending}
-                    description="Consumption per user is tracked by passing their ids on traces."
+                    description={t("dashboard.chart.user-consumption-empty", "Consumption per user is tracked by passing their ids on traces.")}
                     href="https://langfuse.com/docs/observability/features/users"
                   />
                 )}
@@ -254,8 +256,8 @@ export const UserChart = ({
         maxLength={maxNumberOfEntries.collapsed}
         expandText={
           transformedCost.length > maxNumberOfEntries.expanded
-            ? `Show top ${maxNumberOfEntries.expanded}`
-            : "Show all"
+            ? t("dashboard.card.show-top", "Show top {count}", { count: String(maxNumberOfEntries.expanded) })
+            : t("dashboard.card.show-all", "Show all")
         }
       />
     </DashboardCard>

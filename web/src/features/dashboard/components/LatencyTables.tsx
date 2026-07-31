@@ -13,6 +13,7 @@ import { Popup } from "@/src/components/layouts/doc-popup";
 import { type QueryType, type ViewVersion } from "@langfuse/shared/query";
 import { mapLegacyUiTableFilterToView } from "@/src/features/dashboard/lib/dashboardUiTableToViewMapping";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const LatencyTables = ({
   projectId,
@@ -31,6 +32,7 @@ export const LatencyTables = ({
   metricsVersion?: ViewVersion;
   schedulerId?: string;
 }) => {
+  const { t } = useI18n();
   const generationsLatenciesQuery: QueryType = {
     view: "observations",
     dimensions: [{ field: "name" }],
@@ -203,12 +205,12 @@ export const LatencyTables = ({
     <>
       <DashboardCard
         className="col-span-1 xl:col-span-2"
-        title="Trace latency percentiles"
+        title={t("dashboard.chart.trace-latency-title", "Trace latency percentiles")}
         isLoading={isLoading || tracesLatencies.isPending}
       >
         <DashboardTable
           headers={[
-            "Trace Name",
+            t("dashboard.chart.trace-latency-col", "Trace Name"),
             <RightAlignedCell key="p50">p50</RightAlignedCell>,
             <RightAlignedCell key="p90">p90</RightAlignedCell>,
             <RightAlignedCell key="p95">
@@ -223,12 +225,12 @@ export const LatencyTables = ({
       </DashboardCard>
       <DashboardCard
         className="col-span-1 xl:col-span-2"
-        title="Generation latency percentiles"
+        title={t("dashboard.chart.generation-latency-title", "Generation latency percentiles")}
         isLoading={isLoading || generationsLatencies.isPending}
       >
         <DashboardTable
           headers={[
-            "Generation Name",
+            t("dashboard.chart.generation-latency-col", "Generation Name"),
             <RightAlignedCell key="p50">p50</RightAlignedCell>,
             <RightAlignedCell key="p90">p90</RightAlignedCell>,
             <RightAlignedCell key="p95">
@@ -243,12 +245,12 @@ export const LatencyTables = ({
       </DashboardCard>
       <DashboardCard
         className="col-span-1 xl:col-span-2"
-        title="Observation latency percentiles"
+        title={t("dashboard.chart.observation-latency-title", "Observation latency percentiles")}
         isLoading={isLoading || observationsLatencies.isPending}
       >
         <DashboardTable
           headers={[
-            "Observation",
+            t("dashboard.chart.observation-latency-col", "Observation"),
             <RightAlignedCell key="p50">p50</RightAlignedCell>,
             <RightAlignedCell key="p90">p90</RightAlignedCell>,
             <RightAlignedCell key="p95">

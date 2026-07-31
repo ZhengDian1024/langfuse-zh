@@ -21,6 +21,7 @@ import {
   convertScoreColumnsToAnalyticsData,
   getScoreDataTypeIcon,
 } from "@/src/features/scores/lib/scoreColumns";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function ScoreAnalytics(props: {
   className?: string;
@@ -39,6 +40,7 @@ export function ScoreAnalytics(props: {
       `selectedDashboardScoreKeys-${props.projectId}`,
       [],
     );
+  const { t } = useI18n();
 
   const scoreKeysAndProps = api.scores.getScoreColumns.useQuery(
     {
@@ -64,8 +66,8 @@ export function ScoreAnalytics(props: {
   return (
     <DashboardCard
       className={props.className}
-      title="Scores Analytics"
-      description="Aggregate scores and averages over time"
+      title={t("dashboard.chart.scores-analytics-title", "Scores Analytics")}
+      description={t("dashboard.chart.scores-analytics-description", "Aggregate scores and averages over time")}
       isLoading={props.isLoading || scoreKeysAndProps.isPending}
       headerClassName={"grid grid-cols-[1fr_auto_auto] items-center"}
       headerChildren={
@@ -73,7 +75,7 @@ export function ScoreAnalytics(props: {
         !props.isLoading &&
         Boolean(scoreKeysAndProps.data?.scoreColumns.length) && (
           <MultiSelectKeyValues
-            placeholder="Search score..."
+            placeholder={t("dashboard.chart.search-score", "Search score...")}
             onValueChange={(values, changedValueId, selectedValueKeys) => {
               if (values.length === 0) setSelectedDashboardScoreKeys([]);
 
@@ -113,11 +115,11 @@ export function ScoreAnalytics(props: {
                   {/* aggregate */}
                   <div>
                     <div className="text-muted-foreground mb-2 text-sm">
-                      Total aggregate scores
+                      {t("dashboard.chart.total-aggregate-scores", "Total aggregate scores")}
                       {isNumericDataType(dataType) && (
                         // TODO: v2 histogram aggregates all rows server-side (no 10k cap).
                         // Make this tooltip conditional on metricsVersion.
-                        <DocPopup description="Aggregate of up to 10,000 scores" />
+                        <DocPopup description={t("dashboard.chart.total-aggregate-scores-doc", "Aggregate of up to 10,000 scores")} />
                       )}
                     </div>
                     {isCategoricalDataType(dataType) && (
@@ -152,8 +154,8 @@ export function ScoreAnalytics(props: {
                   <div>
                     <div className="text-muted-foreground mb-2 text-sm">
                       {isNumericDataType(dataType)
-                        ? "Moving average over time"
-                        : "Scores over time"}
+                        ? t("dashboard.chart.moving-average-over-time", "Moving average over time")
+                        : t("dashboard.chart.scores-over-time", "Scores over time")}
                     </div>
                     {isCategoricalDataType(dataType) && (
                       <CategoricalScoreChart
@@ -199,7 +201,7 @@ export function ScoreAnalytics(props: {
       ) : Boolean(scoreKeysAndProps.data?.scoreColumns.length) ? (
         <div className="flex min-h-36 w-full flex-1 items-center justify-center rounded-md border">
           <p className="text-muted-foreground">
-            Select a score to view analytics
+            {t("dashboard.chart.select-score-empty", "Select a score to view analytics")}
           </p>
         </div>
       ) : (

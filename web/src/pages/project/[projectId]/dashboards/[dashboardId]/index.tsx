@@ -33,6 +33,7 @@ import {
   getDashboardQuerySchedulerMaxConcurrent,
   useDashboardQueryScheduler,
 } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface WidgetPlacement {
   id: string;
@@ -48,6 +49,7 @@ export default function DashboardDetail() {
   const router = useRouter();
   const utils = api.useUtils();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   const { projectId, dashboardId, addWidgetId } = router.query as {
     projectId: string;
@@ -106,15 +108,15 @@ export default function DashboardDetail() {
     api.dashboard.updateDashboardDefinition.useMutation({
       onSuccess: () => {
         showSuccessToast({
-          title: "Dashboard updated",
-          description: "Your changes have been saved automatically",
+          title: t("dashboard.toast.updated-title", "Dashboard updated"),
+          description: t("dashboard.toast.updated-auto-description", "Your changes have been saved automatically"),
           duration: 2000,
         });
         // Invalidate the dashboard query to refetch the data
         dashboard.refetch();
       },
       onError: (error) => {
-        showErrorToast("Error updating dashboard", error.message);
+        showErrorToast(t("dashboard.toast.error-update", "Error updating dashboard"), error.message);
       },
     });
 
@@ -123,15 +125,15 @@ export default function DashboardDetail() {
     api.dashboard.updateDashboardFilters.useMutation({
       onSuccess: () => {
         showSuccessToast({
-          title: "Filters saved",
-          description: "Dashboard filters have been saved successfully",
+          title: t("dashboard.toast.filters-saved-title", "Filters saved"),
+          description: t("dashboard.toast.filters-saved-description", "Dashboard filters have been saved successfully"),
           duration: 2000,
         });
         // Update saved state to match current state
         setSavedFilters(currentFilters);
       },
       onError: (error) => {
-        showErrorToast("Error saving filters", error.message);
+        showErrorToast(t("dashboard.toast.error-save-filters", "Error saving filters"), error.message);
       },
     });
 
@@ -216,64 +218,64 @@ export default function DashboardDetail() {
   // Filter columns for PopoverFilterBuilder
   const filterColumns: ColumnDefinition[] = [
     {
-      name: "Environment",
+      name: t("dashboard.filter.environment", "Environment"),
       id: "environment",
       type: "stringOptions",
       options: environmentOptions,
       internal: "internalValue",
     },
     {
-      name: "Trace Name",
+      name: t("dashboard.filter.trace-name", "Trace Name"),
       id: "traceName",
       type: "stringOptions",
       options: nameOptions,
       internal: "internalValue",
     },
     {
-      name: "Observation Name",
+      name: t("dashboard.filter.observation-name", "Observation Name"),
       id: "observationName",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Score Name",
+      name: t("dashboard.filter.score-name", "Score Name"),
       id: "scoreName",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Tags",
+      name: t("dashboard.filter.tags", "Tags"),
       id: "tags",
       type: "arrayOptions",
       options: tagsOptions,
       internal: "internalValue",
     },
     {
-      name: "User",
+      name: t("dashboard.filter.user", "User"),
       id: "user",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Session",
+      name: t("dashboard.filter.session", "Session"),
       id: "session",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Metadata",
+      name: t("dashboard.filter.metadata", "Metadata"),
       id: "metadata",
       type: "stringObject",
       internal: "internalValue",
     },
     {
-      name: "Release",
+      name: t("dashboard.filter.release", "Release"),
       id: "release",
       type: "string",
       internal: "internalValue",
     },
     {
-      name: "Version",
+      name: t("dashboard.filter.version", "Version"),
       id: "version",
       type: "string",
       internal: "internalValue",
@@ -365,7 +367,7 @@ export default function DashboardDetail() {
       }
     },
     onError: (e) => {
-      showErrorToast("Failed to clone dashboard", e.message);
+      showErrorToast(t("dashboard.toast.error-clone", "Failed to clone dashboard"), e.message);
     },
   });
 
@@ -420,19 +422,19 @@ export default function DashboardDetail() {
         scrollable
         headerProps={{
           title:
-            (dashboard.data?.name || "Dashboard") +
+            (dashboard.data?.name || t("dashboard.page.title", "Dashboards")) +
             (dashboard.data?.owner === "LANGFUSE"
-              ? " (Langfuse Maintained)"
+              ? t("dashboard.page.langfuse-maintained-suffix", " (Langfuse Maintained)")
               : ""),
           breadcrumb: [
             {
-              name: "Dashboards",
+              name: t("breadcrumb.dashboards", "Dashboards"),
               href: `/project/${projectId}/dashboards`,
             },
           ],
           help: {
             description:
-              dashboard.data?.description || "No description available",
+              dashboard.data?.description || t("dashboard.page.no-description", "No description available"),
           },
           actionButtonsRight: (
             <>
@@ -443,14 +445,14 @@ export default function DashboardDetail() {
                   variant="outline"
                 >
                   {updateDashboardFilters.isPending
-                    ? "Saving..."
-                    : "Save Filters"}
+                    ? t("dashboard.page.saving", "Saving...")
+                    : t("dashboard.page.save-filters", "Save Filters")}
                 </Button>
               )}
               {hasCUDAccess && (
                 <Button onClick={handleAddWidget}>
                   <PlusIcon size={16} className="mr-1 h-4 w-4" />
-                  Add Widget
+                  {t("dashboard.page.add-widget", "Add Widget")}
                 </Button>
               )}
               {hasCloneAccess && (
@@ -459,7 +461,7 @@ export default function DashboardDetail() {
                   disabled={mutateCloneDashboard.isPending}
                 >
                   <Copy size={16} className="mr-1 h-4 w-4" />
-                  Clone
+                  {t("dashboard.page.clone", "Clone")}
                 </Button>
               )}
             </>
@@ -478,7 +480,7 @@ export default function DashboardDetail() {
         ) : dashboard.isError ? (
           <div className="flex h-64 items-center justify-center">
             <div className="text-destructive">
-              Error: {dashboard.error.message}
+              {t("dashboard.page.error-prefix", "Error: {message}", { message: dashboard.error.message })}
             </div>
           </div>
         ) : (

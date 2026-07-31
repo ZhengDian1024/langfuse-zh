@@ -16,6 +16,7 @@ import {
   formatMetric,
   toFullMetricString,
 } from "@/src/features/widgets/chart-library/utils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * PieChart component
@@ -37,6 +38,7 @@ export const PieChart: React.FC<ChartProps> = ({
   metricFormatter = (value, options) => formatMetric(value, options),
   subtleFill = false,
 }) => {
+  const { t } = useI18n();
   const formatValue = (value: number) =>
     toFullMetricString(metricFormatter(value, { style: "compact" }));
 
@@ -122,7 +124,7 @@ export const PieChart: React.FC<ChartProps> = ({
                         y={(viewBox.cy || 0) + 24}
                         className="fill-muted-foreground"
                       >
-                        Total
+                        {t("widgets.chart.pie-total", "Total")}
                       </tspan>
                     </text>
                   );

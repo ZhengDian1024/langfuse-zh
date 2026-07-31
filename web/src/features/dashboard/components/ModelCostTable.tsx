@@ -11,6 +11,7 @@ import { truncate } from "@/src/utils/string";
 import { type QueryType, type ViewVersion } from "@langfuse/shared/query";
 import { mapLegacyUiTableFilterToView } from "@/src/features/dashboard/lib/dashboardUiTableToViewMapping";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ModelCostTable = ({
   className,
@@ -31,6 +32,7 @@ export const ModelCostTable = ({
   metricsVersion?: ViewVersion;
   schedulerId?: string;
 }) => {
+  const { t } = useI18n();
   const modelCostQuery: QueryType = {
     view: "observations",
     dimensions: [{ field: "providedModelName" }],
@@ -103,14 +105,14 @@ export const ModelCostTable = ({
   return (
     <DashboardCard
       className={className}
-      title="Model costs"
+      title={t("dashboard.chart.model-costs-title", "Model costs")}
       isLoading={isLoading || metrics.isLoading}
     >
       <DashboardTable
         headers={[
-          "Model",
-          <RightAlignedCell key="tokens">Tokens</RightAlignedCell>,
-          <RightAlignedCell key="cost">USD</RightAlignedCell>,
+          t("dashboard.chart.model-costs-col-model", "Model"),
+          <RightAlignedCell key="tokens">{t("dashboard.chart.model-costs-col-tokens", "Tokens")}</RightAlignedCell>,
+          <RightAlignedCell key="cost">{t("dashboard.chart.model-costs-col-usd", "USD")}</RightAlignedCell>,
         ]}
         rows={metricsData}
         isLoading={isLoading || metrics.isLoading}
@@ -118,10 +120,10 @@ export const ModelCostTable = ({
       >
         <TotalMetric
           metric={costFormatter(totalTokenCost)}
-          description="Total cost"
+          description={t("dashboard.chart.total-cost", "Total cost")}
         >
           <DocPopup
-            description="Calculated multiplying the number of tokens with cost per token for each model."
+            description={t("dashboard.chart.model-costs-doc", "Calculated multiplying the number of tokens with cost per token for each model.")}
             href="https://langfuse.com/docs/model-usage-and-cost"
           />
         </TotalMetric>

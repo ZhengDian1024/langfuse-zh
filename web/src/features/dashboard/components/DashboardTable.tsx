@@ -27,6 +27,7 @@ import { DeleteDashboardButton } from "@/src/components/deleteButton";
 import { EditDashboardDialog } from "@/src/features/dashboard/components/EditDashboardDialog";
 import { User as UserIcon } from "lucide-react";
 import { useRouter } from "next/router";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DashboardTableRow = {
   id: string;
@@ -47,18 +48,19 @@ function CloneDashboardButton({
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" });
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   const mutCloneDashboard = api.dashboard.cloneDashboard.useMutation({
     onSuccess: () => {
       utils.dashboard.invalidate();
       capture("dashboard:clone_dashboard");
       showSuccessToast({
-        title: "Dashboard cloned",
-        description: "The dashboard has been cloned successfully",
+        title: t("dashboard.toast.cloned-title", "Dashboard cloned"),
+        description: t("dashboard.toast.cloned-description", "The dashboard has been cloned successfully"),
       });
     },
     onError: (e) => {
-      showErrorToast("Failed to clone dashboard", e.message);
+      showErrorToast(t("dashboard.toast.error-clone", "Failed to clone dashboard"), e.message);
     },
   });
 
@@ -82,7 +84,7 @@ function CloneDashboardButton({
       onClick={handleCloneDashboard}
     >
       <Copy className="mr-2 h-4 w-4" />
-      Clone
+      {t("dashboard.action.clone", "Clone")}
     </Button>
   );
 }
@@ -100,6 +102,7 @@ function EditDashboardButton({
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const hasAccess = useHasProjectAccess({ projectId, scope: "dashboards:CUD" });
+  const { t } = useI18n();
 
   return (
     <>
@@ -110,7 +113,7 @@ function EditDashboardButton({
         onClick={() => setIsDialogOpen(true)}
       >
         <Edit className="mr-2 h-4 w-4" />
-        Edit
+        {t("dashboard.action.edit", "Edit")}
       </Button>
 
       <EditDashboardDialog
@@ -129,6 +132,7 @@ export function DashboardTable() {
   const projectId = useProjectIdFromURL() as string;
   const { setDetailPageList } = useDetailPageLists();
   const router = useRouter();
+  const { t } = useI18n();
 
   const [orderByState, setOrderByState] = useOrderByState({
     column: "updatedAt",
@@ -169,7 +173,7 @@ export function DashboardTable() {
   const columnHelper = createColumnHelper<DashboardTableRow>();
   const dashboardColumns = [
     columnHelper.accessor("name", {
-      header: "Name",
+      header: t("dashboard.table.col-name", "Name"),
       id: "name",
       enableSorting: true,
       size: 200,
@@ -184,7 +188,7 @@ export function DashboardTable() {
       },
     }),
     columnHelper.accessor("description", {
-      header: "Description",
+      header: t("dashboard.table.col-description", "Description"),
       id: "description",
       size: 300,
       cell: (row) => {
@@ -193,25 +197,25 @@ export function DashboardTable() {
     }),
     columnHelper.display({
       id: "ownerTag",
-      header: "Owner",
+      header: t("dashboard.table.col-owner", "Owner"),
       size: 80,
       cell: (row) => {
         return row.row.original.owner === "LANGFUSE" ? (
           <span className="flex gap-1 px-2 py-0.5 text-xs">
-            <span role="img" aria-label="Langfuse">
+            <span role="img" aria-label={t("dashboard.aria.langfuse", "Langfuse")}>
               🪢
             </span>
-            Langfuse
+            {t("dashboard.table.owner-langfuse", "Langfuse")}
           </span>
         ) : (
           <span className="flex gap-1 px-2 py-0.5 text-xs">
-            <UserIcon className="h-3 w-3" /> Project
+            <UserIcon className="h-3 w-3" /> {t("dashboard.table.owner-project", "Project")}
           </span>
         );
       },
     }),
     columnHelper.accessor("createdAt", {
-      header: "Created At",
+      header: t("dashboard.table.col-created-at", "Created At"),
       id: "createdAt",
       enableSorting: true,
       size: 150,
@@ -221,7 +225,7 @@ export function DashboardTable() {
       },
     }),
     columnHelper.accessor("updatedAt", {
-      header: "Updated At",
+      header: t("dashboard.table.col-updated-at", "Updated At"),
       id: "updatedAt",
       enableSorting: true,
       size: 150,
@@ -232,7 +236,7 @@ export function DashboardTable() {
     }),
     columnHelper.display({
       id: "actions",
-      header: "Actions",
+      header: t("dashboard.table.col-actions", "Actions"),
       size: 70,
       cell: (row) => {
         const id = row.row.original.id;

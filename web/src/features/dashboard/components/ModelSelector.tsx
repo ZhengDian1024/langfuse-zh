@@ -19,6 +19,7 @@ import { type FilterState } from "@langfuse/shared";
 import { type ViewVersion } from "@langfuse/shared/query";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ModelSelectorPopover = ({
   allModels,
@@ -36,6 +37,7 @@ export const ModelSelectorPopover = ({
   handleSelectAll: () => void;
 }) => {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -52,8 +54,8 @@ export const ModelSelectorPopover = ({
       </PopoverTrigger>
       <PopoverContent className="w-56 p-0">
         <InputCommand>
-          <InputCommandInput placeholder="Search models..." variant="bottom" />
-          <InputCommandEmpty>No model found.</InputCommandEmpty>
+          <InputCommandInput placeholder={t("dashboard.model-selector.search", "Search models...")} variant="bottom" />
+          <InputCommandEmpty>{t("dashboard.model-selector.no-model", "No model found.")}</InputCommandEmpty>
           <InputCommandGroup>
             <InputCommandItem onSelect={handleSelectAll}>
               <Check
@@ -63,7 +65,7 @@ export const ModelSelectorPopover = ({
                 )}
               />
               <span>
-                <p className="font-semibold">Select All</p>
+                <p className="font-semibold">{t("dashboard.model-selector.select-all", "Select All")}</p>
               </span>
             </InputCommandItem>
             <InputCommandSeparator className="my-1" />
@@ -88,7 +90,7 @@ export const ModelSelectorPopover = ({
                     )}
                   />
                   {!model.model || model.model === "" ? (
-                    <i>none</i>
+                    <i>{t("dashboard.model-selector.none", "none")}</i>
                   ) : (
                     model.model
                   )}

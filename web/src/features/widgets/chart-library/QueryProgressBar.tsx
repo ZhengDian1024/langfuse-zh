@@ -1,5 +1,6 @@
 import { type QueryProgress } from "@/src/hooks/useSSEDashboardQuery";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function formatRows(n: number): string {
   if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(1)}B`;
@@ -19,6 +20,7 @@ export function QueryProgressBar({
   className,
   layout = "default",
 }: QueryProgressBarProps) {
+  const { t } = useI18n();
   const hasProgress = progress != null;
   const percent = hasProgress
     ? Math.max(0, Math.min(progress.percent * 100, 100))
@@ -30,7 +32,7 @@ export function QueryProgressBar({
     <div className={cn("w-full min-w-0", className)}>
       <div
         role="progressbar"
-        aria-label="Query progress"
+        aria-label={t("widgets.chart.query-progress-aria", "Query progress")}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={hasProgress ? Math.round(percent) : undefined}
@@ -54,10 +56,8 @@ export function QueryProgressBar({
           )}
         >
           {hasProgress
-            ? `Reading ${formatRows(progress.read_rows)} / ~${formatRows(
-                progress.total_rows_to_read,
-              )} rows`
-            : "Reading query progress..."}
+            ? t("widgets.chart.reading-rows", "Reading {read} / ~{total} rows", { read: formatRows(progress.read_rows), total: formatRows(progress.total_rows_to_read) })
+            : t("widgets.chart.reading-progress", "Reading query progress...")}
         </p>
       ) : null}
     </div>

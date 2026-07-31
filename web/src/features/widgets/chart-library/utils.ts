@@ -112,33 +112,36 @@ export const isTimeSeriesChart = (
 export const formatAxisLabel = (label: string): string =>
   label.length > 13 ? label.slice(0, 13).concat("…") : label;
 
+import type { MessageKey } from "@/src/features/i18n/messages";
+
 /**
  * Maps chart types to their human-readable display names.
  */
 export function getChartTypeDisplayName(
   chartType: DashboardWidgetChartType,
+  t: (key: MessageKey, defaultMessage?: string) => string = (_k, def) => def ?? "",
 ): string {
   switch (chartType) {
     case "LINE_TIME_SERIES":
-      return "Line Chart (Time Series)";
+      return t("widgets.chart-type.line-time-series", "Line Chart (Time Series)");
     case "AREA_TIME_SERIES":
-      return "Area Chart (Time Series)";
+      return t("widgets.chart-type.area-time-series", "Area Chart (Time Series)");
     case "BAR_TIME_SERIES":
-      return "Bar Chart (Time Series)";
+      return t("widgets.chart-type.bar-time-series", "Bar Chart (Time Series)");
     case "HORIZONTAL_BAR":
-      return "Horizontal Bar Chart (Total Value)";
+      return t("widgets.chart-type.horizontal-bar", "Horizontal Bar Chart (Total Value)");
     case "VERTICAL_BAR":
-      return "Vertical Bar Chart (Total Value)";
+      return t("widgets.chart-type.vertical-bar", "Vertical Bar Chart (Total Value)");
     case "PIE":
-      return "Pie Chart (Total Value)";
+      return t("widgets.chart-type.pie", "Pie Chart (Total Value)");
     case "NUMBER":
-      return "Big Number (Total Value)";
+      return t("widgets.chart-type.number", "Big Number (Total Value)");
     case "HISTOGRAM":
-      return "Histogram (Total Value)";
+      return t("widgets.chart-type.histogram", "Histogram (Total Value)");
     case "PIVOT_TABLE":
-      return "Pivot Table (Total Value)";
+      return t("widgets.chart-type.pivot-table", "Pivot Table (Total Value)");
     default:
-      return "Unknown Chart Type";
+      return t("widgets.chart-type.unknown", "Unknown Chart Type");
   }
 }
 

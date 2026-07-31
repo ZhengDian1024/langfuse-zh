@@ -21,6 +21,7 @@ import type { DatabaseRow } from "@/src/server/api/services/sqlInterface";
 import { Chart } from "@/src/features/widgets/chart-library/Chart";
 import { timeSeriesToDataPoints } from "@/src/features/dashboard/lib/chart-data-adapters";
 import { useScheduledDashboardExecuteQuery } from "@/src/hooks/useDashboardQueryScheduler";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const GenerationLatencyChart = ({
   className,
@@ -61,6 +62,7 @@ export const GenerationLatencyChart = ({
       queryId: `${schedulerId ?? "home:generation-latency"}:all-models`,
     },
   );
+  const { t } = useI18n();
   const hasModelSelection = selectedModels.length > 0 && allModels.length > 0;
   const isLatencyEnabled = !isLoading && hasModelSelection;
 
@@ -136,23 +138,23 @@ export const GenerationLatencyChart = ({
 
   const data = [
     {
-      tabTitle: "50th Percentile",
+      tabTitle: t("dashboard.chart.latency-p50", "50th Percentile"),
       data: getData("p50_latency"),
     },
     {
-      tabTitle: "75th Percentile",
+      tabTitle: t("dashboard.chart.latency-p75", "75th Percentile"),
       data: getData("p75_latency"),
     },
     {
-      tabTitle: "90th Percentile",
+      tabTitle: t("dashboard.chart.latency-p90", "90th Percentile"),
       data: getData("p90_latency"),
     },
     {
-      tabTitle: "95th Percentile",
+      tabTitle: t("dashboard.chart.latency-p95", "95th Percentile"),
       data: getData("p95_latency"),
     },
     {
-      tabTitle: "99th Percentile",
+      tabTitle: t("dashboard.chart.latency-p99", "99th Percentile"),
       data: getData("p99_latency"),
     },
   ];
@@ -160,8 +162,8 @@ export const GenerationLatencyChart = ({
   return (
     <DashboardCard
       className={className}
-      title="Model latencies"
-      description="Latencies (seconds) per LLM generation"
+      title={t("dashboard.chart.model-latencies-title", "Model latencies")}
+      description={t("dashboard.chart.model-latencies-description", "Latencies (seconds) per LLM generation")}
       isLoading={
         isLoading || (latencies.isPending && selectedModels.length > 0)
       }
@@ -191,7 +193,7 @@ export const GenerationLatencyChart = ({
                       data={timeSeriesToDataPoints(item.data, agg)}
                       config={{
                         metric: {
-                          label: "Latency",
+                          label: t("dashboard.chart.metric-latency", "Latency"),
                         },
                       }}
                       rowLimit={100}

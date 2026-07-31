@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/src/components/ui/chart";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface HistogramDataPoint {
   binLabel: string;
@@ -25,12 +26,7 @@ interface HistogramDataPoint {
 
 const HistogramChart = ({
   data,
-  config = {
-    count: {
-      label: "Count",
-      color: "hsl(var(--chart-1))",
-    },
-  },
+  config,
   subtleFill = false,
   metricFormatter = (value, options) => formatMetric(value, options),
 }: {
@@ -39,6 +35,14 @@ const HistogramChart = ({
   subtleFill?: boolean;
   metricFormatter?: MetricFormatterFunction;
 }) => {
+  const { t } = useI18n();
+  const resolvedConfig: ChartConfig =
+    config ?? {
+      count: {
+        label: t("widgets.chart.histogram-count", "Count"),
+        color: "hsl(var(--chart-1))",
+      },
+    };
   const formatBinEdge = (value: number) =>
     toFullMetricString(metricFormatter(value, { style: "compact" }));
 
@@ -72,14 +76,14 @@ const HistogramChart = ({
   if (!histogramData.length) {
     return (
       <div className="text-muted-foreground flex h-full items-center justify-center">
-        No data available
+        {t("widgets.chart.no-data", "No data available")}
       </div>
     );
   }
 
   return (
     <ChartContainer
-      config={config}
+      config={resolvedConfig}
       className="[&_.recharts-bar-rectangle:hover]:opacity-30 dark:[&_.recharts-bar-rectangle:hover]:opacity-100 dark:[&_.recharts-bar-rectangle:hover]:brightness-[3]"
     >
       <BarChart
@@ -122,8 +126,8 @@ const HistogramChart = ({
                   formatMetric(Number(v), { style: "compact" }),
                 )
               }
-              nameFormatter={(name) => (name === "count" ? "Count" : name)}
-              labelFormatter={(label) => `Bin: ${label}`}
+              nameFormatter={(name) => (name === "count" ? t("widgets.chart.histogram-count", "Count") : name)}
+              labelFormatter={(label) => t("widgets.chart.histogram-bin", "Bin: {label}", { label })}
             />
           )}
         />
