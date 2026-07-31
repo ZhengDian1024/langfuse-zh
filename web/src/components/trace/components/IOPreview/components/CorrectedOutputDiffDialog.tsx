@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import DiffViewer from "@/src/components/DiffViewer";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type CorrectedOutputDiffDialogProps = {
   isOpen: boolean;
@@ -56,6 +57,7 @@ const formatOutputForDiff = (
 export const CorrectedOutputDiffDialog: React.FC<
   CorrectedOutputDiffDialogProps
 > = ({ isOpen, setIsOpen, actualOutput, correctedOutput, strictJsonMode }) => {
+  const { t } = useI18n();
   // Format both outputs for comparison
   const formattedActualOutput = formatOutputForDiff(
     actualOutput,
@@ -74,9 +76,14 @@ export const CorrectedOutputDiffDialog: React.FC<
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent size="xl">
         <DialogHeader>
-          <DialogTitle>Output Correction Diff</DialogTitle>
+          <DialogTitle>
+            {t("trace.correction.diff-title", "Output Correction Diff")}
+          </DialogTitle>
           <DialogDescription>
-            Compare the original output with the corrected version
+            {t(
+              "trace.correction.diff-description",
+              "Compare the original output with the corrected version",
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -84,9 +91,14 @@ export const CorrectedOutputDiffDialog: React.FC<
           {hasNoOriginalOutput ? (
             <div className="flex flex-col items-center justify-center p-8 text-center">
               <div className="text-muted-foreground">
-                <p className="text-lg font-medium">No original output</p>
+                <p className="text-lg font-medium">
+                  {t("trace.correction.no-original", "No original output")}
+                </p>
                 <p className="mt-2 text-sm">
-                  There is no original output to compare with the correction.
+                  {t(
+                    "trace.correction.no-original-message",
+                    "There is no original output to compare with the correction.",
+                  )}
                 </p>
               </div>
             </div>
@@ -95,15 +107,23 @@ export const CorrectedOutputDiffDialog: React.FC<
               <DiffViewer
                 oldString={formattedActualOutput}
                 newString={formattedCorrectedOutput}
-                oldLabel="Original Output"
-                newLabel="Corrected Output"
+                oldLabel={t(
+                  "trace.correction.original-label",
+                  "Original Output",
+                )}
+                newLabel={t(
+                  "trace.correction.corrected-label",
+                  "Corrected Output",
+                )}
               />
             </div>
           )}
         </DialogBody>
 
         <DialogFooter>
-          <Button onClick={() => setIsOpen(false)}>Close</Button>
+          <Button onClick={() => setIsOpen(false)}>
+            {t("trace.common.close", "Close")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

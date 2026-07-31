@@ -13,6 +13,7 @@ import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { cn } from "@/src/utils/tailwind";
 import { type JSONTableViewProps } from "./json-table-view-types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { JSONTableViewHeader } from "./JSONTableViewHeader";
 import { JSONTableViewRow } from "./JSONTableViewRow";
 
@@ -40,6 +41,7 @@ export function JSONTableView<T>({
   overscan = 100,
   className,
 }: JSONTableViewProps<T>) {
+  const { t } = useI18n();
   // Internal expand state (uncontrolled mode)
   const [internalExpandedKeys, setInternalExpandedKeys] = useState<Set<string>>(
     new Set(),
@@ -251,7 +253,9 @@ export function JSONTableView<T>({
       {/* Empty state */}
       {!hasItems && (
         <div className="flex flex-1 items-center justify-center">
-          <div className="text-muted-foreground text-sm">No items</div>
+          <div className="text-muted-foreground text-sm">
+            {t("trace.json-table.no-items", "No items")}
+          </div>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import {
 import { useState } from "react";
 import Decimal from "decimal.js";
 import { getMaxDecimals } from "@/src/features/models/utils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface Details {
   [key: string]: number | undefined;
@@ -72,6 +73,7 @@ export const BreakdownTooltip = ({
   pricingTierName,
 }: BreakdownTooltipProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useI18n();
 
   // Aggregate details if array is provided
   const aggregatedDetails = Array.isArray(details)
@@ -112,17 +114,28 @@ export const BreakdownTooltip = ({
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <span className="font-semibold">
-                {isCost ? "Cost breakdown" : "Usage breakdown"}
+                {isCost
+                  ? t("trace.breakdown.cost", "Cost breakdown")
+                  : t("trace.breakdown.usage", "Usage breakdown")}
               </span>
               {Array.isArray(details) && details.length > 0 && (
                 <span className="text-muted-foreground text-xs italic">
-                  Aggregate across {details.length}{" "}
-                  {details.length === 1 ? "generation" : "generations"}
+                  {t(
+                    "trace.breakdown.aggregate",
+                    "Aggregate across {count} {kind}",
+                    {
+                      count: String(details.length),
+                      kind:
+                        details.length === 1
+                          ? t("trace.breakdown.generation.one", "generation")
+                          : t("trace.breakdown.generation.other", "generations"),
+                    },
+                  )}
                 </span>
               )}
               {pricingTierName && (
                 <div className="text-muted-foreground flex justify-between text-xs">
-                  <span>Pricing Tier:</span>
+                  <span>{t("trace.breakdown.pricing-tier", "Pricing Tier:")}</span>
                   <span className="font-mono">{pricingTierName}</span>
                 </div>
               )}
@@ -130,7 +143,11 @@ export const BreakdownTooltip = ({
 
             {/* Input Section */}
             <Section
-              title={isCost ? "Input cost" : "Input usage"}
+              title={
+                isCost
+                  ? t("trace.breakdown.input-cost", "Input cost")
+                  : t("trace.breakdown.input-usage", "Input usage")
+              }
               details={aggregatedDetails}
               filterFn={(key) => key.includes("input")}
               formatValue={(v) => formatValueWithPadding(v, maxDecimals)}
@@ -138,7 +155,11 @@ export const BreakdownTooltip = ({
 
             {/* Output Section */}
             <Section
-              title={isCost ? "Output cost" : "Output usage"}
+              title={
+                isCost
+                  ? t("trace.breakdown.output-cost", "Output cost")
+                  : t("trace.breakdown.output-usage", "Output usage")
+              }
               details={aggregatedDetails}
               filterFn={(key) => key.includes("output")}
               formatValue={(v) => formatValueWithPadding(v, maxDecimals)}
@@ -154,7 +175,9 @@ export const BreakdownTooltip = ({
             {/* Total */}
             <div className="flex justify-between border-t border-b-4 border-double py-1">
               <span className="text-xs font-semibold">
-                {isCost ? "Total cost" : "Total usage"}
+                {isCost
+                  ? t("trace.breakdown.total-cost", "Total cost")
+                  : t("trace.breakdown.total-usage", "Total usage")}
               </span>
               <span className="font-mono text-xs font-semibold">
                 {formatValueWithPadding(
@@ -216,6 +239,7 @@ interface OtherSectionProps {
 }
 
 const OtherSection = ({ details, isCost, formatValue }: OtherSectionProps) => {
+  const { t } = useI18n();
   const otherEntries = Object.entries(details)
     .filter(
       ([key]) =>
@@ -235,7 +259,9 @@ const OtherSection = ({ details, isCost, formatValue }: OtherSectionProps) => {
     <div className="flex flex-col gap-2">
       <div className="flex justify-between border-b pb-2">
         <span className="text-xs font-medium">
-          {isCost ? "Other cost" : "Other usage"}
+          {isCost
+            ? t("trace.breakdown.other-cost", "Other cost")
+            : t("trace.breakdown.other-usage", "Other usage")}
         </span>
         <span className="text-right font-mono text-xs font-medium">
           {formatValue(otherTotal)}

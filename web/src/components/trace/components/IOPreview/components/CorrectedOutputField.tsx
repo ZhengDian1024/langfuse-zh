@@ -11,6 +11,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { Switch } from "@/src/components/ui/switch";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { CorrectedOutputDiffDialog } from "./CorrectedOutputDiffDialog";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   HoverCard,
   HoverCardContent,
@@ -38,6 +39,7 @@ export function CorrectedOutputField({
   environment = "default",
   compact = false,
 }: CorrectedOutputFieldProps) {
+  const { t } = useI18n();
   const hasAccess = useHasProjectAccess({ projectId, scope: "scores:CUD" });
 
   // JSON validation toggle (persisted in localStorage)
@@ -167,7 +169,7 @@ export function CorrectedOutputField({
                   compact ? "text-xs" : "text-sm",
                 )}
               >
-                {compact ? "" : "Corrected Output"}
+                {compact ? "" : t("trace.correction.label", "Corrected Output")}
               </span>
               <HoverCard>
                 <HoverCardTrigger asChild>
@@ -177,17 +179,19 @@ export function CorrectedOutputField({
                 </HoverCardTrigger>
                 <HoverCardContent className="w-80 text-xs" side="right">
                   <p>
-                    Corrected outputs allow you to save the expected output for
-                    a trace or observation. Learn more in the{" "}
+                    {t(
+                      "trace.correction.description-before",
+                      "Corrected outputs allow you to save the expected output for a trace or observation. Learn more in the ",
+                    )}
                     <Link
                       href="https://langfuse.com/docs/observability/features/corrections"
                       target="_blank"
                       rel="noreferrer"
                       className="hover:text-foreground underline"
                     >
-                      documentation
+                      {t("trace.correction.docs-link", "documentation")}
                     </Link>
-                    .
+                    {t("trace.correction.description-after", ".")}
                   </p>
                 </HoverCardContent>
               </HoverCard>
@@ -197,22 +201,30 @@ export function CorrectedOutputField({
                 {!isValidJson && isEditing && hasContent && (
                   <span className="mr-2 text-xs text-red-500">
                     {strictJsonMode
-                      ? "Invalid JSON - fix to save"
-                      : "Cannot save empty content"}
+                      ? t(
+                          "trace.correction.invalid-json",
+                          "Invalid JSON - fix to save",
+                        )
+                      : t(
+                          "trace.correction.cannot-save-empty",
+                          "Cannot save empty content",
+                        )}
                   </span>
                 )}
                 {isValidJson && saveStatus === "saving" && (
                   <div className="mr-2 flex items-center gap-1">
                     <Spinner size="xxs" />
                     <span className="text-muted-foreground text-xs">
-                      Saving
+                      {t("trace.correction.saving", "Saving")}
                     </span>
                   </div>
                 )}
                 {isValidJson && saveStatus === "saved" && (
                   <div className="mr-2 flex items-center gap-1">
                     <Check className="h-3 w-3" />
-                    <span className="text-muted-foreground text-xs">Saved</span>
+                    <span className="text-muted-foreground text-xs">
+                      {t("trace.correction.saved", "Saved")}
+                    </span>
                   </div>
                 )}
                 {hasContent && (
@@ -222,7 +234,10 @@ export function CorrectedOutputField({
                       variant="ghost"
                       onClick={() => setIsDiffDialogOpen(true)}
                       className="hover:bg-border"
-                      title={"View diff between original and corrected output"}
+                      title={t(
+                        "trace.correction.view-diff",
+                        "View diff between original and corrected output",
+                      )}
                     >
                       <FileDiff className="h-3 w-3" />
                     </Button>
@@ -233,7 +248,10 @@ export function CorrectedOutputField({
                         onClick={handleEdit}
                         disabled={!hasAccess}
                         className="hover:bg-border"
-                        title="Edit corrected output"
+                        title={t(
+                          "trace.correction.edit",
+                          "Edit corrected output",
+                        )}
                       >
                         <Pencil className="h-3 w-3" />
                       </Button>
@@ -244,7 +262,10 @@ export function CorrectedOutputField({
                       onClick={handleDeleteWithExitEdit}
                       disabled={!hasAccess}
                       className="hover:bg-border"
-                      title="Delete corrected output"
+                      title={t(
+                        "trace.correction.delete",
+                        "Delete corrected output",
+                      )}
                     >
                       <Trash className="h-3 w-3" />
                     </Button>
@@ -258,7 +279,9 @@ export function CorrectedOutputField({
                   disabled={!isEditing}
                   className="scale-75"
                 />
-                <span className="text-muted-foreground text-xs">JSON</span>
+                <span className="text-muted-foreground text-xs">
+                  {t("trace.common.json", "JSON")}
+                </span>
               </div>
             </div>
           </div>
@@ -269,7 +292,7 @@ export function CorrectedOutputField({
               disabled={!hasAccess}
               className="text-muted-foreground hover:bg-muted/50 w-full cursor-pointer rounded-md border px-3 py-4 text-center text-xs transition-colors"
             >
-              Click to add corrected output
+              {t("trace.correction.add", "Click to add corrected output")}
             </button>
           ) : isEditing ? (
             <CodeMirrorEditor
@@ -277,7 +300,10 @@ export function CorrectedOutputField({
               onChange={handleEditorChange}
               mode={strictJsonMode ? "json" : "text"}
               minHeight={200}
-              placeholder="Enter corrected output..."
+              placeholder={t(
+                "trace.correction.placeholder",
+                "Enter corrected output...",
+              )}
               className="bg-accent-light-green"
             />
           ) : (
