@@ -1,4 +1,5 @@
 import { StringParam, useQueryParam } from "use-query-params";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   Group,
   Separator,
@@ -425,6 +426,7 @@ TraceLayoutDesktop.DetailPanel = function Detail({
 }: {
   children: ReactNode;
 }) {
+  const { t } = useI18n();
   const {
     detailPanelRef,
     setIsDetailPanelCollapsed,
@@ -462,8 +464,8 @@ TraceLayoutDesktop.DetailPanel = function Detail({
           <Button
             variant="ghost"
             size="icon"
-            title="Show detail panel"
-            aria-label="Show detail panel"
+            title={t("trace.layout.show-detail-panel", "Show detail panel")}
+            aria-label={t("trace.layout.show-detail-panel", "Show detail panel")}
             onClick={expandDetailPanel}
             className="h-7 w-7 shrink-0"
           >

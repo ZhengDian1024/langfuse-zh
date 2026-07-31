@@ -7,14 +7,18 @@
 
 import { TraceGraphView as TraceGraphViewComponent } from "@/src/features/trace-graph-view/components/TraceGraphView";
 import { useTraceGraphData } from "../../contexts/TraceGraphDataContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function TraceGraphView() {
   const { agentGraphData, isLoading } = useTraceGraphData();
+  const { t } = useI18n();
 
   if (isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <span className="text-muted-foreground text-sm">Loading graph...</span>
+        <span className="text-muted-foreground text-sm">
+          {t("trace.graph.loading", "Loading graph...")}
+        </span>
       </div>
     );
   }

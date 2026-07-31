@@ -22,6 +22,7 @@ import { type ReactNode, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { TracePanelNavigationHiddenNotice } from "./TracePanelNavigationHiddenNotice";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function TracePanelNavigationLayoutMobile({
   children,
@@ -31,6 +32,7 @@ export function TracePanelNavigationLayoutMobile({
   secondaryContent?: ReactNode;
 }) {
   const [isGraphExpanded, setIsGraphExpanded] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div className="flex h-full flex-col">
@@ -44,7 +46,9 @@ export function TracePanelNavigationLayoutMobile({
             onClick={() => setIsGraphExpanded(!isGraphExpanded)}
             className="flex w-full items-center justify-between px-2 py-1"
           >
-            <span className="text-xs font-medium">Graph View</span>
+            <span className="text-xs font-medium">
+              {t("trace.panel.graph-view", "Graph View")}
+            </span>
             {isGraphExpanded ? (
               <ChevronUp className="h-3.5 w-3.5" />
             ) : (

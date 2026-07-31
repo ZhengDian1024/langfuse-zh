@@ -577,5 +577,19 @@
   "trace.correction.view-diff": "View diff between original and corrected output",
   "trace.json-table.no-items": "No items",
   "trace.prompt.prefix": "Prompt: ",
-  "trace.prompt.suffix-version": " - v"
+  "trace.prompt.suffix-version": " - v",
+  "trace.layout.navigation": "Navigation",
+  "trace.layout.show-detail-panel": "Show detail panel",
+  "trace.panel.collapse-panel": "Collapse panel",
+  "trace.panel.download-failed": "Failed to download trace JSON",
+  "trace.panel.download-json": "Download trace as JSON",
+  "trace.panel.expand-panel": "Expand panel",
+  "trace.panel.graph-view": "Graph View",
+  "trace.panel.hidden-notice": "{count} hidden observations below {level} level.",
+  "trace.panel.more-options": "More options",
+  "trace.panel.more": "More",
+  "trace.panel.observation-not-found": "Observation not found",
+  "trace.panel.show-all": "Show all",
+  "trace.panel.download-warning": "Trace download excludes IO, metadata, toolDefinitions, and toolCalls for traces with {count}+ observations.",
+  "trace.graph.loading": "Loading graph..."
 }

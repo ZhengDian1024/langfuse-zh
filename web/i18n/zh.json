@@ -577,5 +577,19 @@
   "trace.correction.view-diff": "查看原始 output 与修正 output 的对比",
   "trace.json-table.no-items": "无项目",
   "trace.prompt.prefix": "Prompt: ",
-  "trace.prompt.suffix-version": " - v"
+  "trace.prompt.suffix-version": " - v",
+  "trace.layout.navigation": "导航",
+  "trace.layout.show-detail-panel": "显示详情面板",
+  "trace.panel.collapse-panel": "折叠面板",
+  "trace.panel.download-failed": "下载 trace JSON 失败",
+  "trace.panel.download-json": "下载 trace 为 JSON",
+  "trace.panel.expand-panel": "展开面板",
+  "trace.panel.graph-view": "图表视图",
+  "trace.panel.hidden-notice": "{count} 个 observation 被隐藏，低于 {level} 级别。",
+  "trace.panel.more-options": "更多选项",
+  "trace.panel.more": "更多",
+  "trace.panel.observation-not-found": "未找到 observation",
+  "trace.panel.show-all": "显示全部",
+  "trace.panel.download-warning": "trace 含 {count}+ 个 observation 时，下载会排除 IO、metadata、toolDefinitions 和 toolCalls。",
+  "trace.graph.loading": "正在加载图表…"
 }

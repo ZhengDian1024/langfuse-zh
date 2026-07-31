@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { StringParam, useQueryParam } from "use-query-params";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { cn } from "@/src/utils/tailwind";
 import { useCallback } from "react";
 import {
@@ -88,6 +89,7 @@ function TracePanelNavigationHeaderExpanded({
 }: TracePanelNavigationHeaderProps) {
   const { searchInputValue, setSearchInputValue, setSearchQueryImmediate } =
     useSearch();
+  const { t } = useI18n();
   const { expandAll, collapseAll, collapsedNodes } = useSelection();
   const { roots, trace, observations } = useTraceData();
   const { isGraphViewAvailable } = useTraceGraphData();
@@ -148,14 +150,20 @@ function TracePanelNavigationHeaderExpanded({
 
         if (observations.length >= TRACE_DOWNLOAD_OMIT_LARGE_FIELDS_THRESHOLD) {
           toast.warning(
-            `Trace download excludes IO, metadata, toolDefinitions, and toolCalls for traces with ${TRACE_DOWNLOAD_OMIT_LARGE_FIELDS_THRESHOLD}+ observations.`,
+            t(
+              "trace.panel.download-warning",
+              "Trace download excludes IO, metadata, toolDefinitions, and toolCalls for traces with {count}+ observations.",
+              {
+                count: String(TRACE_DOWNLOAD_OMIT_LARGE_FIELDS_THRESHOLD),
+              },
+            ),
           );
         }
       } catch (error) {
         toast.error(
           error instanceof Error
             ? error.message
-            : "Failed to download trace JSON",
+            : t("trace.panel.download-failed", "Failed to download trace JSON"),
         );
       }
     }, [isBetaEnabled, observations, trace]);
@@ -183,7 +191,7 @@ function TracePanelNavigationHeaderExpanded({
         >
           <CommandInput
             showBorder={false}
-            placeholder="Search"
+            placeholder={t("trace.common.search", "Search")}
             className="h-7 min-w-20 border-0 pr-0 focus:ring-0"
             value={searchInputValue}
             onValueChange={setSearchInputValue}
@@ -197,7 +205,11 @@ function TracePanelNavigationHeaderExpanded({
               onClick={handleToggleTreeNodes}
               variant="ghost"
               size="icon"
-              title={isEverythingCollapsed ? "Expand all" : "Collapse all"}
+              title={
+                isEverythingCollapsed
+                  ? t("trace.common.expand-all", "Expand all")
+                  : t("trace.common.collapse-all", "Collapse all")
+              }
               className="h-7 w-7"
             >
               {isEverythingCollapsed ? (
@@ -216,7 +228,7 @@ function TracePanelNavigationHeaderExpanded({
               size="icon"
               onClick={handleDownload}
               disabled={isDownloading}
-              title="Download trace as JSON"
+              title={t("trace.panel.download-json", "Download trace as JSON")}
               className="h-7 w-7"
             >
               {isDownloading ? (
@@ -233,8 +245,8 @@ function TracePanelNavigationHeaderExpanded({
               <Button
                 variant="ghost"
                 size="icon"
-                title="More"
-                aria-label="More options"
+                title={t("trace.panel.more", "More")}
+                aria-label={t("trace.panel.more-options", "More options")}
                 className="h-7 w-7 @min-[380px]/navheader:hidden"
               >
                 <MoreHorizontal className="h-3.5 w-3.5" />
@@ -247,14 +259,16 @@ function TracePanelNavigationHeaderExpanded({
                 ) : (
                   <FoldVertical className="mr-2 h-3.5 w-3.5" />
                 )}
-                {isEverythingCollapsed ? "Expand all" : "Collapse all"}
+                {isEverythingCollapsed
+                  ? t("trace.common.expand-all", "Expand all")
+                  : t("trace.common.collapse-all", "Collapse all")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => handleDownload()}
                 disabled={isDownloading}
               >
                 <Download className="mr-2 h-3.5 w-3.5" />
-                Download trace as JSON
+                {t("trace.panel.download-json", "Download trace as JSON")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <TraceViewOptionsMenuItems
@@ -286,19 +300,20 @@ function ViewModeSwitch({
   isTimelineView: boolean;
   onSelect: (timeline: boolean) => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="bg-muted/60 ml-2 inline-flex h-7 shrink-0 items-center rounded-md border p-0.5">
       <ViewModeSegment
         active={!isTimelineView}
         onClick={() => onSelect(false)}
         icon={ListTree}
-        label="Tree"
+        label={t("trace.common.tree", "Tree")}
       />
       <ViewModeSegment
         active={isTimelineView}
         onClick={() => onSelect(true)}
         icon={GanttChartSquare}
-        label="Timeline"
+        label={t("trace.common.timeline", "Timeline")}
       />
     </div>
   );
