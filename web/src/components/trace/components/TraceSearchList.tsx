@@ -16,12 +16,14 @@ import { VirtualizedList } from "./_shared/VirtualizedList";
 import { TraceSearchListItem } from "./TraceSearchListItem";
 import { Button } from "@/src/components/ui/button";
 import { XIcon } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function TraceSearchList() {
   const { searchItems } = useTraceData();
   const { searchQuery, setSearchInputValue } = useSearch();
   const { selectedNodeId, setSelectedNodeId } = useSelection();
   const { handleHover } = useHandlePrefetchObservation();
+  const { t } = useI18n();
   // Optional (null on mobile): reopen the detail panel on select, including
   // re-selecting the already-selected result.
   const layout = useDesktopLayoutContextOptional();
@@ -50,9 +52,14 @@ export function TraceSearchList() {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8 text-center">
         <div className="space-y-4">
-          <p className="text-muted-foreground">No results found</p>
+          <p className="text-muted-foreground">
+            {t("trace.search.no-results", "No results found")}
+          </p>
           <p className="text-muted-foreground text-sm">
-            Try searching by type, title, or id
+            {t(
+              "trace.search.try-different",
+              "Try searching by type, title, or id",
+            )}
           </p>
           <Button
             variant="outline"
@@ -60,7 +67,7 @@ export function TraceSearchList() {
             onClick={() => setSearchInputValue("")}
           >
             <XIcon className="mr-2 h-4 w-4" />
-            Clear search
+            {t("trace.search.clear", "Clear search")}
           </Button>
         </div>
       </div>

@@ -30,6 +30,7 @@ import {
 } from "@/src/components/trace/lib/helpers";
 import { useViewPreferences } from "../contexts/ViewPreferencesContext";
 import { useTraceData } from "../contexts/TraceDataContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import type Decimal from "decimal.js";
 
 interface SpanContentProps {
@@ -52,6 +53,7 @@ export function SpanContent({
   className,
 }: SpanContentProps) {
   const { mergedScores, roots } = useTraceData();
+  const { t } = useI18n();
   const {
     showDuration,
     showCostTokens,
@@ -127,7 +129,10 @@ export function SpanContent({
         {/* Name and badges row */}
         <div className="flex min-w-0 items-center gap-2 overflow-hidden">
           <span className="shrink truncate text-xs">
-            {node.name || `Unnamed ${node.type.toLowerCase()}`}
+            {node.name ||
+              t("trace.unnamed-type", "Unnamed {type}", {
+                type: node.type.toLowerCase(),
+              })}
           </span>
 
           <div className="flex items-center gap-x-2">
@@ -163,8 +168,8 @@ export function SpanContent({
               <span
                 title={
                   node.type === "TRACE"
-                    ? "Total trace duration"
-                    : "Own span duration"
+                    ? t("trace.duration.total-trace", "Total trace duration")
+                    : t("trace.duration.own-span", "Own span duration")
                 }
                 className={cn(
                   "text-muted-foreground text-xs",
@@ -186,10 +191,13 @@ export function SpanContent({
             {/* Subtree wall-clock duration — async descendants outlive the parent span */}
             {shouldRenderSubtreeDuration ? (
               <span
-                title="Subtree wall-clock duration (first start → last end)"
+                title={t(
+                  "trace.duration.subtree",
+                  "Subtree wall-clock duration (first start → last end)",
+                )}
                 className="text-muted-foreground text-xs"
               >
-                {"∑ "}
+                {t("trace.common.sigma", "∑ ")}
                 {formatIntervalSeconds(subtreeWallClockOverflowMs / 1000)}
               </span>
             ) : null}
@@ -211,7 +219,10 @@ export function SpanContent({
               <span
                 title={
                   node.children.length > 0 || node.type === "TRACE"
-                    ? "Aggregated cost of all child observations"
+                    ? t(
+                        "trace.cost.aggregated",
+                        "Aggregated cost of all child observations",
+                      )
                     : undefined
                 }
                 className={cn(
@@ -224,7 +235,9 @@ export function SpanContent({
                     }),
                 )}
               >
-                {node.children.length > 0 || node.type === "TRACE" ? "∑ " : ""}
+                {node.children.length > 0 || node.type === "TRACE"
+                  ? t("trace.common.sigma", "∑ ")
+                  : ""}
                 {usdFormatter(totalCost.toNumber())}
               </span>
             ) : null}

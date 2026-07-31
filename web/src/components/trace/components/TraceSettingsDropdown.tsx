@@ -30,6 +30,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { cn } from "@/src/utils/tailwind";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useViewPreferences } from "../contexts/ViewPreferencesContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface TraceSettingsDropdownProps {
   isGraphViewAvailable: boolean;
@@ -38,13 +39,14 @@ export interface TraceSettingsDropdownProps {
 export function TraceSettingsDropdown({
   isGraphViewAvailable,
 }: TraceSettingsDropdownProps) {
+  const { t } = useI18n();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          title="View Options"
+          title={t("trace.settings.view-options", "View Options")}
           className="h-7 w-7"
         >
           <Settings2 className="h-3.5 w-3.5" />
@@ -71,6 +73,7 @@ export function TraceViewOptionsMenuItems({
   isGraphViewAvailable,
 }: TraceSettingsDropdownProps) {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   // Get all preferences directly from context
   const {
@@ -104,7 +107,9 @@ export function TraceViewOptionsMenuItems({
             className="space-y-0 px-2 py-1"
           >
             <div className="flex w-full items-center justify-between">
-              <span className="mr-2">Show Graph</span>
+              <span className="mr-2">
+                {t("trace.settings.show-graph", "Show Graph")}
+              </span>
               <Switch
                 size="sm"
                 checked={showGraph}
@@ -121,7 +126,7 @@ export function TraceViewOptionsMenuItems({
           className="px-2 py-1"
         >
           <div className="flex w-full items-center justify-between">
-            <span className="mr-2">Show Comments</span>
+            <span className="mr-2">{t("trace.settings.show-comments", "Show Comments")}</span>
             <Switch
               size="sm"
               checked={showComments}
@@ -137,7 +142,7 @@ export function TraceViewOptionsMenuItems({
           className="px-2 py-1"
         >
           <div className="flex w-full items-center justify-between">
-            <span className="mr-2">Show Scores</span>
+            <span className="mr-2">{t("trace.settings.show-scores", "Show Scores")}</span>
             <Switch
               size="sm"
               checked={showScores}
@@ -158,7 +163,7 @@ export function TraceViewOptionsMenuItems({
           className="px-2 py-1"
         >
           <div className="flex w-full items-center justify-between">
-            <span className="mr-2">Show Duration</span>
+            <span className="mr-2">{t("trace.settings.show-duration", "Show Duration")}</span>
             <Switch
               size="sm"
               checked={showDuration}
@@ -174,7 +179,7 @@ export function TraceViewOptionsMenuItems({
           className="px-2 py-1"
         >
           <div className="flex w-full items-center justify-between">
-            <span className="mr-2">Show Cost/Tokens</span>
+            <span className="mr-2">{t("trace.settings.show-cost-tokens", "Show Cost/Tokens")}</span>
             <Switch
               size="sm"
               checked={showCostTokens}
@@ -205,7 +210,7 @@ export function TraceViewOptionsMenuItems({
                 !isColorCodeEnabled && "cursor-not-allowed",
               )}
             >
-              Show Color Code Metrics
+              {t("trace.settings.show-color-code", "Show Color Code Metrics")}
             </span>
             <Switch
               size="sm"
@@ -222,12 +227,13 @@ export function TraceViewOptionsMenuItems({
       <DropdownMenuSub>
         <DropdownMenuSubTrigger>
           <span className="flex items-center">
-            Min Level: {minObservationLevel}
+            {t("trace.settings.min-level-prefix", "Min Level: ")}
+            {minObservationLevel}
           </span>
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
           <DropdownMenuLabel className="font-semibold">
-            Minimum Level
+            {t("trace.settings.minimum-level", "Minimum Level")}
           </DropdownMenuLabel>
           {Object.values(ObservationLevel).map((level) => (
             <DropdownMenuItem

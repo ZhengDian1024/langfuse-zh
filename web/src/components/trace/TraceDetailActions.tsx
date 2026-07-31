@@ -2,6 +2,7 @@ import { api } from "@/src/utils/api";
 import { StarTraceDetailsToggle } from "@/src/components/star-toggle";
 import { PublishTraceSwitch } from "@/src/components/publish-object-switch";
 import { DeleteTraceButton } from "@/src/components/deleteButton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Trace-level header actions (star / publish / delete) shared by the peek and
@@ -49,6 +50,7 @@ export function TraceDetailActions({
 }) {
   const utils = api.useUtils();
   const isMenu = layout === "menu";
+  const { t } = useI18n();
 
   // The page path navigates away (redirectUrl) and never calls this. The peek
   // path is hosted over many different lists, so invalidate all queries to
@@ -74,7 +76,7 @@ export function TraceDetailActions({
           traceId={traceId}
           timestamp={timestamp}
           isPublic={isPublic}
-          label="Share"
+          label={t("trace.actions.share", "Share")}
         />
         <DeleteTraceButton
           itemId={traceId}
@@ -108,7 +110,11 @@ export function TraceDetailActions({
         timestamp={timestamp}
         isPublic={isPublic}
         size={size}
-        tooltip={isPublic ? "Shared (public)" : "Share"}
+        tooltip={
+          isPublic
+            ? t("trace.actions.shared-public", "Shared (public)")
+            : t("trace.actions.share", "Share")
+        }
       />
       <DeleteTraceButton
         itemId={traceId}

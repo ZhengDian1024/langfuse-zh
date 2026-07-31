@@ -16,6 +16,7 @@ import { stripBasePath } from "@/src/utils/redirect";
 import { Badge } from "@/src/components/ui/badge";
 import { showErrorToast } from "@/src/features/notifications/showErrorToast";
 import { useEffect } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function TracePage({
   traceId,
@@ -26,6 +27,7 @@ export function TracePage({
 }) {
   const router = useRouter();
   const session = useSession();
+  const { t } = useI18n();
   const routeProjectId = (router.query.projectId as string) ?? "";
 
   // Shared, beta-aware fetch (same hook the peek uses).
@@ -43,29 +45,40 @@ export function TracePage({
   useEffect(() => {
     if (trace.cutoffObservationsAfterMaxCount) {
       showErrorToast(
-        "Trace truncated",
-        "This trace has too many observations for the detail view. Only a subset is shown.",
+        t("trace.error.truncated-title", "Trace truncated"),
+        t(
+          "trace.error.truncated-message",
+          "This trace has too many observations for the detail view. Only a subset is shown.",
+        ),
         "WARNING",
       );
     }
   }, [trace.cutoffObservationsAfterMaxCount]);
 
   if (trace.isUnauthorized)
-    return <ErrorPage message="You do not have access to this trace." />;
+    return (
+      <ErrorPage
+        message={t("trace.error.no-access", "You do not have access to this trace.")}
+      />
+    );
 
   if (trace.isNotFound)
     return (
       <ErrorPage
-        title="Trace not found"
-        message="The trace is either still being processed or has been deleted."
+        title={t("trace.error.not-found-title", "Trace not found")}
+        message={t(
+          "trace.error.not-found-message",
+          "The trace is either still being processed or has been deleted.",
+        )}
         additionalButton={{
-          label: "Retry",
+          label: t("common.retry", "Retry"),
           onClick: () => window.location.reload(),
         }}
       />
     );
 
-  if (!trace.data) return <div className="p-3">Loading...</div>;
+  if (!trace.data)
+    return <div className="p-3">{t("breadcrumb.loading", "Loading...")}</div>;
 
   const isSharedTrace = trace.data.public;
   const showPublicIndicators = isSharedTrace && !hasProjectAccess;
@@ -78,7 +91,7 @@ export function TracePage({
         asChild
         size="sm"
         variant="outline"
-        title="Back to Langfuse"
+        title={t("trace.back-to-langfuse", "Back to Langfuse")}
         className="px-3"
       >
         <Link href="/">Langfuse</Link>
@@ -88,18 +101,18 @@ export function TracePage({
         asChild
         size="sm"
         variant="default"
-        title="Sign in to Langfuse"
+        title={t("trace.sign-in-to-langfuse", "Sign in to Langfuse")}
         className="px-3"
       >
         <Link href={`/auth/sign-in?targetPath=${encodedTargetPath}`}>
-          Sign in
+          {t("auth.sign-in.submit", "Sign in")}
         </Link>
       </Button>
     )
   ) : undefined;
   const sharedBadge = showPublicIndicators ? (
     <Badge variant="outline" className="text-xs font-medium">
-      Public
+      {t("trace.public", "Public")}
     </Badge>
   ) : undefined;
 
@@ -110,7 +123,7 @@ export function TracePage({
         itemType: "TRACE",
         breadcrumb: [
           {
-            name: "Traces",
+            name: t("breadcrumb.traces", "Traces"),
             href: `/project/${router.query.projectId as string}/traces`,
           },
         ],
