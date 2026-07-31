@@ -35,23 +35,24 @@ trace-graph-view、tracing-tables、global-time-range（date-picker + date-range
 components/trace/**（~45 文件：TracePage、detail views、IOPreview、TraceLogView、
 TraceTimeline、_layout、_shared 等）。
 
-### Phase 3 — 评估与数据（部分完成）
+### Phase 3 — 评估与数据（全部完成 ✅）
 
 | 模块 | 状态 | 提交 | 说明 |
 |---|---|---|---|
 | automations | ✅ | `fc782d7` `0876470` | automationForm/automations.tsx/AutomationButton/DeleteAutomationButton + Webhook/Slack/GitHubDispatch action forms |
-| monitors | ✅ | `179a34b` `80161b5` | MonitorForm/MonitorsTable/MonitorsOnboarding + pages |
-| annotation-queues | ✅ | `0428bd7` | CreateOrEdit/Delete/UserAssignment/CreateNew/AnnotationQueueItemPage |
+| monitors | ✅ | `179a34b` `80161b5` `2c41533` | MonitorForm/MonitorsTable/MonitorsOnboarding + pages + Notifications 补抽 |
+| annotation-queues | ✅ | `0428bd7` `2c41533` | CreateOrEdit/Delete/UserAssignment/CreateNew/AnnotationQueueItemPage + ShortcutRow/placeholder 补抽 |
 | score-configs | ✅ | `70293cd` | Archive/Settings/Details/UpsertDialog（4 文件全部） |
-| scores（feature+pages） | ✅ | `8a44c4e` | AnnotateDrawer/DualAnnotationContent/ScoreRow/multi-select-key-values + pages/analytics+index |
-| **score-analytics** | ❌ | — | 28 文件未改造（DistributionCard×3/HeatmapCard/StatisticsCard/TimelineChartCard/SamplingDetails/ScoreCombobox/ObjectTypeFilter/charts/* 等） |
-| **experiments** | ❌ | — | 27+3 文件未改造。keys 已设计但 python 脚本执行时遇到临时故障，**keys 未写入 en.json/zh.json**，需重新添加 |
-| **datasets** | ❌ | — | 44+9 文件未改造 |
-| **evals** | ❌ | — | 35+11 文件未改造（~250 字符串） |
+| scores（feature+pages） | ✅ | `8a44c4e` `2c41533` | AnnotateDrawer/DualAnnotationContent/ScoreRow/multi-select-key-values + pages/analytics+index + AnnotationForm 补抽 |
+| score-analytics | ✅ | `fbfd508` | DistributionCard×3/HeatmapCard/StatisticsCard/TimelineChartCard/SamplingDetails/ScoreCombobox/ObjectTypeFilter/charts/* 等 26 文件 |
+| experiments | ✅ | `93333f1` | steps×5/MultiStepExperimentForm/CreateExperimentsForm/ExperimentOverviewPanel/BaselineControls/ChartSlot/ComparisonSelector/DisplaySettings/MetadataSection/RemoteDataset×3/table×5 + pages×3 |
+| datasets | ✅ | `d09ea5a` | 41 组件 + 9 page（表格/CSV/Form/Item/版本/对比/运行/Schema/Analytics） |
+| evals | ✅ | `5aedc1a` | 35 组件 + 11 page（template-form/inner-evaluator-form/tables×2/variable-mapping/select×2/callout×3/detail×2/log/delete/type-selector/code-eval×2/prompt-preview/execution-count/ragas/pages×6/configs×3） |
 
 ## 四、当前 en.json/zh.json 状态
 
-- **885 个 key**，en/zh 完全对齐
+- **1877 个 key**，en/zh 完全对齐
+- Phase 3 新增 namespace：`experiments.*`（~242）/`score-analytics.*`（~127）/`datasets.*`（~281）/`evals.*`（~336）
 - 已有 namespace：`auth.*`/`account.*`/`trace.*`/`session.*`/`automations.*`/`monitors.*`/`annotation-queues.*`/`score-configs.*`/`scores.*`/`time-range.*`/`trace-graph.*`/`observations.*`/`sessions.*`/`traces.*` + Phase 0 的 `common.*`/`nav.*`/`breadcrumb.*`/`layout.*`/`setup.*`/`organization.*`/`users.*`/`onboarding.*`/`dashboard.*`/`api-keys.*`/`ai-features.*`/`settings.*`/`user-menu.*`
 
 ### 既有可复用的共享 key
@@ -72,147 +73,56 @@ TraceTimeline、_layout、_shared 等）。
 | `breadcrumb.loading` | Loading... / 加载中... | 加载状态 |
 | `breadcrumb.traces` | Traces / 链路追踪 | 面包屑 |
 
-## 五、待完成模块详细说明
+## 五、模块改造详情（已完成）
 
-### 5.1 experiments（27 feature + 3 page tsx）
+Phase 3 全部 9 个模块已完成改造。各模块的文件清单与 key 设计见对应提交：
+- experiments: `93333f1`（~242 key，23 组件 + 3 page）
+- score-analytics: `fbfd508`（~127 key，26 组件）
+- datasets: `d09ea5a`（~281 key，41 组件 + 9 page）
+- evals: `5aedc1a`（~336 key，35 组件 + 11 page）
+- 残余补抽: `2c41533`（annotation-queues/monitors/scores）
 
-**已设计但未写入的 key（需重新执行 python 脚本添加到 en.json/zh.json）：**
 
-```python
-pairs = {
- 'experiments.search-datasets': ('Search datasets...', '搜索数据集...'),
- 'experiments.edit-remote': ('Edit remote trigger settings', '编辑远程触发设置'),
- 'experiments.clear-baseline': ('Clear baseline', '清除基线'),
- 'experiments.select-metric': ('Select metric...', '选择指标...'),
- 'experiments.overview.name': ('Name', '名称'),
- 'experiments.overview.description': ('Description', '描述'),
- 'experiments.overview.dataset': ('Dataset', '数据集'),
- 'experiments.overview.prompt': ('Prompt', 'Prompt'),
- 'experiments.overview.model': ('Model', '模型'),
- 'experiments.overview.start-time': ('Start Time', '开始时间'),
- 'experiments.overview.pr-url': ('Pull Request URL', 'Pull Request URL'),
- 'experiments.overview.github-job': ('GitHub Job URL', 'GitHub Job URL'),
- 'experiments.review.title': ('Review & Run', '审查并运行'),
- 'experiments.review.description': ('Review your experiment configuration before running it...', '在运行前审查实验配置...'),
- 'experiments.details.title': ('Experiment Run Details', '实验运行详情'),
- 'experiments.details.description': ('Provide a name and optional description...', '为实验提供名称和可选描述...'),
- 'experiments.details.name-placeholder': ('Enter experiment name', '输入实验名称'),
- 'experiments.details.desc-placeholder': ('Describe the purpose or context of this experiment', '描述此实验的目的或背景'),
- 'experiments.evaluators.title': ('Evaluators (Optional)', '评估器（可选）'),
- 'experiments.evaluators.description': ('Configure evaluators to automatically score...', '配置评估器以自动为实验结果评分...'),
- 'experiments.dataset.title': ('Dataset Selection', '数据集选择'),
- 'experiments.dataset.description': ('Choose the dataset to run...', '选择用于运行实验的数据集...'),
- 'experiments.dataset.latest': ('Latest version', '最新版本'),
- 'experiments.prompt-model.title': ('Prompt & Model Configuration', 'Prompt 与模型配置'),
- 'experiments.prompt-model.description': ('Select the prompt version...', '选择 prompt 版本并配置实验的模型参数...'),
- 'experiments.search-prompts': ('Search prompts...', '搜索 prompt...'),
- 'experiments.search-versions': ('Search versions...', '搜索版本...'),
- 'experiments.search-schemas': ('Search schemas...', '搜索 schema...'),
- 'experiments.grid.item-id': ('Item ID', '项 ID'),
- 'experiments.grid.observation': ('Observation', 'Observation'),
- 'experiments.grid.level': ('Level', '级别'),
- 'experiments.grid.start-time': ('Start Time', '开始时间'),
- 'experiments.grid.total-cost': ('Total Cost', '总成本'),
- 'experiments.grid.latency': ('Latency', '延迟'),
-}
-```
-
-**需编辑的文件（按字符串密度排序）：**
-- `components/steps/` — ReviewStep, ExperimentDetailsStep, EvaluatorsStep, DatasetStep, PromptModelStep（每个有 title/description prop + placeholder）
-- `components/ExperimentOverviewPanel.tsx` — label props (Name/Description/Dataset/Prompt/Model/Start Time/PR URL/GitHub Job URL)
-- `components/CreateExperimentsForm.tsx` — Search datasets placeholder, Edit remote trigger
-- `components/table/ExperimentGridCell.tsx` — MetadataItem labels
-- `components/ExperimentBaselineControls.tsx` — Clear baseline title
-- `components/ExperimentChartSlot.tsx` — Select metric placeholder
-- `components/RemoteExperimentDatasetStep.tsx` — Search datasets placeholder
-
-### 5.2 score-analytics（28 文件）
-
-**主要文件与字符串：**
-- `components/cards/DistributionBooleanCard.tsx` / `DistributionCategoricalCard.tsx` / `DistributionNumericCard.tsx` — "Distribution", "Loading chart...", "No data available", "Select a score to view distribution", "all"/"matched" tabs, "No distribution data available..."
-- `components/cards/HeatmapCard.tsx` — "Score Comparison", "Loading heatmap...", tooltip 模板
-- `components/cards/StatisticsCard.tsx` — "Statistics", MetricCard labels (Total/Mean/Std Dev/Mode/Mode %/Matched/Pearson r/Spearman ρ/MAE/RMSE/Agreement/Cohen's κ/F1 Score/Comparison), Cartesian product warning
-- `components/cards/TimelineChartCard.tsx` — "Trend Over Time", loading/empty states
-- `components/charts/ScoreCombobox.tsx` — "Select score", "Search scores...", "No scores found.", "Boolean"/"Categorical"/"Numeric"
-- `components/charts/ObjectTypeFilter.tsx` — "All Objects"/"Traces"/"Sessions"/"Observations"/"Dataset Runs"
-- `components/SamplingDetailsHoverCard.tsx` — "Sampled Data", "Estimated Score Count", "Total Scores:", "Score 1:", "Score 2:", "Sampling:", "Deduplication:", "Query Optimizations"
-- `components/ScoreAnalyticsHeader.tsx` — "Beta Feature", feedback link
-- `components/ScoreAnalyticsNoticeBanner.tsx` — "Processing large dataset...", "Loading analytics..."
-- `pages/scores/analytics.tsx` — 页面级 title/help/Error/No Scores/Select a Score（已在 scores 提交中处理了 title/help 部分）
-
-### 5.3 datasets（44 feature + 9 page tsx）
-
-**主要文件：**
-- `components/DatasetsTable.tsx` — 表头、空状态
-- `components/DatasetItemDetailPage.tsx` / `DatasetItemsTable.tsx` — item 详情/列表
-- `components/MappingCard.tsx` — Direct Mapping 等映射选项
-- `components/DatasetCompareView.tsx` — compare 视图
-- `components/CreateDatasetButton.tsx` / `DuplicateDatasetButton.tsx` — 创建/复制
-- pages — index/items/[itemId]/items/[itemId]/runs/compare/experiments
-
-### 5.4 evals（35 feature + 11 page tsx）
-
-**主要文件（~250 字符串）：**
-- `components/template-form.tsx` — 大量表单字段（Name/Model/Prompt/Score type/Categories/...）
-- `components/inner-evaluator-form.tsx` — Observations/Traces/Experiments tabs, Run on..., Sampling, Delay
-- `components/eval-templates-table.tsx` — 表头、Clone/Edit/Actions 菜单、Use Evaluator
-- `components/evaluator-table.tsx` — 表头、View、Legacy badge
-- `components/variable-mapping-card.tsx` — Variable mapping 表单
-- `components/select-evaluator-list.tsx` — Create from scratch / Use existing
-- `components/template-selector.tsx` — Select evaluators, Paused
-- `components/eval-version-callout.tsx` — SDK 版本提示
-- `components/deactivate-config.tsx` — Deactivate/Activate
-- `components/default-eval-model-setup.tsx` — LLM connection setup
-- pages — evaluators, new-evaluator, new-template, remap-evaluator, templates, default-evaluation-model
 
 ## 六、已记「待迁移」的项目
 
 以下字符串因架构原因（模块级 .ts 数据/非组件工具函数/zod schema 模块级）暂保留英文：
 
 1. `src/utils/date-range-utils.ts` — TIME_RANGES label/abbreviation（模块级 .ts 数据）
-2. 模块级 zod schema 校验消息（signupSchema/passwordSchema/nameSchema/projectNameSchema/displayNameSchema/annotationQueue name-exists/scoreConfig schema）
+2. 模块级 zod schema 校验消息（signupSchema/passwordSchema/nameSchema/projectNameSchema/displayNameSchema/annotationQueue name-exists/scoreConfig schema/DatasetForm refine/NewDatasetItemForm min/inner-evaluator-form setError 等）
 3. automations action forms 的复杂多行 FormDescription（含 code/link 段落）
 4. ListMonitorsPage 模块级 headerProps const
 5. MonitorForm NoDataField/RenotifyField 子组件直接返回 arrow function
 6. multi-select-key-values.tsx 的 Select/items 默认参数（hook 不可用于默认参数值）
 7. traceDetailTitle 的 ": " 分隔符
-8. scores/components/AnnotationForm.tsx 的大量表单字符串（~30 个 setError/title/placeholder，尚未编辑）
+8. experiments 模块级 .ts：`util.ts` generateDefaultExperimentName/Description、`filter-config.ts` 列名（getExperimentsColumnName/getExperimentItemsColumnName）、`experiment-run-tabs` tab 标题
+9. evals 模块级 .ts：`code-eval-template-utils.ts` CODE_EVAL_ESCAPE_CONFIRM_MESSAGE、`evaluator-form-utils.ts` getTargetDisplayName 返回值（traces/observations/experiments，作为 {target} 插值传入是数据值）、`template-form-schema.ts` zod message
+10. aria-label 被 peek 配置 CSS 选择器引用的（evaluator-table/eval-templates-table 的 view-logs/edit/delete/apply/actions/clone、annotation-queues ItemsTable Select all/Select row、monitors MonitorsTable Monitor actions）——保守不改
+11. DEFAULT_BLOCK_MESSAGE（evaluator-paused-callout 模块级 const）
+12. error.message 兜底（如 UploadDatasetCsv "Unknown error"、各 mutation onError 的 error.message）
 
-## 七、恢复执行步骤
+注：scores/components/AnnotationForm.tsx 已在 `2c41533` 补抽完成（AnnotateHeader/CommentField/InnerAnnotationForm 全部文案）。
 
-1. **确认断点**：
-   ```bash
-   cd /Users/zhengdian/project/ehr-langfuse/web
-   nvm use 22
-   git log --oneline -5  # 确认最后一个提交是 scores
-   jq 'keys|length' i18n/en.json i18n/zh.json  # 应为 885/885
-   pnpm --filter web run typecheck  # 应 EXIT=0
-   ```
+## 七、Phase 3 完成状态
 
-2. **按顺序处理剩余模块**：
-   - experiments → 先用上面的 python 脚本添加 33 个 key 到 en.json/zh.json，然后逐文件编辑
-   - score-analytics → 添加 key + 编辑 28 文件（建议用后台 agent 扫描）
-   - datasets → 添加 key + 编辑 53 文件（建议用后台 agent 扫描）
-   - evals → 添加 key + 编辑 46 文件（建议用后台 agent 扫描）
+**Phase 3 全部 9 个模块已完成改造并通过收尾验证**（2026-07-31）：
 
-3. **每模块编辑模板**：
-   - 添加 `import { useI18n } from "@/src/features/i18n/useI18n"` 到文件
-   - 在组件函数体首行加 `const { t } = useI18n();`（**注意：必须在 early return 之前，不能在解构参数中**）
-   - 替换硬编码字符串为 `t("module.key", "原英文")`
-   - 非组件工具函数/模块级 const 中的文案保留英文并记「待迁移」
+| 验证项 | 结果 |
+|---|---|
+| `pnpm --filter web run typecheck` | ✅ EXIT=0 |
+| `pnpm --filter web run lint` | ✅ EXIT=0（--max-warnings 0） |
+| `pnpm --filter web run test-client src/features/i18n/i18n.clienttest.ts` | ✅ 2 tests passed |
+| 遗漏文案 grep 扫描 | ✅ 仅剩 3 条 aria-label（§六-10 豁免） |
+| `pnpm --filter web run build:check` | ✅ TypeScript Finished in 80s |
+| 浏览器抽查 | ⚠️ 未执行（建议后续用 Playwright MCP 切 en/zh 抽查 4 个新模块页面） |
 
-4. **Phase 收尾验证（全部模块改完后强制跑）**：
-   ```bash
-   pnpm --filter web run typecheck
-   pnpm --filter web run lint
-   pnpm --filter web run test-client src/features/i18n/i18n.clienttest.ts
-   grep -rnE '(title|description|label|placeholder|aria-label|tooltip)="[A-Z][a-z]' \
-     src/features/datasets/ src/features/experiments/ src/features/evals/ \
-     src/features/score-analytics/ src/features/score-configs/ src/features/scores/ \
-     src/features/annotation-queues/ src/features/monitors/ src/features/automations/
-   pnpm --filter web run build:check
-   ```
-   浏览器抽查：dev:web + Playwright MCP，切 en/zh。
+en/zh key 数：1877 / 1877，完全对齐。
+
+### 浏览器抽查待办（建议）
+- `pnpm run dev:web` + Playwright MCP
+- 抽查页面：experiments（运行/对比/远程触发）、scores/analytics（分布/热力/统计/趋势）、datasets（列表/项/对比/CSV 导入）、evals（模板表/评估器表/详情/新评估器向导）
+- 切 en/zh 两次，确认无英文残留/无 {name} 未替换/无空白/布局不错位
+- 数据用 `pnpm run seed -- list` 选场景预填
 
 ## 八、后续 Phase（Phase 3 之后）
 
