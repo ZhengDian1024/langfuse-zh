@@ -48,6 +48,7 @@
   "nav.support": "支持",
   "nav.beta": "Beta",
   "breadcrumb.loading": "加载中...",
+  "breadcrumb.sessions": "会话",
   "breadcrumb.organization": "组织",
   "breadcrumb.organizations": "组织",
   "breadcrumb.new-organization": "新建组织",
@@ -105,6 +106,7 @@
   "common.create": "创建",
   "common.cancel": "取消",
   "common.confirm": "确认",
+  "common.retry": "重试",
   "ai-features.title": "AI 功能",
   "ai-features.enable-title": "为你的组织启用 AI 功能",
   "ai-features.enable-description-before": "此设置适用于所有用户和项目。任何数据",
@@ -444,5 +446,15 @@
   "traces.setup.need-api-key": "您需要创建 API 密钥以开始对应用进行追踪。您可以稍后在项目设置中创建更多密钥。",
   "traces.setup.otel-description": "Langfuse 依赖 OpenTelemetry 来埋点您的应用，并将 LLM 应用/智能体 trace 导出至 Langfuse。您可以使用我们的 SDK 或 50+ 框架集成。请按照文档中的快速开始指南将 Langfuse 接入您的应用。",
   "traces.setup.page-title": "追踪设置",
-  "traces.setup.quickstart-guide": "快速开始指南"
+  "traces.setup.quickstart-guide": "快速开始指南",
+  "session.download-json": "下载会话为 JSON",
+  "session.empty.no-observations-filter": "没有 observation 匹配当前筛选条件。",
+  "session.error.load-observations": "加载 observation 失败。",
+  "session.fallback.observation": "Observation",
+  "session.fallback.trace": "Trace",
+  "session.no-access": "您无权访问此会话。",
+  "session.not-found-message": "该会话仍在处理中或已被删除。",
+  "session.not-found-title": "未找到会话",
+  "session.total-cost": "总成本：",
+  "session.total-traces": "总 trace 数：{count}"
 }

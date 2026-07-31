@@ -13,6 +13,7 @@ import { type FilterState } from "@langfuse/shared";
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { IOPreview } from "@/src/components/trace/components/IOPreview/IOPreview";
 import { api } from "@/src/utils/api";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const TraceEventsSkeleton = () => {
   return (
@@ -70,6 +71,7 @@ export const TraceEventsRow = React.memo(
     filterState: FilterState;
     hideTracePanel?: boolean;
   }) => {
+    const { t } = useI18n();
     const observationsQuery =
       api.sessions.observationsForTraceFromEvents.useQuery(
         {
@@ -99,14 +101,17 @@ export const TraceEventsRow = React.memo(
               <JsonSkeleton className="h-full w-full" numRows={8} />
             ) : observationsQuery.isError ? (
               <div className="text-destructive p-2 text-xs">
-                Failed to load observations.
+                {t("session.error.load-observations", "Failed to load observations.")}
               </div>
             ) : observationsQuery.data && observationsQuery.data.length > 0 ? (
               <div className="flex flex-col gap-4">
                 {observationsQuery.data.map((observation) => (
                   <div key={observation.id} className="flex flex-col gap-2">
                     <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-                      <span>{observation.name ?? "Observation"}</span>
+                      <span>
+                        {observation.name ??
+                          t("session.fallback.observation", "Observation")}
+                      </span>
                       <span className="-mr-1">•</span>
                       <span className="inline-flex items-center gap-1">
                         <ItemBadge
@@ -144,7 +149,10 @@ export const TraceEventsRow = React.memo(
               </div>
             ) : (
               <div className="text-muted-foreground p-2 text-xs">
-                No observations match the current filter.
+                {t(
+                  "session.empty.no-observations-filter",
+                  "No observations match the current filter.",
+                )}
               </div>
             )}
           </div>
@@ -166,7 +174,8 @@ export const TraceEventsRow = React.memo(
                     <ItemBadge type="TRACE" isSmall />
                     <div className="flex flex-col">
                       <span className="text-xs font-medium">
-                        {trace.name ?? "Trace"} ({trace.id})&nbsp;↗
+                        {trace.name ?? t("session.fallback.trace", "Trace")} (
+                        {trace.id})&nbsp;↗
                       </span>
                       <span className="text-muted-foreground text-xs">
                         {trace.timestamp.toLocaleString()}

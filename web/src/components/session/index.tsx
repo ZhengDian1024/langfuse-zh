@@ -37,6 +37,7 @@ import {
 import { CreateNewAnnotationQueueItem } from "@/src/features/annotation-queues/components/CreateNewAnnotationQueueItem";
 import { WebCalloutButton } from "@/src/features/web-callouts/components/WebCalloutMenuItem";
 import { TablePeekViewTraceDetail } from "@/src/components/table/peek/peek-trace-detail";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePeekNavigation } from "@/src/components/table/peek/hooks/usePeekNavigation";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { LazyTraceRow } from "@/src/components/session/TraceRow";
@@ -203,6 +204,7 @@ export const SessionPage: React.FC<{
   projectId: string;
 }> = ({ sessionId, projectId }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const { setDetailPageList, detailPagelists } = useDetailPageLists();
   const userSession = useSession();
   const capture = usePostHogClientCapture();
@@ -325,15 +327,22 @@ export const SessionPage: React.FC<{
   const virtualItems = virtualizer.getVirtualItems();
 
   if (session.error?.data?.code === "UNAUTHORIZED")
-    return <ErrorPage message="You do not have access to this session." />;
+    return (
+      <ErrorPage
+        message={t("session.no-access", "You do not have access to this session.")}
+      />
+    );
 
   if (session.error?.data?.code === "NOT_FOUND")
     return (
       <ErrorPage
-        title="Session not found"
-        message="The session is either still being processed or has been deleted."
+        title={t("session.not-found-title", "Session not found")}
+        message={t(
+          "session.not-found-message",
+          "The session is either still being processed or has been deleted.",
+        )}
         additionalButton={{
-          label: "Retry",
+          label: t("common.retry", "Retry"),
           onClick: () => window.location.reload(),
         }}
       />
@@ -347,7 +356,7 @@ export const SessionPage: React.FC<{
           itemType: "SESSION",
           breadcrumb: [
             {
-              name: "Sessions",
+              name: t("breadcrumb.sessions", "Sessions"),
               href: `/project/${projectId}/sessions`,
             },
           ],
@@ -391,7 +400,7 @@ export const SessionPage: React.FC<{
                 variant="outline"
                 size="icon"
                 onClick={onDownloadSessionAsJson}
-                title="Download session as JSON"
+                title={t("session.download-json", "Download session as JSON")}
               >
                 <Download className="h-4 w-4" />
               </Button>
@@ -506,6 +515,7 @@ export const SessionEventsPage: React.FC<{
   sessionId: string;
   projectId: string;
 }> = ({ sessionId, projectId }) => {
+  const { t } = useI18n();
   const session = api.sessions.byIdWithScoresFromEvents.useQuery(
     {
       sessionId,
@@ -539,15 +549,22 @@ export const SessionEventsPage: React.FC<{
   );
 
   if (session.error?.data?.code === "UNAUTHORIZED")
-    return <ErrorPage message="You do not have access to this session." />;
+    return (
+      <ErrorPage
+        message={t("session.no-access", "You do not have access to this session.")}
+      />
+    );
 
   if (session.error?.data?.code === "NOT_FOUND")
     return (
       <ErrorPage
-        title="Session not found"
-        message="The session is either still being processed or has been deleted."
+        title={t("session.not-found-title", "Session not found")}
+        message={t(
+          "session.not-found-message",
+          "The session is either still being processed or has been deleted.",
+        )}
         additionalButton={{
-          label: "Retry",
+          label: t("common.retry", "Retry"),
           onClick: () => window.location.reload(),
         }}
       />
@@ -561,7 +578,7 @@ export const SessionEventsPage: React.FC<{
           itemType: "SESSION",
           breadcrumb: [
             {
-              name: "Sessions",
+              name: t("breadcrumb.sessions", "Sessions"),
               href: `/project/${projectId}/sessions`,
             },
           ],
@@ -593,6 +610,7 @@ const LoadedSessionEventsPage: React.FC<{
   isTracesSuccess: boolean;
 }> = ({ sessionId, projectId, session, traces, isTracesSuccess }) => {
   const router = useRouter();
+  const { t } = useI18n();
   const { setDetailPageList, detailPagelists } = useDetailPageLists();
   const userSession = useSession();
   const parentRef = useRef<HTMLDivElement>(null);
@@ -948,7 +966,7 @@ const LoadedSessionEventsPage: React.FC<{
           itemType: "SESSION",
           breadcrumb: [
             {
-              name: "Sessions",
+              name: t("breadcrumb.sessions", "Sessions"),
               href: `/project/${projectId}/sessions`,
             },
           ],
@@ -1062,9 +1080,14 @@ const LoadedSessionEventsPage: React.FC<{
             <Separator orientation="vertical" className="h-6" />
 
             {/* Stats */}
-            <Badge variant="outline">Total traces: {session.countTraces}</Badge>
             <Badge variant="outline">
-              Total cost: {usdFormatter(session.totalCost ?? 0, 2)}
+              {t("session.total-traces", "Total traces: {count}", {
+                count: String(session.countTraces),
+              })}
+            </Badge>
+            <Badge variant="outline">
+              {t("session.total-cost", "Total cost: ")}
+              {usdFormatter(session.totalCost ?? 0, 2)}
             </Badge>
 
             {/* Users */}
