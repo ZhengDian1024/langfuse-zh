@@ -16,6 +16,7 @@ import { type TimelineGutterRowProps } from "./types";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const INDENT = 14; // px per depth level
 const RAIL = 7; // x of a level's vertical rail within its indent step
@@ -32,6 +33,7 @@ export function TimelineGutterRow({
   isCollapsed,
 }: TimelineGutterRowProps) {
   const { node, depth, treeLines, isLastSibling } = item;
+  const { t } = useI18n();
 
   const ownRailX = depth * INDENT + RAIL;
   const parentRailX = (depth - 1) * INDENT + RAIL;
@@ -112,7 +114,10 @@ export function TimelineGutterRow({
           className="text-primary min-w-0 flex-1 truncate text-xs font-medium"
           title={node.name}
         >
-          {node.name || `Unnamed ${node.type.toLowerCase()}`}
+          {node.name ||
+            t("trace.unnamed-type", "Unnamed {type}", {
+              type: node.type.toLowerCase(),
+            })}
         </span>
       </div>
 
@@ -120,7 +125,11 @@ export function TimelineGutterRow({
       {hasChildren && (
         <button
           type="button"
-          aria-label={isCollapsed ? "Expand" : "Collapse"}
+          aria-label={
+            isCollapsed
+              ? t("trace.common.expand", "Expand")
+              : t("trace.common.collapse", "Collapse")
+          }
           aria-expanded={!isCollapsed}
           onClick={(e) => {
             e.stopPropagation();

@@ -18,9 +18,7 @@ import {
   getSubtreeDurationOverflowMs,
 } from "@/src/components/trace/lib/helpers";
 import { isPresent } from "@langfuse/shared";
-
-const SUBTREE_DURATION_TITLE =
-  "Subtree wall-clock duration (first start → last end)";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Keep zero/near-zero-duration spans visible as a small marker.
 const MIN_BAR_WIDTH = 4;
@@ -40,6 +38,7 @@ export function TimelineBar({
   commentCount,
   scores,
 }: TimelineBarProps) {
+  const { t } = useI18n();
   const { startOffset, itemWidth, firstTokenTimeOffset, latency } = metrics;
   const duration = latency ? latency * 1000 : undefined;
 
@@ -86,8 +85,13 @@ export function TimelineBar({
         </span>
       )}
       {isPresent(ownDurationMs) && subtreeWallClockOverflowMs != null && (
-        <span title={SUBTREE_DURATION_TITLE}>
-          {"∑ "}
+        <span
+          title={t(
+            "trace.duration.subtree",
+            "Subtree wall-clock duration (first start → last end)",
+          )}
+        >
+          {t("trace.common.sigma", "∑ ")}
           {formatIntervalSeconds(subtreeWallClockOverflowMs / 1000)}
         </span>
       )}
@@ -137,7 +141,7 @@ export function TimelineBar({
           <div
             className="bg-muted h-full border-r border-gray-400 opacity-60"
             style={{ width: `${firstTokenWidth}px` }}
-            title="Time to first token"
+            title={t("trace.timeline.time-to-first-token", "Time to first token")}
           />
           <div
             className="bg-muted h-full"

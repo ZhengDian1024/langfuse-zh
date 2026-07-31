@@ -9,6 +9,7 @@ import {
 import { ToolCallInvocationsView } from "@/src/components/trace/components/ToolCallInvocationsView";
 import { ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import { copyTextToClipboard } from "@/src/utils/clipboard";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   type ChatMlMessage,
   getMessageTitle,
@@ -52,6 +53,7 @@ export function ChatMessage({
   isOutputMessage,
 }: ChatMessageProps) {
   const [showTableView, setShowTableView] = useState(false);
+  const { t } = useI18n();
 
   const title = getMessageTitle(message);
   const toolCalls = parseToolCallsFromMessage(message);
@@ -64,7 +66,9 @@ export function ChatMessage({
       size="icon-xs"
       onClick={() => setShowTableView((v) => !v)}
       title={
-        showTableView ? "Show formatted view" : "Show passthrough JSON data"
+        showTableView
+          ? t("trace.chat.show-formatted", "Show formatted view")
+          : t("trace.chat.show-passthrough", "Show passthrough JSON data")
       }
       className="hover:bg-border -mr-2"
     >
@@ -82,15 +86,21 @@ export function ChatMessage({
       <div className="hover:bg-muted transition-colors">
         <div style={{ display: shouldRenderMarkdown ? "block" : "none" }}>
           <MarkdownJsonView
-            title="Placeholder"
-            content={message.name || "Unnamed placeholder"}
+            title={t("trace.chat.placeholder", "Placeholder")}
+            content={
+              message.name ||
+              t("trace.chat.unnamed-placeholder", "Unnamed placeholder")
+            }
             customCodeHeaderClassName="bg-primary-foreground"
           />
         </div>
         <div style={{ display: shouldRenderMarkdown ? "none" : "block" }}>
           <PrettyJsonView
-            title="Placeholder"
-            json={message.name || "Unnamed placeholder"}
+            title={t("trace.chat.placeholder", "Placeholder")}
+            json={
+              message.name ||
+              t("trace.chat.unnamed-placeholder", "Unnamed placeholder")
+            }
             currentView={currentView}
           />
         </div>
@@ -103,7 +113,7 @@ export function ChatMessage({
     return (
       <div className="hover:bg-muted transition-colors">
         <PrettyJsonView
-          title={title || (isOutputMessage ? "Output" : "Input")}
+          title={title || (isOutputMessage ? t("trace.common.output", "Output") : t("trace.common.input", "Input"))}
           json={message.json}
           currentView={currentView}
         />
@@ -227,7 +237,7 @@ export function ChatMessage({
     return (
       <div className="hover:bg-muted transition-colors">
         <PrettyJsonView
-          title={title || (isOutputMessage ? "Output" : "Input")}
+          title={title || (isOutputMessage ? t("trace.common.output", "Output") : t("trace.common.input", "Input"))}
           json={message}
           currentView={currentView}
         />

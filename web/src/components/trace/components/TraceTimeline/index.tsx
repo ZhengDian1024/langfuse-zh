@@ -17,6 +17,7 @@
 import { useCallback, useMemo, useRef, useState, useLayoutEffect } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTraceData } from "../../contexts/TraceDataContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useSelection } from "../../contexts/SelectionContext";
 import { useViewPreferences } from "../../contexts/ViewPreferencesContext";
 import { useHandlePrefetchObservation } from "../../hooks/useHandlePrefetchObservation";
@@ -45,6 +46,7 @@ const ROW_HEIGHT = 26;
 
 export function TraceTimeline() {
   const { roots, serverScores: scores, comments } = useTraceData();
+  const { t } = useI18n();
   const { collapsedNodes, toggleCollapsed, selectedNodeId, setSelectedNodeId } =
     useSelection();
   const {
@@ -381,7 +383,7 @@ export function TraceTimeline() {
           className="bg-background text-muted-foreground flex shrink-0 items-start pt-0.5 pl-2 text-xs font-medium"
           style={{ width: `${gutterWidth}px` }}
         >
-          Name
+          {t("trace.timeline.name", "Name")}
         </div>
         <div className="bg-border/60 w-px shrink-0" />
         <div
@@ -438,7 +440,7 @@ export function TraceTimeline() {
           <div
             role="separator"
             aria-orientation="vertical"
-            aria-label="Resize name column"
+            aria-label={t("trace.timeline.resize-name", "Resize name column")}
             onPointerDown={startGutterResize}
             className={cn(
               "hover:bg-primary/40 active:bg-primary/40 absolute inset-y-0 left-1/2 z-20 w-2",
