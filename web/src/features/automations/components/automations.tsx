@@ -24,9 +24,11 @@ import {
 import { type AutomationDomain } from "@langfuse/shared";
 import { ErrorPage } from "@/src/components/error-page";
 import { getPathnameWithoutBasePath } from "@/src/utils/api";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function AutomationsPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const utils = api.useUtils();
   const projectId = router.query.projectId as string;
   const [webhookSecret, setWebhookSecret] = useState<string | null>(null);
@@ -279,10 +281,10 @@ export default function AutomationsPage() {
 
   const renderAutomationNotFoundError = (message: string) => (
     <ErrorPage
-      title="Webhook not found"
+      title={t("automations.not-found-title", "Webhook not found")}
       message={message}
       additionalButton={{
-        label: "Back to Webhooks",
+        label: t("automations.back-to-webhooks", "Back to Webhooks"),
         onClick: () => {
           setUrlParams({
             view: "list",
@@ -298,7 +300,7 @@ export default function AutomationsPage() {
     // Handle 404 errors for edit view
     if (view === "edit" && editingAutomationError?.data?.code === "NOT_FOUND") {
       return renderAutomationNotFoundError(
-        "The webhook you're trying to edit doesn't exist or has been deleted.",
+        t("automations.not-found-edit", "The webhook you're trying to edit doesn't exist or has been deleted."),
       );
     }
 
@@ -309,7 +311,7 @@ export default function AutomationsPage() {
       automationDetailError?.data?.code === "NOT_FOUND"
     ) {
       return renderAutomationNotFoundError(
-        "The webhook you're looking for doesn't exist or has been deleted.",
+        t("automations.not-found-detail", "The webhook you're looking for doesn't exist or has been deleted."),
       );
     }
 
@@ -412,10 +414,12 @@ export default function AutomationsPage() {
       >
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Webhook Secret Created</DialogTitle>
+            <DialogTitle>{t("automations.secret-created-title", "Webhook Secret Created")}</DialogTitle>
             <DialogDescription>
-              Your automation has been created successfully. Please copy the
-              webhook secret below - it will only be shown once.
+              {t(
+                "automations.secret-created-desc",
+                "Your automation has been created successfully. Please copy the webhook secret below - it will only be shown once.",
+              )}
             </DialogDescription>
           </DialogHeader>
           <DialogBody>

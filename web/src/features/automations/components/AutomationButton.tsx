@@ -1,4 +1,5 @@
 import { ActionButton } from "@/src/components/ActionButton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { Zap } from "lucide-react";
 import { type ButtonProps } from "@/src/components/ui/button";
@@ -15,6 +16,7 @@ export const AutomationButton = ({
     projectId,
     scope: "automations:read",
   });
+  const { t } = useI18n();
 
   const numberOfAutomations = api.automations.count.useQuery({
     projectId,
@@ -39,12 +41,12 @@ export const AutomationButton = ({
       href={`/project/${projectId}/automations`}
       icon={<Zap className="h-4 w-4" aria-hidden="true" />}
       hasAccess={hasAccess}
-      title="Automations"
+      title={t("automations.title", "Automations")}
       variant="outline"
       {...buttonProps}
     >
       <span className="hidden md:ml-1 md:inline">
-        Automations
+        {t("automations.title", "Automations")}
         {numberIndicator}
       </span>
     </ActionButton>

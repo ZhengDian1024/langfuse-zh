@@ -3,6 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import { Trash } from "lucide-react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   Popover,
   PopoverContent,
@@ -23,6 +24,7 @@ export const DeleteAutomationButton: React.FC<DeleteAutomationButtonProps> = ({
   onSuccess,
   variant = "icon",
 }) => {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const utils = api.useUtils();
   const hasAccess = useHasProjectAccess({
@@ -34,8 +36,8 @@ export const DeleteAutomationButton: React.FC<DeleteAutomationButtonProps> = ({
     {
       onSuccess: () => {
         showSuccessToast({
-          title: "Automation deleted",
-          description: "The automation has been deleted successfully.",
+          title: t("automations.toast.deleted-title", "Automation deleted"),
+          description: t("automations.toast.deleted-desc", "The automation has been deleted successfully."),
         });
 
         if (onSuccess) {
