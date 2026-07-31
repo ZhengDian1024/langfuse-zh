@@ -9,8 +9,10 @@ import {
 import useSessionStorage from "@/src/components/useSessionStorage";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
 import { useEffect } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function ExperimentAnalytics() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -34,7 +36,7 @@ export default function ExperimentAnalytics() {
 
   if (!isExperimentsBetaActive) {
     return (
-      <Page headerProps={{ title: "Analytics" }}>
+      <Page headerProps={{ title: t("experiments.analytics", "Analytics") }}>
         <div className="flex h-full items-center justify-center">
           <Spinner size="xl" variant="muted" />
         </div>
@@ -45,10 +47,10 @@ export default function ExperimentAnalytics() {
   return (
     <Page
       headerProps={{
-        title: "Analytics",
+        title: t("experiments.analytics", "Analytics"),
         itemType: "EXPERIMENT",
         breadcrumb: [
-          { name: "Experiments", href: `/project/${projectId}/experiments` },
+          { name: t("nav.experiments", "Experiments"), href: `/project/${projectId}/experiments` },
         ],
         tabsProps: {
           tabs: getExperimentRunTabs(projectId, handleResultsClick),
@@ -63,11 +65,10 @@ export default function ExperimentAnalytics() {
           </div>
           <div className="space-y-2">
             <h3 className="text-xl font-semibold tracking-tight">
-              Analytics Coming Soon
+              {t("experiments.analytics-coming-soon", "Analytics Coming Soon")}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              We are working on adding advanced analytics capabilities for
-              experiments.
+              {t("experiments.analytics-coming-soon-desc", "We are working on adding advanced analytics capabilities for experiments.")}
             </p>
           </div>
         </div>

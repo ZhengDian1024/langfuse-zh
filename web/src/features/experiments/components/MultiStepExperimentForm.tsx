@@ -50,6 +50,7 @@ import { ReviewStep } from "./steps/ReviewStep";
 
 // Import step prop types
 import { PromptType } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const MultiStepExperimentForm = ({
   projectId,
@@ -80,6 +81,7 @@ export const MultiStepExperimentForm = ({
   }) => Promise<void>;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const [activeStep, setActiveStep] = useState("prompt");
   const [selectedPromptName, setSelectedPromptName] = useState<string>(
     promptDefault?.name ?? "",
@@ -99,11 +101,11 @@ export const MultiStepExperimentForm = ({
   );
 
   const steps = [
-    { id: "prompt", label: "Prompt & Model" },
-    { id: "dataset", label: "Dataset" },
-    { id: "evaluators", label: "Evaluators" },
-    { id: "details", label: "Experiment run details" },
-    { id: "review", label: "Review" },
+    { id: "prompt", label: t("experiments.step.prompt-model", "Prompt & Model") },
+    { id: "dataset", label: t("experiments.step.dataset", "Dataset") },
+    { id: "evaluators", label: t("experiments.step.evaluators", "Evaluators") },
+    { id: "details", label: t("experiments.step.details", "Experiment run details") },
+    { id: "review", label: t("experiments.step.review", "Review") },
   ];
 
   const hasEvalReadAccess = useHasProjectAccess({
@@ -228,8 +230,8 @@ export const MultiStepExperimentForm = ({
     onSuccess: handleExperimentSuccess ?? (() => {}),
     onError: (error) => {
       showErrorToast(
-        error.message || "Failed to trigger dataset run",
-        "Please try again.",
+        error.message || t("experiments.toast.trigger-failed", "Failed to trigger dataset run"),
+        t("experiments.toast.retry", "Please try again."),
       );
     },
     onSettled: handleExperimentSettled ?? (() => {}),
@@ -437,18 +439,17 @@ export const MultiStepExperimentForm = ({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Run Experiment</DialogTitle>
+        <DialogTitle>{t("experiments.run-dialog.title", "Run Experiment")}</DialogTitle>
         <DialogDescription>
-          Run an experiment to evaluate prompts and model configurations against
-          a dataset. See{" "}
+          {t("experiments.run-dialog.description-before", "Run an experiment to evaluate prompts and model configurations against a dataset. See ")}
           <Link
             href="https://langfuse.com/docs/evaluation/dataset-runs/native-run"
             target="_blank"
             className="underline"
           >
-            documentation
-          </Link>{" "}
-          to learn more.
+            {t("experiments.run-dialog.documentation", "documentation")}
+          </Link>
+          {t("experiments.run-dialog.description-after", " to learn more.")}
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>
@@ -546,7 +547,7 @@ export const MultiStepExperimentForm = ({
                 disabled={activeStep === "prompt"}
               >
                 <ChevronLeft className="mr-2 h-4 w-4" />
-                Previous
+                {t("experiments.previous", "Previous")}
               </Button>
 
               <div className="flex gap-2">
@@ -562,7 +563,7 @@ export const MultiStepExperimentForm = ({
                       }
                     }}
                   >
-                    Next
+                    {t("experiments.next", "Next")}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 ) : (
@@ -575,7 +576,7 @@ export const MultiStepExperimentForm = ({
                     }
                     loading={form.formState.isSubmitting}
                   >
-                    Run Experiment
+                    {t("experiments.run-dialog.title", "Run Experiment")}
                   </Button>
                 )}
               </div>

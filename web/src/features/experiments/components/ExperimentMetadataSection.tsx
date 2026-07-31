@@ -6,12 +6,14 @@ import {
 } from "@/src/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ExperimentMetadataSection = ({
   metadata,
 }: {
   metadata: Record<string, unknown> | undefined;
 }) => {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
   if (Object.keys(metadata ?? {}).length === 0) return null;
@@ -24,7 +26,7 @@ export const ExperimentMetadataSection = ({
             type="button"
             className="flex w-full items-center justify-between text-left"
           >
-            <span className="text-sm font-medium">Metadata</span>
+            <span className="text-sm font-medium">{t("experiments.metadata-section", "Metadata")}</span>
             {isOpen ? (
               <ChevronDown className="text-muted-foreground h-4 w-4" />
             ) : (

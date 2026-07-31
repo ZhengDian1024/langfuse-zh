@@ -7,10 +7,8 @@ import {
   getScoresTabs,
   SCORES_TABS,
 } from "@/src/features/navigation/utils/scores-tabs";
-import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function ScoresPage() {
-  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
 

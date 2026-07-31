@@ -14,12 +14,14 @@ import {
 import { InfoIcon } from "lucide-react";
 import { type ReviewStepProps } from "@/src/features/experiments/types/stepProps";
 import { StepHeader } from "@/src/features/experiments/components/shared/StepHeader";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ReviewStep: React.FC<ReviewStepProps> = ({
   formState,
   navigationState,
   summary,
 }) => {
+  const { t } = useI18n();
   const { form } = formState;
   const { setActiveStep } = navigationState;
   const {
@@ -37,8 +39,11 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   return (
     <div className="space-y-6">
       <StepHeader
-        title="Review & Run"
-        description="Review your experiment configuration before running it. You can go back to any step to make changes."
+        title={t("experiments.review.title", "Review & Run")}
+        description={t(
+          "experiments.review.description",
+          "Review your experiment configuration before running it. You can go back to any step to make changes.",
+        )}
       />
 
       {/* Two-column grid layout */}
@@ -49,15 +54,15 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           onClick={() => setActiveStep("prompt")}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Prompt</CardTitle>
+            <CardTitle className="text-base">{t("experiments.review.prompt", "Prompt")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Name:</span>
+              <span className="text-muted-foreground">{t("experiments.review.name-label", "Name:")}</span>
               <span className="font-medium">{selectedPromptName}</span>
             </div>
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Version:</span>
+              <span className="text-muted-foreground">{t("experiments.review.version-label", "Version:")}</span>
               <span className="font-medium">v{selectedPromptVersion}</span>
             </div>
           </CardContent>
@@ -69,33 +74,33 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           onClick={() => setActiveStep("prompt")}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Model</CardTitle>
+            <CardTitle className="text-base">{t("experiments.review.model", "Model")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Provider:</span>
+              <span className="text-muted-foreground">{t("experiments.review.provider-label", "Provider:")}</span>
               <span>{modelParams.provider.value}</span>
             </div>
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Model:</span>
+              <span className="text-muted-foreground">{t("experiments.review.model-label", "Model:")}</span>
               <span>{modelParams.model.value}</span>
             </div>
             {modelParams.temperature.enabled && (
               <div className="flex gap-2">
-                <span className="text-muted-foreground">Temperature:</span>
+                <span className="text-muted-foreground">{t("experiments.review.temperature-label", "Temperature:")}</span>
                 <span>{modelParams.temperature.value}</span>
               </div>
             )}
             {modelParams.max_tokens.enabled && (
               <div className="flex gap-2">
-                <span className="text-muted-foreground">Max Tokens:</span>
+                <span className="text-muted-foreground">{t("experiments.review.max-tokens-label", "Max Tokens:")}</span>
                 <span>{modelParams.max_tokens.value}</span>
               </div>
             )}
             {structuredOutputEnabled && selectedSchemaName && (
               <div className="flex gap-2">
                 <span className="text-muted-foreground">
-                  Structured Output:
+                  {t("experiments.review.structured-output-label", "Structured Output:")}
                 </span>
                 <span>{selectedSchemaName}</span>
               </div>
@@ -109,16 +114,16 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           onClick={() => setActiveStep("dataset")}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Dataset</CardTitle>
+            <CardTitle className="text-base">{t("experiments.review.dataset", "Dataset")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Name:</span>
+              <span className="text-muted-foreground">{t("experiments.review.name-label", "Name:")}</span>
               <span className="font-medium">{selectedDataset?.name}</span>
             </div>
             {validationResult?.isValid && (
               <div className="flex gap-2">
-                <span className="text-muted-foreground">Items:</span>
+                <span className="text-muted-foreground">{t("experiments.review.items-label", "Items:")}</span>
                 <span>{validationResult.totalItems}</span>
               </div>
             )}
@@ -133,7 +138,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           >
             <CardHeader className="pb-3">
               <CardTitle className="text-base">
-                Evaluators ({activeEvaluatorNames.length})
+                {t("experiments.review.evaluators", "Evaluators ({count})", { count: String(activeEvaluatorNames.length) })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -154,30 +159,31 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
           onClick={() => setActiveStep("details")}
         >
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Experiment Run Details</CardTitle>
+            <CardTitle className="text-base">{t("experiments.review.run-details", "Experiment Run Details")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Experiment Name:</span>
+              <span className="text-muted-foreground">{t("experiments.review.experiment-name-label", "Experiment Name:")}</span>
               <span className="font-medium">{formValues.name}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">Run Name:</span>
+              <span className="text-muted-foreground">{t("experiments.review.run-name-label", "Run Name:")}</span>
               <span className="font-medium">{formValues.runName}</span>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <InfoIcon className="text-muted-foreground h-3.5 w-3.5" />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[300px]">
-                  This run name is auto-generated from the experiment name and
-                  can be used to fetch the resulting experiment run via the
-                  public API.
+                  {t(
+                    "experiments.review.run-name-tooltip",
+                    "This run name is auto-generated from the experiment name and can be used to fetch the resulting experiment run via the public API.",
+                  )}
                 </TooltipContent>
               </Tooltip>
             </div>
             {formValues.description && (
               <div className="flex flex-col gap-1">
-                <span className="text-muted-foreground">Description:</span>
+                <span className="text-muted-foreground">{t("experiments.review.description-label", "Description:")}</span>
                 <span className="text-sm">{formValues.description}</span>
               </div>
             )}

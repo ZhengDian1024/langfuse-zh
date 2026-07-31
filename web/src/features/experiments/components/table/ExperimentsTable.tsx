@@ -61,6 +61,7 @@ import {
 } from "@/src/components/ui/accordion";
 import { ExperimentChartsGrid } from "../ExperimentChartsGrid";
 import { useExperimentChartsAccordion } from "../../hooks/useExperimentChartsAccordion";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * LFE-10460: the metadata column's default position moved from last to right
@@ -94,6 +95,7 @@ export default function ExperimentsTable({
   fixedFilter = [],
   sessionFilterContextId,
 }: ExperimentsTableProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const filterConfig = useMemo(
     () =>
@@ -442,7 +444,7 @@ export default function ExperimentsTable({
       size: 100,
       enableHiding: true,
       headerTooltip: {
-        description: "Average duration of the root span per experiment item.",
+        description: t("experiments.table.duration-tooltip", "Average duration of the root span per experiment item."),
       },
       cell: ({ row }) => {
         const value: number | undefined = row.getValue("latencyAvg");
@@ -464,7 +466,7 @@ export default function ExperimentsTable({
     },
     {
       accessorKey: "traceItemScores",
-      header: "Trace Item Scores",
+      header: t("experiments.table.trace-item-scores", "Trace Item Scores"),
       id: "traceItemScores",
       enableHiding: true,
       defaultHidden: true,
@@ -477,7 +479,7 @@ export default function ExperimentsTable({
     },
     {
       accessorKey: "observationItemScores",
-      header: "Observation Item Scores",
+      header: t("experiments.table.observation-item-scores", "Observation Item Scores"),
       id: "observationItemScores",
       enableHiding: true,
       defaultHidden: true,
@@ -490,7 +492,7 @@ export default function ExperimentsTable({
     },
     {
       accessorKey: "experimentScores",
-      header: "Experiment-Level Scores",
+      header: t("experiments.table.experiment-scores", "Experiment-Level Scores"),
       id: "experimentScores",
       enableHiding: true,
       defaultHidden: true,
@@ -634,13 +636,13 @@ export default function ExperimentsTable({
     actions.push({
       id: ActionId.ExperimentCompare,
       type: BatchActionType.Create,
-      label: "Compare",
-      description: "Compare selected experiments",
+      label: t("experiments.table.compare", "Compare"),
+      description: t("experiments.table.compare-desc", "Compare selected experiments"),
       icon: <GitCompareArrows className="h-4 w-4 sm:mr-2" />,
       customDialog: true,
       disabled: tooManySelected,
       disabledReason: tooManySelected
-        ? "Select only up to 5 experiments to compare"
+        ? t("experiments.table.compare-disabled", "Select only up to 5 experiments to compare")
         : undefined,
       accessCheck: {
         scope: "project:read",
@@ -652,8 +654,8 @@ export default function ExperimentsTable({
       actions.push({
         id: ActionId.ObservationBatchEvaluation,
         type: BatchActionType.Create,
-        label: "Run Evaluator",
-        description: "Run evaluators on selected experiments",
+        label: t("experiments.table.run-evaluator", "Run Evaluator"),
+        description: t("experiments.table.run-evaluator-desc", "Run evaluators on selected experiments"),
         icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
         customDialog: true,
         accessCheck: {
@@ -663,7 +665,7 @@ export default function ExperimentsTable({
     }
 
     return actions;
-  }, [selectedExperimentIds.length, hasEvalAccess]);
+  }, [selectedExperimentIds.length, hasEvalAccess, t]);
 
   const shouldShowActions =
     selectedExperimentIds.length > 0 && tableActions.length > 0;
@@ -727,7 +729,7 @@ export default function ExperimentsTable({
               <AccordionItem value="charts" className="border-t">
                 <AccordionTrigger className="px-3 pt-2 pb-1 hover:no-underline">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Charts</span>
+                    <span className="text-sm font-medium">{t("experiments.charts", "Charts")}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="max-h-[40dvh] overflow-x-auto px-3 pt-1 pb-1">

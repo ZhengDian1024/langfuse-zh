@@ -19,8 +19,10 @@ import {
   getExperimentRunTabs,
 } from "@/src/features/navigation/utils/experiment-run-tabs";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function ExperimentResults() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
 
@@ -74,7 +76,7 @@ export default function ExperimentResults() {
   // Show spinner while session loads or while redirecting when beta is off
   if (!isExperimentsBetaActive) {
     return (
-      <Page headerProps={{ title: "Experiments" }}>
+      <Page headerProps={{ title: t("nav.experiments", "Experiments") }}>
         <div className="flex h-full items-center justify-center">
           <Spinner size="xl" variant="muted" />
         </div>
@@ -86,11 +88,11 @@ export default function ExperimentResults() {
     <Page
       headerProps={{
         title: hasBaseline
-          ? (experiment?.name ?? baselineId ?? "Results")
-          : "Results",
+          ? (experiment?.name ?? baselineId ?? t("experiments.results", "Results"))
+          : t("experiments.results", "Results"),
         itemType: "EXPERIMENT",
         breadcrumb: [
-          { name: "Experiments", href: `/project/${projectId}/experiments` },
+          { name: t("nav.experiments", "Experiments"), href: `/project/${projectId}/experiments` },
         ],
         tabsProps: {
           tabs: getExperimentRunTabs(projectId),
@@ -101,7 +103,7 @@ export default function ExperimentResults() {
             {hasBaseline && comparisonIds.length > 0 && (
               <Button variant="outline" onClick={clearBaseline}>
                 <X className="h-4 w-4" />
-                <span className="ml-2 hidden md:inline">Clear baseline</span>
+                <span className="ml-2 hidden md:inline">{t("experiments.clear-baseline", "Clear baseline")}</span>
               </Button>
             )}
 

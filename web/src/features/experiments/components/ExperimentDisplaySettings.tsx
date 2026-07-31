@@ -8,6 +8,7 @@ import {
 } from "@/src/components/ui/dropdown-menu";
 import { Button } from "@/src/components/ui/button";
 import { Settings2, Check } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type ExperimentDisplaySettingsProps = {
   layout: "grid" | "list";
@@ -26,6 +27,7 @@ export function ExperimentDisplaySettings({
   hasComparisons,
   hasBaseline,
 }: ExperimentDisplaySettingsProps) {
+  const { t } = useI18n();
   const isItemVisibilityDisabled = !hasComparisons || !hasBaseline;
 
   return (
@@ -33,25 +35,25 @@ export function ExperimentDisplaySettings({
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <Settings2 className="h-4 w-4" />
-          <span className="ml-2 hidden md:inline">Display</span>
+          <span className="ml-2 hidden md:inline">{t("experiments.display.button", "Display")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>Layout</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("experiments.display.layout", "Layout")}</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => onLayoutChange("grid")}>
           {layout === "grid" && <Check className="mr-2 h-4 w-4" />}
           {layout !== "grid" && <span className="mr-2 h-4 w-4" />}
-          Grid
+          {t("experiments.display.grid", "Grid")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onLayoutChange("list")}>
           {layout === "list" && <Check className="mr-2 h-4 w-4" />}
           {layout !== "list" && <span className="mr-2 h-4 w-4" />}
-          List
+          {t("experiments.display.list", "List")}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel>Item Visibility</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("experiments.display.item-visibility", "Item Visibility")}</DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => onItemVisibilityChange("baseline-only")}
           disabled={isItemVisibilityDisabled}
@@ -62,7 +64,7 @@ export function ExperimentDisplaySettings({
           {itemVisibility !== "baseline-only" && (
             <span className="mr-2 h-4 w-4" />
           )}
-          Show only items in baseline
+          {t("experiments.display.show-baseline-only", "Show only items in baseline")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => onItemVisibilityChange("all")}
@@ -70,7 +72,7 @@ export function ExperimentDisplaySettings({
         >
           {itemVisibility === "all" && <Check className="mr-2 h-4 w-4" />}
           {itemVisibility !== "all" && <span className="mr-2 h-4 w-4" />}
-          Show all items
+          {t("experiments.display.show-all", "Show all items")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

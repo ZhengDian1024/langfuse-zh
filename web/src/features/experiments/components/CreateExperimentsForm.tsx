@@ -38,6 +38,7 @@ import { RemoteExperimentUpsertForm } from "@/src/features/experiments/component
 import { RemoteExperimentTriggerModal } from "@/src/features/experiments/components/RemoteExperimentTriggerModal";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const CreateExperimentsForm = ({
   projectId,
@@ -70,6 +71,7 @@ export const CreateExperimentsForm = ({
   showSDKRunInfoPage?: boolean;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const [showPromptForm, setShowPromptForm] = useState(false);
   const [showRemoteExperimentUpsertForm, setShowRemoteExperimentUpsertForm] =
     useState(false);
@@ -124,10 +126,10 @@ export const CreateExperimentsForm = ({
   const isRemoteExperimentEnabled =
     existingRemoteExperiment.data?.enabled !== false;
   const webhookActionLabel = isRemoteExperimentLoading
-    ? "Loading..."
+    ? t("experiments.loading", "Loading...")
     : hasRemoteExperiment
-      ? "Run"
-      : "Configure";
+      ? t("experiments.run", "Run")
+      : t("experiments.configure", "Configure");
 
   if (!hasExperimentWriteAccess) {
     return null;
@@ -150,18 +152,17 @@ export const CreateExperimentsForm = ({
     return (
       <>
         <DialogHeader>
-          <DialogTitle>Run Experiment</DialogTitle>
+          <DialogTitle>{t("experiments.run-dialog.title", "Run Experiment")}</DialogTitle>
           <DialogDescription>
-            Experiments allow you to test iterations of your application or
-            prompt on a dataset. Learn more about experiments{" "}
+            {t("experiments.run-dialog.intro-before", "Experiments allow you to test iterations of your application or prompt on a dataset. Learn more about experiments ")}
             <Link
               href="https://langfuse.com/docs/evaluation/dataset-runs/datasets"
               target="_blank"
               className="underline"
             >
-              here
+              {t("experiments.run-dialog.intro-here", "here")}
             </Link>
-            .
+            {t("experiments.run-dialog.intro-after", ".")}
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="pb-8">
@@ -170,17 +171,17 @@ export const CreateExperimentsForm = ({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Wand2 className="size-4" />
-                  via User Interface
+                  {t("experiments.run-dialog.via-ui", "via User Interface")}
                 </CardTitle>
                 <CardDescription>
-                  Test single prompts and model configurations via Langfuse UI.
+                  {t("experiments.run-dialog.via-ui-desc", "Test single prompts and model configurations via Langfuse UI.")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-muted-foreground list-disc space-y-2 pl-4 text-sm">
-                  <li>Compare prompt versions</li>
-                  <li>Compare model configurations</li>
-                  <li>No code required</li>
+                  <li>{t("experiments.run-dialog.compare-prompts", "Compare prompt versions")}</li>
+                  <li>{t("experiments.run-dialog.compare-models", "Compare model configurations")}</li>
+                  <li>{t("experiments.run-dialog.no-code", "No code required")}</li>
                 </ul>
               </CardContent>
               <CardFooter className="mt-auto flex flex-row gap-2">
@@ -192,7 +193,7 @@ export const CreateExperimentsForm = ({
                     setShowRemoteExperimentTriggerModal(false);
                   }}
                 >
-                  Configure
+                  {t("experiments.configure", "Configure")}
                 </Button>
                 <Button
                   variant="outline"
@@ -203,7 +204,7 @@ export const CreateExperimentsForm = ({
                   }
                 >
                   <Link href="https://langfuse.com/docs/evaluation/dataset-runs/native-run">
-                    View Docs
+                    {t("experiments.view-docs", "View Docs")}
                   </Link>
                 </Button>
               </CardFooter>
@@ -213,22 +214,23 @@ export const CreateExperimentsForm = ({
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Code2 className="size-4" />
-                  via Webhook
+                  {t("experiments.run-dialog.via-webhook", "via Webhook")}
                 </CardTitle>
                 <CardDescription>
-                  Set up an experiment webhook to start remote experiments from
-                  Langfuse. Your service receives the selected dataset and run
-                  config, executes the experiment, and posts results back.
+                  {t(
+                    "experiments.run-dialog.via-webhook-desc",
+                    "Set up an experiment webhook to start remote experiments from Langfuse. Your service receives the selected dataset and run config, executes the experiment, and posts results back.",
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="text-muted-foreground list-disc space-y-2 pl-4 text-sm">
-                  <li>Run custom evaluation logic in your service</li>
-                  <li>Keep experiment results in Langfuse</li>
+                  <li>{t("experiments.run-dialog.run-custom-logic", "Run custom evaluation logic in your service")}</li>
+                  <li>{t("experiments.run-dialog.keep-results", "Keep experiment results in Langfuse")}</li>
                 </ul>
                 {!fixedDatasetId ? (
                   <div className="mt-4 space-y-2">
-                    <div className="text-sm font-medium">Dataset</div>
+                    <div className="text-sm font-medium">{t("experiments.run-dialog.dataset", "Dataset")}</div>
                     <Popover
                       open={datasetPopoverOpen}
                       onOpenChange={setDatasetPopoverOpen}
@@ -245,10 +247,10 @@ export const CreateExperimentsForm = ({
                           className="w-full justify-between px-2 font-normal"
                         >
                           {remoteExperimentDatasets.isPending
-                            ? "Loading datasets"
+                            ? t("experiments.run-dialog.loading-datasets", "Loading datasets")
                             : (selectedRemoteExperimentDataset?.name ??
                               remoteExperimentDataset?.name ??
-                              "Select a dataset")}
+                              t("experiments.run-dialog.select-dataset", "Select a dataset"))}
                           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </PopoverTrigger>
@@ -258,13 +260,13 @@ export const CreateExperimentsForm = ({
                       >
                         <InputCommand>
                           <InputCommandInput
-                            placeholder="Search datasets..."
+                            placeholder={t("experiments.run-dialog.search-datasets", "Search datasets...")}
                             className="h-9"
                             variant="bottom"
                           />
                           <InputCommandList>
                             <InputCommandEmpty>
-                              No dataset found.
+                              {t("experiments.run-dialog.no-dataset", "No dataset found.")}
                             </InputCommandEmpty>
                             <InputCommandGroup>
                               {remoteExperimentDatasets.data?.map((dataset) => (
@@ -307,19 +309,19 @@ export const CreateExperimentsForm = ({
                       title={
                         isRemoteExperimentEnabled
                           ? undefined
-                          : "please edit and enable webhook"
+                          : t("experiments.run-dialog.edit-webhook-title", "please edit and enable webhook")
                       }
                       onClick={() => {
                         if (!datasetId || !isRemoteExperimentEnabled) return;
                         setShowRemoteExperimentTriggerModal(true);
                       }}
                     >
-                      Run
+                      {t("experiments.run", "Run")}
                     </Button>
                     <Button
-                      aria-label="Edit remote trigger settings"
+                      aria-label={t("experiments.run-dialog.edit-remote", "Edit remote trigger settings")}
                       className="rounded-l-none rounded-r-md border-l-2 px-2"
-                      title="Edit remote trigger settings"
+                      title={t("experiments.run-dialog.edit-remote", "Edit remote trigger settings")}
                       onClick={() => setShowRemoteExperimentUpsertForm(true)}
                     >
                       <Cog className="h-3 w-3" />
@@ -349,7 +351,7 @@ export const CreateExperimentsForm = ({
                     href="https://langfuse.com/docs/evaluation/dataset-runs/remote-run"
                     target="_blank"
                   >
-                    View Docs
+                    {t("experiments.view-docs", "View Docs")}
                   </Link>
                 </Button>
               </CardFooter>

@@ -15,8 +15,10 @@ import { FlaskConical } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function Experiments() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const [isCreateExperimentDialogOpen, setIsCreateExperimentDialogOpen] =
@@ -47,7 +49,7 @@ export default function Experiments() {
 
   if (!canAccessExperiments) {
     return (
-      <Page headerProps={{ title: "Experiments" }}>
+      <Page headerProps={{ title: t("nav.experiments", "Experiments") }}>
         <div className="flex h-full items-center justify-center">
           <Spinner size="xl" variant="muted" />
         </div>
@@ -58,7 +60,7 @@ export default function Experiments() {
   return (
     <Page
       headerProps={{
-        title: "Experiments",
+        title: t("nav.experiments", "Experiments"),
         actionButtonsRight: (
           <div className="flex items-center gap-2">
             <Dialog
@@ -71,7 +73,7 @@ export default function Experiments() {
                   onClick={() => capture("dataset_run:new_form_open")}
                 >
                   <FlaskConical className="h-4 w-4" />
-                  <span className="ml-2 hidden md:block">Run experiment</span>
+                  <span className="ml-2 hidden md:block">{t("experiments.run-experiment", "Run experiment")}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">

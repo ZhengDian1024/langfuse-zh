@@ -10,16 +10,21 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { type ExperimentDetailsStepProps } from "@/src/features/experiments/types/stepProps";
 import { StepHeader } from "@/src/features/experiments/components/shared/StepHeader";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({
   formState,
 }) => {
+  const { t } = useI18n();
   const { form } = formState;
   return (
     <div className="space-y-6">
       <StepHeader
-        title="Experiment Run Details"
-        description="Provide a name and optional description for your experiment to help identify and track it."
+        title={t("experiments.details-step.title", "Experiment Run Details")}
+        description={t(
+          "experiments.details-step.description",
+          "Provide a name and optional description for your experiment to help identify and track it.",
+        )}
       />
 
       <FormField
@@ -27,11 +32,11 @@ export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Experiment name</FormLabel>
+            <FormLabel>{t("experiments.details-step.experiment-name", "Experiment name")}</FormLabel>
             <FormControl>
               <Input
                 {...field}
-                placeholder="Enter experiment name"
+                placeholder={t("experiments.details-step.name-placeholder", "Enter experiment name")}
                 className="w-full"
               />
             </FormControl>
@@ -45,11 +50,11 @@ export const ExperimentDetailsStep: React.FC<ExperimentDetailsStepProps> = ({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description (optional)</FormLabel>
+            <FormLabel>{t("experiments.details-step.description-optional", "Description (optional)")}</FormLabel>
             <FormControl>
               <Textarea
                 {...field}
-                placeholder="Describe the purpose or context of this experiment"
+                placeholder={t("experiments.details-step.desc-placeholder", "Describe the purpose or context of this experiment")}
                 className="min-h-[100px] w-full"
               />
             </FormControl>

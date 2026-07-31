@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { Separator } from "@/src/components/ui/separator";
-import { useI18n } from "@/src/features/i18n/useI18n";
 
 type MultiSelectOptions = {
   value: string;
@@ -77,7 +76,6 @@ export function MultiSelectKeyValues<
   variant = "secondary",
   showSelectedValueStrings = true,
 }: MultiSelectKeyValuesProps<T>) {
-  const { t } = useI18n();
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 

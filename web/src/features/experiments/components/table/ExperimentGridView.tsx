@@ -18,6 +18,7 @@ import {
   type VisibilityState,
   type RowSelectionState,
 } from "@tanstack/react-table";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useExperimentNames } from "@/src/features/experiments/hooks/useExperimentNames";
 import { cn } from "@/src/utils/tailwind";
 import { type ReactNode } from "react";
@@ -78,6 +79,7 @@ export const ExperimentGridView = ({
   setRowSelection,
   highlightAllRows,
 }: ExperimentGridViewProps) => {
+  const { t } = useI18n();
   // Build all experiment IDs (baseline first)
   const allExperimentIds = useMemo(
     () => [baselineExperimentId, ...comparisonExperimentIds],
@@ -112,7 +114,7 @@ export const ExperimentGridView = ({
                 size="sm"
                 className={cn("shrink-0 font-medium", colorStyles?.badgeClass)}
               >
-                {isBaseline ? "Baseline" : "Comp"}
+                {isBaseline ? t("experiments.grid-view.baseline", "Baseline") : t("experiments.grid-view.comp", "Comp")}
               </Badge>
             )}
           </div>
@@ -173,6 +175,7 @@ export const ExperimentGridView = ({
     traceScoreOrder,
     columnVisibility,
     useExperimentColors,
+    t,
   ]);
 
   // Build all columns: Select, Input, Expected Output, then experiment columns
@@ -183,7 +186,7 @@ export const ExperimentGridView = ({
       {
         accessorKey: "input",
         id: "input",
-        header: "Input",
+        header: t("experiments.grid-view.input", "Input"),
         size: 200,
         cell: ({ row }) => (
           <MemoizedIOTableCell
@@ -197,7 +200,7 @@ export const ExperimentGridView = ({
       {
         accessorKey: "expectedOutput",
         id: "expectedOutput",
-        header: "Expected Output",
+        header: t("experiments.grid-view.expected-output", "Expected Output"),
         size: 200,
         cell: ({ row }) => (
           <MemoizedIOTableCell
@@ -211,7 +214,7 @@ export const ExperimentGridView = ({
       },
       ...experimentColumns,
     ],
-    [experimentColumns, isLoading, selectActionColumn],
+    [experimentColumns, isLoading, selectActionColumn, t],
   );
 
   return (

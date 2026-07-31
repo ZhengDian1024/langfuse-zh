@@ -64,6 +64,7 @@ import {
 import { DiffLabel } from "@/src/features/datasets/components/DiffLabel";
 import { computeScoreDiffs } from "@/src/features/datasets/lib/computeScoreDiffs";
 import { TablePeekViewExperimentItemDetail } from "@/src/components/table/peek/peek-experiment-item-detail";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const renderExperimentSpecificHeader = (label: string) => (
   <span className="text-muted-foreground">{label}</span>
@@ -249,6 +250,7 @@ export default function ExperimentItemsTable({
   projectId,
   hideControls = false,
 }: ExperimentItemsTableProps) {
+  const { t } = useI18n();
   const { setDetailPageList } = useDetailPageLists();
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
   const [showRunEvaluationDialog, setShowRunEvaluationDialog] = useState(false);
@@ -655,7 +657,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "itemId",
       id: "itemId",
-      header: "Item ID",
+      header: t("experiments.items-table.item-id", "Item ID"),
       size: 150,
       enableHiding: true,
       cell: ({ row }) => {
@@ -666,7 +668,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "observationId",
       id: "observationId",
-      header: () => renderExperimentSpecificHeader("Observation ID"),
+      header: () => renderExperimentSpecificHeader(t("experiments.items-table.observation-id", "Observation ID")),
       size: 180,
       enableHiding: true,
       cell: ({ row }) => {
@@ -783,7 +785,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "experimentId",
       id: "experimentId",
-      header: () => renderExperimentSpecificHeader("Experiment"),
+      header: () => renderExperimentSpecificHeader(t("experiments.items-table.experiment", "Experiment")),
       size: 150,
       defaultHidden: true,
       enableHiding: true,
@@ -811,7 +813,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "input",
       id: "input",
-      header: "Input",
+      header: t("experiments.items-table.input", "Input"),
       size: 300,
       enableHiding: true,
       cell: ({ row }) => {
@@ -827,7 +829,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "expectedOutput",
       id: "expectedOutput",
-      header: "Expected Output",
+      header: t("experiments.items-table.expected-output", "Expected Output"),
       size: 300,
       enableHiding: true,
       cell: ({ row }) => {
@@ -844,7 +846,7 @@ export default function ExperimentItemsTable({
     {
       accessorKey: "output",
       id: "output",
-      header: "Output",
+      header: t("experiments.items-table.output", "Output"),
       size: 300,
       enableHiding: true,
       cell: ({ row }) => {
@@ -862,7 +864,7 @@ export default function ExperimentItemsTable({
     },
     {
       accessorKey: "observationScores",
-      header: "Observation Scores",
+      header: t("experiments.items-table.observation-scores", "Observation Scores"),
       id: "observationScores",
       enableHiding: true,
       defaultHidden: true,
@@ -875,7 +877,7 @@ export default function ExperimentItemsTable({
     },
     {
       accessorKey: "traceScores",
-      header: "Trace Scores",
+      header: t("experiments.items-table.trace-scores", "Trace Scores"),
       id: "traceScores",
       enableHiding: true,
       defaultHidden: true,
@@ -1035,8 +1037,8 @@ export default function ExperimentItemsTable({
         {
           id: ActionId.ObservationBatchEvaluation,
           type: BatchActionType.Create,
-          label: "Evaluate",
-          description: "Run evaluators on selected items",
+          label: t("experiments.items-table.evaluate", "Evaluate"),
+          description: t("experiments.items-table.evaluate-desc", "Run evaluators on selected items"),
           icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
           customDialog: true,
           accessCheck: {
@@ -1155,7 +1157,7 @@ export default function ExperimentItemsTable({
               ) : (
                 <div className="flex flex-1 items-center justify-center">
                   <span className="text-muted-foreground text-sm">
-                    Please select a baseline experiment.
+                    {t("experiments.items-table.select-baseline", "Please select a baseline experiment.")}
                   </span>
                 </div>
               )
@@ -1180,7 +1182,7 @@ export default function ExperimentItemsTable({
                 noResultsMessage={
                   !hasSelectedRuns ? (
                     <span className="text-muted-foreground text-sm">
-                      Please select a baseline experiment.
+                      {t("experiments.items-table.select-baseline", "Please select a baseline experiment.")}
                     </span>
                   ) : undefined
                 }

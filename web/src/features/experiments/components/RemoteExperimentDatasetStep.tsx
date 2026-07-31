@@ -26,6 +26,7 @@ import {
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DatasetOption = {
   id: string;
@@ -43,6 +44,7 @@ export const RemoteExperimentDatasetStep = ({
   onBack: () => void;
   onContinue: (dataset: DatasetOption) => void;
 }) => {
+  const { t } = useI18n();
   const [datasetPopoverOpen, setDatasetPopoverOpen] = useState(false);
   const [selectedDatasetId, setSelectedDatasetId] = useState(
     initialDatasetId ?? "",
@@ -75,12 +77,14 @@ export const RemoteExperimentDatasetStep = ({
           onClick={onBack}
           className="inline-block self-start"
         >
-          ← Back
+          ← {t("experiments.remote-dataset.back", "Back")}
         </Button>
-        <DialogTitle>Select dataset</DialogTitle>
+        <DialogTitle>{t("experiments.remote-dataset.title", "Select dataset")}</DialogTitle>
         <DialogDescription>
-          Remote dataset run triggers are attached to a dataset. Choose the
-          dataset before configuring the remote experiment.
+          {t(
+            "experiments.remote-dataset.description",
+            "Remote dataset run triggers are attached to a dataset. Choose the dataset before configuring the remote experiment.",
+          )}
         </DialogDescription>
       </DialogHeader>
 
@@ -89,7 +93,7 @@ export const RemoteExperimentDatasetStep = ({
           <Skeleton className="h-24 w-full" />
         ) : datasets.data && datasets.data.length > 0 ? (
           <div className="space-y-2">
-            <div className="text-sm font-medium">Dataset</div>
+            <div className="text-sm font-medium">{t("experiments.remote-dataset.dataset", "Dataset")}</div>
             <Popover
               open={datasetPopoverOpen}
               onOpenChange={setDatasetPopoverOpen}
@@ -101,7 +105,7 @@ export const RemoteExperimentDatasetStep = ({
                   aria-expanded={datasetPopoverOpen}
                   className="w-full justify-between px-2 font-normal"
                 >
-                  {selectedDataset?.name ?? "Select a dataset"}
+                  {selectedDataset?.name ?? t("experiments.remote-dataset.select", "Select a dataset")}
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
@@ -111,12 +115,12 @@ export const RemoteExperimentDatasetStep = ({
               >
                 <InputCommand>
                   <InputCommandInput
-                    placeholder="Search datasets..."
+                    placeholder={t("experiments.remote-dataset.search", "Search datasets...")}
                     className="h-9"
                     variant="bottom"
                   />
                   <InputCommandList>
-                    <InputCommandEmpty>No dataset found.</InputCommandEmpty>
+                    <InputCommandEmpty>{t("experiments.remote-dataset.no-dataset", "No dataset found.")}</InputCommandEmpty>
                     <InputCommandGroup>
                       {datasets.data.map((dataset) => (
                         <InputCommandItem
@@ -146,9 +150,9 @@ export const RemoteExperimentDatasetStep = ({
           </div>
         ) : (
           <div className="rounded-md border p-4 text-sm">
-            <div className="font-medium">No datasets found</div>
+            <div className="font-medium">{t("experiments.remote-dataset.no-datasets-title", "No datasets found")}</div>
             <p className="text-muted-foreground mt-1">
-              Create a dataset before setting up a remote experiment trigger.
+              {t("experiments.remote-dataset.no-datasets-desc", "Create a dataset before setting up a remote experiment trigger.")}
             </p>
           </div>
         )}
@@ -170,7 +174,7 @@ export const RemoteExperimentDatasetStep = ({
                 <Spinner size="sm" />
               </div>
             ) : null}
-            Continue
+            {t("experiments.remote-dataset.continue", "Continue")}
           </Button>
         </div>
       </DialogFooter>

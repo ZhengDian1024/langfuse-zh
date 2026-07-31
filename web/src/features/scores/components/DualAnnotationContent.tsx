@@ -2,7 +2,6 @@ import { type ScoreDomain } from "@langfuse/shared";
 import { type WithStringifiedMetadata } from "@/src/utils/clientSideDomainTypes";
 import { AnnotationForm } from "@/src/features/scores/components/AnnotationForm";
 import { Separator } from "@/src/components/ui/separator";
-import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface DualAnnotationContentProps {
   projectId: string;
@@ -23,7 +22,6 @@ export function DualAnnotationContent({
   observationScores,
   traceScores,
 }: DualAnnotationContentProps) {
-  const { t } = useI18n();
   const hasNonAnnotationScores = [...observationScores, ...traceScores].some(
     (score) => score.source !== "ANNOTATION",
   );
