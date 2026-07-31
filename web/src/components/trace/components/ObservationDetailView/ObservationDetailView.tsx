@@ -47,6 +47,7 @@ import { useJsonExpansion } from "@/src/components/trace/contexts/JsonExpansionC
 import { useMedia } from "@/src/components/trace/api/useMedia";
 import { useSelection } from "@/src/components/trace/contexts/SelectionContext";
 import { useViewPreferences } from "@/src/components/trace/contexts/ViewPreferencesContext";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Contexts and hooks
 import { useTraceData } from "@/src/components/trace/contexts/TraceDataContext";
@@ -82,6 +83,7 @@ export function ObservationDetailView({
     setSelectedTab: setGlobalSelectedTab,
   } = useSelection();
   const utils = api.useUtils();
+  const { t } = useI18n();
 
   // V4 beta mode and observations for log tab
   const { isBetaEnabled: isV4Enabled } = useV4Beta();
@@ -314,20 +316,33 @@ export function ObservationDetailView({
         {showTabsBar && (
           <TooltipProvider>
             <TabsBarList>
-              <TabsBarTrigger value="preview">Preview</TabsBarTrigger>
+              <TabsBarTrigger value="preview">
+                {t("trace.common.preview", "Preview")}
+              </TabsBarTrigger>
               {showScoresTab && (
-                <TabsBarTrigger value="scores">Scores</TabsBarTrigger>
+                <TabsBarTrigger value="scores">
+                  {t("nav.scores", "Scores")}
+                </TabsBarTrigger>
               )}
               {showLogViewTab && (
                 <TabsBarTrigger value="log">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span>Log View</span>
+                      <span>
+                        {t("trace.common.log-view", "Log View")}
+                      </span>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs">
                       {isLogViewVirtualized
-                        ? `Shows all ${observations.length} observations with virtualization enabled.`
-                        : "Shows all observations concatenated. Great for quickly scanning through them."}
+                        ? t(
+                            "trace.detail.shows-all-virtualized",
+                            "Shows all {count} observations with virtualization enabled.",
+                            { count: String(observations.length) },
+                          )
+                        : t(
+                            "trace.detail.shows-all-concatenated",
+                            "Shows all observations concatenated. Great for quickly scanning through them.",
+                          )}
                     </TooltipContent>
                   </Tooltip>
                 </TabsBarTrigger>
@@ -362,7 +377,7 @@ export function ObservationDetailView({
                         value="pretty"
                         className="h-fit px-1 text-xs"
                       >
-                        Formatted
+                        {t("trace.common.formatted", "Formatted")}
                       </TabsTrigger>
                       {selectedTab === "log" && isLogViewVirtualized ? (
                         <HoverCard openDelay={200}>
@@ -373,7 +388,7 @@ export function ObservationDetailView({
                                 className="h-fit px-1 text-xs"
                                 disabled
                               >
-                                JSON
+                                {t("trace.common.json", "JSON")}
                               </TabsTrigger>
                             </span>
                           </HoverCardTrigger>
@@ -382,14 +397,23 @@ export function ObservationDetailView({
                             className="w-64 text-sm"
                             sideOffset={8}
                           >
-                            <p className="font-medium">JSON view unavailable</p>
+                            <p className="font-medium">
+                              {t(
+                                "trace.detail.json-view-unavailable",
+                                "JSON view unavailable",
+                              )}
+                            </p>
                             <p className="text-muted-foreground mt-1">
-                              Disabled for traces with{" "}
-                              {
-                                TRACE_VIEW_CONFIG.logView
-                                  .virtualizationThreshold
-                              }
-                              + observations to maintain performance.
+                              {t(
+                                "trace.detail.disabled-for-performance",
+                                "Disabled for traces with {count}+ observations to maintain performance.",
+                                {
+                                  count: String(
+                                    TRACE_VIEW_CONFIG.logView
+                                      .virtualizationThreshold,
+                                  ),
+                                },
+                              )}
                             </p>
                           </HoverCardContent>
                         </HoverCard>
@@ -398,7 +422,7 @@ export function ObservationDetailView({
                           value="json"
                           className="h-fit px-1 text-xs"
                         >
-                          JSON
+                          {t("trace.common.json", "JSON")}
                         </TabsTrigger>
                       )}
                     </TabsList>
@@ -413,7 +437,7 @@ export function ObservationDetailView({
                           onCheckedChange={handleBetaToggle}
                         />
                         <span className="text-muted-foreground text-xs">
-                          Beta
+                          {t("nav.beta", "Beta")}
                         </span>
                       </div>
                     )}
@@ -442,7 +466,7 @@ export function ObservationDetailView({
                   <div
                     className={`px-2 pt-2 text-sm font-medium ${currentView !== "pretty" ? "shrink-0" : ""}`}
                   >
-                    Tags
+                    {t("trace.common.tags", "Tags")}
                   </div>
                   <div
                     className={`flex flex-wrap gap-x-1 gap-y-1 px-2 pb-2 ${currentView !== "pretty" ? "shrink-0" : ""}`}
