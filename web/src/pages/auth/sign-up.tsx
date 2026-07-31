@@ -32,6 +32,7 @@ import { getSafeRedirectPath } from "@/src/utils/redirect";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { noUrlCheck, StringNoHTMLNonEmpty } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Use the same getServerSideProps function as src/pages/auth/sign-in.tsx
 export { getServerSideProps } from "@/src/pages/auth/sign-in";
@@ -80,6 +81,7 @@ function StandardSignupFlow({
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const router = useRouter();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   // Read query params for targetPath and email pre-population
   const queryTargetPath = router.query.targetPath as string | undefined;
@@ -135,7 +137,7 @@ function StandardSignupFlow({
 
     if (!emailResult.success) {
       form.setError("email", {
-        message: "Invalid email address",
+        message: t("auth.error.invalid-email", "Invalid email address"),
       });
       setContinueLoading(false);
       return;
@@ -183,7 +185,12 @@ function StandardSignupFlow({
       }, 100);
     } catch (error) {
       console.error(error);
-      setFormError("Unable to check SSO configuration. Please try again.");
+      setFormError(
+        t(
+          "auth.error.sso-check-failed",
+          "Unable to check SSO configuration. Please try again.",
+        ),
+      );
     } finally {
       setContinueLoading(false);
     }
@@ -217,7 +224,7 @@ function StandardSignupFlow({
             : `${env.NEXT_PUBLIC_BASE_PATH ?? ""}/`),
       });
     } catch {
-      setFormError("An error occurred. Please try again.");
+      setFormError(t("auth.error.generic", "An error occurred. Please try again."));
     }
   }
 
@@ -241,7 +248,7 @@ function StandardSignupFlow({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("auth.label.name", "Name")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Jane Doe" {...field} />
                   </FormControl>
@@ -255,7 +262,7 @@ function StandardSignupFlow({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("auth.label.email", "Email")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="jsdoe@example.com"
@@ -274,7 +281,7 @@ function StandardSignupFlow({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t("auth.label.password", "Password")}</FormLabel>
                   <FormControl>
                     <PasswordInput {...field} />
                   </FormControl>
@@ -292,7 +299,9 @@ function StandardSignupFlow({
             disabled={showPasswordStep ? false : form.watch("email") === ""}
             data-testid="submit-email-password-sign-up-form"
           >
-            {showPasswordStep ? "Sign up" : "Continue"}
+            {showPasswordStep
+              ? t("auth.sign-up.submit", "Sign up")
+              : t("auth.action.continue", "Continue")}
           </Button>
           {formError ? (
             <div className="text-destructive text-center text-sm font-medium">
@@ -317,6 +326,7 @@ function VerifiedSignupFlow({
 }: Pick<PageProps, "authProviders" | "emailVerificationRequired">) {
   const router = useRouter();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const emailParam = router.query.email as string | undefined;
 
   const [formError, setFormError] = useState<string | null>(null);
@@ -371,7 +381,10 @@ function VerifiedSignupFlow({
       if (signInRes?.error) {
         setFormError(
           signInRes.error === "AccessDenied"
-            ? "Unable to send verification email. Please try again."
+            ? t(
+                "auth.sign-up.verify-send-failed",
+                "Unable to send verification email. Please try again.",
+              )
             : signInRes.error,
         );
         return;
@@ -381,7 +394,7 @@ function VerifiedSignupFlow({
       setOtpEmail(values.email);
       setPhase("otp");
     } catch {
-      setFormError("An error occurred. Please try again.");
+      setFormError(t("auth.error.generic", "An error occurred. Please try again."));
     }
   }
 
@@ -403,16 +416,24 @@ function VerifiedSignupFlow({
     return (
       <>
         <Head>
-          <title>Verify your email | Langfuse</title>
+          <title>
+            {t(
+              "auth.sign-up.verify-document-title",
+              "Verify your email | Langfuse",
+            )}
+          </title>
         </Head>
         <div className="flex flex-1 flex-col py-6 sm:min-h-full sm:justify-center sm:px-6 sm:py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
             <LangfuseIcon className="mx-auto" />
             <h2 className="text-primary mt-4 text-center text-2xl leading-9 font-bold tracking-tight">
-              Check your email
+              {t("auth.sign-up.check-email-heading", "Check your email")}
             </h2>
             <p className="text-muted-foreground mt-2 text-center text-sm">
-              We sent a verification code to{" "}
+              {t(
+                "auth.sign-up.sent-code-to",
+                "We sent a verification code to ",
+              )}
               <span className="font-medium">{otpEmail}</span>
             </p>
           </div>
@@ -424,7 +445,7 @@ function VerifiedSignupFlow({
                   htmlFor="otp-code"
                   className="mb-2 block text-sm font-medium"
                 >
-                  Verification code
+                  {t("auth.sign-up.verification-code", "Verification code")}
                 </label>
                 <Input
                   id="otp-code"
@@ -433,7 +454,10 @@ function VerifiedSignupFlow({
                   maxLength={6}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.trim())}
-                  placeholder="6-digit code"
+                  placeholder={t(
+                    "auth.sign-up.six-digit-code-placeholder",
+                    "6-digit code",
+                  )}
                   className="w-full"
                   autoFocus
                 />
@@ -444,7 +468,7 @@ function VerifiedSignupFlow({
                 loading={otpLoading}
                 disabled={!otpCode || otpCode.length !== 6}
               >
-                Verify
+                {t("auth.sign-up.verify", "Verify")}
               </Button>
               {otpError && (
                 <div className="text-destructive text-center text-sm font-medium">
@@ -452,7 +476,10 @@ function VerifiedSignupFlow({
                 </div>
               )}
               <p className="text-muted-foreground text-center text-xs">
-                The code is valid for 3 minutes.{" "}
+                {t(
+                  "auth.sign-up.code-validity",
+                  "The code is valid for 3 minutes. ",
+                )}{" "}
                 <button
                   type="button"
                   className="text-primary-accent hover:text-hover-primary-accent font-medium"
@@ -462,7 +489,7 @@ function VerifiedSignupFlow({
                     setOtpError(null);
                   }}
                 >
-                  Go back
+                  {t("auth.sign-up.go-back", "Go back")}
                 </button>
               </p>
             </div>
@@ -485,7 +512,7 @@ function VerifiedSignupFlow({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t("auth.label.name", "Name")}</FormLabel>
                 <FormControl>
                   <Input placeholder="Jane Doe" {...field} />
                 </FormControl>
@@ -498,7 +525,7 @@ function VerifiedSignupFlow({
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t("auth.label.email", "Email")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="jsdoe@example.com"
@@ -517,7 +544,7 @@ function VerifiedSignupFlow({
             loading={form.formState.isSubmitting}
             data-testid="submit-email-password-sign-up-form"
           >
-            Continue
+            {t("auth.action.continue", "Continue")}
           </Button>
           {formError ? (
             <div className="text-destructive text-center text-sm font-medium">
@@ -539,14 +566,18 @@ function VerifiedSignupFlow({
 
 function SignupPageShell({ children }: { children: React.ReactNode }) {
   const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { t } = useI18n();
 
   return (
     <>
       <Head>
-        <title>Sign up | Langfuse</title>
+        <title>{t("auth.sign-up.document-title", "Sign up | Langfuse")}</title>
         <meta
           name="description"
-          content="Create an account, no credit card required."
+          content={t(
+            "auth.sign-up.meta-description",
+            "Create an account, no credit card required.",
+          )}
           key="desc"
         />
       </Head>
@@ -554,12 +585,12 @@ function SignupPageShell({ children }: { children: React.ReactNode }) {
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <LangfuseIcon className="mx-auto" />
           <h2 className="text-primary mt-4 text-center text-2xl leading-9 font-bold tracking-tight">
-            Create new account
+            {t("auth.sign-up.heading", "Create new account")}
           </h2>
         </div>
         {isLangfuseCloud ? (
           <div className="text-center sm:mx-auto sm:w-full sm:max-w-[480px]">
-            No credit card required.
+            {t("auth.sign-up.no-credit-card", "No credit card required.")}
           </div>
         ) : null}
 
@@ -568,7 +599,12 @@ function SignupPageShell({ children }: { children: React.ReactNode }) {
         <div className="bg-background mt-14 px-6 py-10 shadow-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
           {children}
         </div>
-        <CloudPrivacyNotice action="creating an account" />
+        <CloudPrivacyNotice
+          action={t(
+            "auth.privacy.action.creating-account",
+            "creating an account",
+          )}
+        />
       </div>
     </>
   );
@@ -576,14 +612,15 @@ function SignupPageShell({ children }: { children: React.ReactNode }) {
 
 function SignupFooter() {
   const router = useRouter();
+  const { t } = useI18n();
   return (
     <p className="text-muted-foreground mt-10 text-center text-sm">
-      Already have an account?{" "}
+      {t("auth.sign-up.have-account", "Already have an account?")}{" "}
       <Link
         href={`/auth/sign-in${router.asPath.includes("?") ? router.asPath.substring(router.asPath.indexOf("?")) : ""}`}
         className="text-primary-accent hover:text-hover-primary-accent leading-6 font-semibold"
       >
-        Sign in
+        {t("auth.sign-up.sign-in-link", "Sign in")}
       </Link>
     </p>
   );

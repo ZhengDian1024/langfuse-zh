@@ -11,6 +11,7 @@ import { type GetServerSideProps } from "next";
 import { env } from "@/src/env.mjs";
 import { PlusIcon } from "lucide-react";
 import { CodeView } from "@/src/components/ui/CodeJsonViewer";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type PageProps = {
   deploymentDomain: string;
@@ -27,10 +28,11 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 };
 
 export default function HfSpaces({ deploymentDomain }: PageProps) {
+  const { t } = useI18n();
   return (
     <>
       <Head>
-        <title>Langfuse on Hugging Face</title>
+        <title>{t("auth.hf-spaces.document-title", "Langfuse on Hugging Face")}</title>
       </Head>
       <div className="flex flex-1 flex-col py-6 sm:min-h-full sm:justify-center sm:px-6 sm:py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -46,13 +48,16 @@ export default function HfSpaces({ deploymentDomain }: PageProps) {
             />
           </div>
           <h2 className="text-primary mt-4 text-center text-2xl leading-9 font-bold tracking-tight">
-            Langfuse on Hugging Face
+            {t("auth.hf-spaces.heading", "Langfuse on Hugging Face")}
           </h2>
         </div>
 
         <div className="bg-background mt-14 px-6 py-10 shadow-sm sm:mx-auto sm:w-full sm:max-w-[480px] sm:rounded-lg sm:px-10">
           <div className="space-y-8">
-            <CodeView content={deploymentDomain} title="HF Space Host" />
+            <CodeView
+              content={deploymentDomain}
+              title={t("auth.hf-spaces.space-host", "HF Space Host")}
+            />
 
             <Button className="w-full" asChild>
               <Link
@@ -60,7 +65,7 @@ export default function HfSpaces({ deploymentDomain }: PageProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Open in new tab
+                {t("auth.hf-spaces.open-in-new-tab", "Open in new tab")}
               </Link>
             </Button>
           </div>

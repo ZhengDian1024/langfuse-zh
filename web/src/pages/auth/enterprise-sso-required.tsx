@@ -19,6 +19,7 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { env } from "@/src/env.mjs";
 import { captureException } from "@sentry/nextjs";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const enterpriseSsoFormSchema = z.object({
   email: z.email(),
@@ -43,6 +44,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 
 export default function EnterpriseSsoRequiredPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -83,7 +85,9 @@ export default function EnterpriseSsoRequiredPage() {
 
     const domain = values.email.split("@")[1]?.toLowerCase();
     if (!domain) {
-      form.setError("email", { message: "Invalid email address" });
+      form.setError("email", {
+        message: t("auth.error.invalid-email", "Invalid email address"),
+      });
       setLoading(false);
       return;
     }
@@ -110,7 +114,10 @@ export default function EnterpriseSsoRequiredPage() {
 
       if (response.status === 404) {
         setError(
-          "We couldn't find a custom Enterprise SSO configuration for this domain. Double-check your company email or contact your administrator.",
+          t(
+            "auth.enterprise-sso.not-found",
+            "We couldn't find a custom Enterprise SSO configuration for this domain. Double-check your company email or contact your administrator.",
+          ),
         );
         return;
       }
@@ -120,12 +127,18 @@ export default function EnterpriseSsoRequiredPage() {
       } | null;
       setError(
         data?.message ??
-          "Unable to start the Enterprise SSO sign-in flow. Please try again.",
+          t(
+            "auth.enterprise-sso.start-failed",
+            "Unable to start the Enterprise SSO sign-in flow. Please try again.",
+          ),
       );
     } catch (err) {
       captureException(err);
       setError(
-        "Something went wrong while checking your Enterprise SSO configuration. Please try again.",
+        t(
+          "auth.enterprise-sso.check-failed",
+          "Something went wrong while checking your Enterprise SSO configuration. Please try again.",
+        ),
       );
     } finally {
       setLoading(false);
@@ -133,23 +146,38 @@ export default function EnterpriseSsoRequiredPage() {
   }
 
   const description = friendlyProviderName
-    ? `You tried signing in with ${friendlyProviderName}, but this domain requires your company's custom Enterprise SSO.`
-    : "This domain requires your company's custom Enterprise SSO.";
+    ? t(
+        "auth.enterprise-sso.description-with-provider",
+        "You tried signing in with {provider}, but this domain requires your company's custom Enterprise SSO.",
+        { provider: friendlyProviderName },
+      )
+    : t(
+        "auth.enterprise-sso.description",
+        "This domain requires your company's custom Enterprise SSO.",
+      );
 
   return (
     <>
       <Head>
-        <title>Enterprise SSO Required | Langfuse</title>
+        <title>
+          {t(
+            "auth.enterprise-sso.document-title",
+            "Enterprise SSO Required | Langfuse",
+          )}
+        </title>
       </Head>
       <div className="min-h-screen-with-banner bg-background flex flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <LangfuseIcon className="mx-auto" />
           <h1 className="text-primary mt-6 text-center text-2xl font-bold">
-            Use your Enterprise SSO
+            {t("auth.enterprise-sso.heading", "Use your Enterprise SSO")}
           </h1>
           <p className="text-muted-foreground mt-2 text-center text-sm leading-6">
-            {description} Enter your company email so we can send you to the
-            correct identity provider.
+            {description}{" "}
+            {t(
+              "auth.enterprise-sso.instruction",
+              "Enter your company email so we can send you to the correct identity provider.",
+            )}
           </p>
         </div>
 
@@ -161,7 +189,7 @@ export default function EnterpriseSsoRequiredPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("auth.label.email", "Email")}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="jsdoe@example.com"
@@ -181,7 +209,10 @@ export default function EnterpriseSsoRequiredPage() {
                 loading={loading}
                 disabled={loading}
               >
-                Continue with Enterprise SSO
+                {t(
+                  "auth.enterprise-sso.continue",
+                  "Continue with Enterprise SSO",
+                )}
               </Button>
             </form>
           </Form>
@@ -189,14 +220,17 @@ export default function EnterpriseSsoRequiredPage() {
             <div className="text-destructive mt-4 text-center text-sm font-medium">
               {error}
               <br />
-              Contact{" "}
+              {t("auth.enterprise-sso.contact-before", "Contact ")}
               <a
                 href="mailto:support@langfuse.com"
                 className="text-primary-accent hover:text-hover-primary-accent"
               >
                 support@langfuse.com
-              </a>{" "}
-              if this keeps happening.
+              </a>
+              {t(
+                "auth.enterprise-sso.contact-after",
+                " if this keeps happening.",
+              )}
             </div>
           ) : null}
           <div className="text-muted-foreground mt-6 text-center text-sm">
@@ -204,20 +238,23 @@ export default function EnterpriseSsoRequiredPage() {
               href="/auth/sign-in"
               className="text-primary-accent hover:text-hover-primary-accent"
             >
-              Back to other sign-in options
+              {t(
+                "auth.enterprise-sso.back",
+                "Back to other sign-in options",
+              )}
             </Link>
           </div>
         </div>
 
         <div className="text-muted-foreground mt-4 text-center text-xs">
-          Need help? Contact{" "}
+          {t("auth.enterprise-sso.need-help-before", "Need help? Contact ")}
           <a
             href="mailto:support@langfuse.com"
             className="text-primary-accent hover:text-hover-primary-accent"
           >
             support@langfuse.com
           </a>
-          .
+          {t("auth.enterprise-sso.need-help-after", ".")}
         </div>
       </div>
     </>

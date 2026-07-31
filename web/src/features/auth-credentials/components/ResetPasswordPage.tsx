@@ -27,6 +27,7 @@ import { ErrorPage } from "@/src/components/error-page";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { passwordSchema } from "@/src/features/auth/lib/signupSchema";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const resetPasswordSchema = z
   .object({
@@ -47,6 +48,7 @@ export function ResetPasswordPage({
   const session = useSession();
   const router = useRouter();
   const { isLangfuseCloud, region } = useLangfuseCloudRegion();
+  const { t } = useI18n();
   const [formError, setFormError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showResetPasswordEmailButton, setShowResetPasswordEmailButton] =
@@ -102,7 +104,7 @@ export function ResetPasswordPage({
           setFormError(error.message);
         } else {
           console.error(error);
-          setFormError("An unknown error occurred");
+          setFormError(t("auth.error.unknown", "An unknown error occurred"));
         }
       });
   }
@@ -110,21 +112,39 @@ export function ResetPasswordPage({
   if (!passwordResetAvailable)
     return (
       <ErrorPage
-        title="Not available"
-        message="Password reset is not configured on this instance"
+        title={t("auth.reset-password.unavailable-title", "Not available")}
+        message={t(
+          "auth.reset-password.unavailable-message",
+          "Password reset is not configured on this instance",
+        )}
         additionalButton={{
-          label: "Setup instructions",
+          label: t(
+            "auth.reset-password.setup-instructions",
+            "Setup instructions",
+          ),
           href: "https://langfuse.com/self-hosting/security/authentication-and-sso#auth-email-password",
         }}
       />
     );
 
-  const title = isSetMode ? "Set your password" : "Reset your password";
-  const pageTitle = isSetMode ? "Set Password" : "Reset Password";
-  const submitLabel = isSetMode ? "Set password" : "Update Password";
+  const title = isSetMode
+    ? t("auth.reset-password.set-title", "Set your password")
+    : t("auth.reset-password.reset-title", "Reset your password");
+  const pageTitle = isSetMode
+    ? t("auth.reset-password.set-page-title", "Set Password")
+    : t("auth.reset-password.reset-page-title", "Reset Password");
+  const submitLabel = isSetMode
+    ? t("auth.reset-password.set-submit", "Set password")
+    : t("auth.reset-password.reset-submit", "Update Password");
   const successMessage = isSetMode
-    ? "Password set successfully. Redirecting ..."
-    : "Password successfully updated. Redirecting ...";
+    ? t(
+        "auth.reset-password.set-success",
+        "Password set successfully. Redirecting ...",
+      )
+    : t(
+        "auth.reset-password.reset-success",
+        "Password successfully updated. Redirecting ...",
+      );
 
   return (
     <>
@@ -144,7 +164,10 @@ export function ResetPasswordPage({
               <Button asChild variant="ghost">
                 <Link href="/auth/sign-in">
                   <ArrowLeft className="mr-2 h-3 w-3" />
-                  Back to sign in
+                  {t(
+                    "auth.reset-password.back-to-sign-in",
+                    "Back to sign in",
+                  )}
                 </Link>
               </Button>
             </div>
@@ -163,7 +186,7 @@ export function ResetPasswordPage({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>{t("auth.label.email", "Email")}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -174,7 +197,12 @@ export function ResetPasswordPage({
                             {...field}
                           />
                           {emailVerified.verified && (
-                            <span title="Email verified">
+                            <span
+                              title={t(
+                                "auth.reset-password.email-verified-tooltip",
+                                "Email verified",
+                              )}
+                            >
                               <ShieldCheck className="text-muted-green absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform" />
                             </span>
                           )}
@@ -192,7 +220,12 @@ export function ResetPasswordPage({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            {isSetMode ? "Password" : "New Password"}
+                            {isSetMode
+                              ? t("auth.label.password", "Password")
+                              : t(
+                                  "auth.reset-password.new-password",
+                                  "New Password",
+                                )}
                           </FormLabel>
                           <FormControl>
                             <PasswordInput
@@ -211,8 +244,14 @@ export function ResetPasswordPage({
                         <FormItem>
                           <FormLabel>
                             {isSetMode
-                              ? "Confirm Password"
-                              : "Confirm New Password"}
+                              ? t(
+                                  "auth.reset-password.confirm-password",
+                                  "Confirm Password",
+                                )
+                              : t(
+                                  "auth.reset-password.confirm-new-password",
+                                  "Confirm New Password",
+                                )}
                           </FormLabel>
                           <FormControl>
                             <PasswordInput
@@ -272,13 +311,14 @@ export function ResetPasswordPage({
         </div>
         {!isSetMode && session.status !== "authenticated" && (
           <div className="text-muted-foreground mx-auto mt-10 max-w-lg text-center text-xs">
-            You will only receive an email if an account with this email exists
-            and you have signed up with email and password. If you used an
-            authentication provider like Google, Gitlab, Okta, or GitHub, please{" "}
+            {t(
+              "auth.reset-password.footer-before",
+              "You will only receive an email if an account with this email exists and you have signed up with email and password. If you used an authentication provider like Google, Gitlab, Okta, or GitHub, please ",
+            )}
             <Link href="/auth/sign-in" className="underline">
-              sign in
+              {t("auth.reset-password.footer-sign-in-link", "sign in")}
             </Link>
-            .
+            {t("auth.reset-password.footer-after", ".")}
           </div>
         )}
       </div>
