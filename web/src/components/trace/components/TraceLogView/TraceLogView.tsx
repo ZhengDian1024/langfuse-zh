@@ -45,6 +45,7 @@ import {
 import { type FlatLogItem } from "./log-view-types";
 import { LogViewToolbar } from "./LogViewToolbar";
 import { LogViewExpandedContent } from "./LogViewExpandedContent";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { LogViewTreeIndent } from "./LogViewTreeIndent";
 import { LogViewJsonMode } from "./LogViewJsonMode";
 import { useLogViewAllObservationsIO } from "./useLogViewAllObservationsIO";
@@ -76,6 +77,7 @@ export const TraceLogView = ({
   currentView = "pretty",
 }: TraceLogViewProps) => {
   const { roots, observations } = useTraceData();
+  const { t } = useI18n();
   const { logViewMode, logViewTreeStyle } = useViewPreferences();
   const { formattedExpansion, setFormattedFieldExpansion } = useJsonExpansion();
 
@@ -292,7 +294,7 @@ export const TraceLogView = ({
       {hasNoObservations && (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-muted-foreground text-sm">
-            No observations in this trace
+            {t("trace.logview.no-observations", "No observations in this trace")}
           </div>
         </div>
       )}
@@ -300,7 +302,11 @@ export const TraceLogView = ({
       {hasNoSearchResults && (
         <div className="flex flex-1 items-center justify-center">
           <div className="text-muted-foreground text-sm">
-            No observations match &quot;{searchQuery}&quot;
+            {t(
+              "trace.logview.no-match",
+              'No observations match "{query}"',
+              { query: searchQuery },
+            )}
           </div>
         </div>
       )}

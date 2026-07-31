@@ -9,6 +9,7 @@ import { memo, useRef, useEffect } from "react";
 import { ItemBadge } from "@/src/components/ItemBadge";
 import { usePrefetchObservation } from "@/src/components/trace/api/usePrefetchObservation";
 import { TRACE_VIEW_CONFIG } from "@/src/components/trace/config/trace-view-config";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { type FlatLogItem } from "./log-view-types";
 import { formatDisplayName } from "./log-view-formatters";
 
@@ -39,6 +40,7 @@ export const LogViewObservationCell = memo(function LogViewObservationCell({
 }: LogViewObservationCellProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { prefetch } = usePrefetchObservation({ projectId });
+  const { t } = useI18n();
   const hasPrefetched = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -91,7 +93,10 @@ export const LogViewObservationCell = memo(function LogViewObservationCell({
       <span className="truncate">{displayName}</span>
       {childrenCount > 0 && (
         <span className="text-muted-foreground shrink-0 text-xs">
-          {childrenCount} {childrenCount === 1 ? "item" : "items"}
+          {childrenCount}{" "}
+          {childrenCount === 1
+            ? t("trace.logview.item.one", "item")
+            : t("trace.logview.item.other", "items")}
         </span>
       )}
     </div>

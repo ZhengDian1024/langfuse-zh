@@ -8,6 +8,7 @@
 import { useMemo } from "react";
 import { type JSONTableViewColumn } from "@/src/components/trace/components/_shared/JSONTableView";
 import { type FlatLogItem } from "./log-view-types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { LogViewObservationCell } from "./LogViewObservationCell";
 import { formatRelativeTime, formatDuration } from "./log-view-formatters";
 
@@ -31,11 +32,12 @@ export function useLogViewColumns({
   projectId,
   traceId,
 }: UseLogViewColumnsParams): JSONTableViewColumn<FlatLogItem>[] {
+  const { t } = useI18n();
   return useMemo((): JSONTableViewColumn<FlatLogItem>[] => {
     return [
       {
         key: "observation",
-        header: "Observation",
+        header: t("trace.logview.column.observation", "Observation"),
         width: "flex-1",
         render: (item) => (
           <LogViewObservationCell
@@ -48,18 +50,20 @@ export function useLogViewColumns({
       },
       {
         key: "depth",
-        header: "Depth",
+        header: t("trace.logview.column.depth", "Depth"),
         width: "w-12",
         align: "right" as const,
         render: (item) => (
           <span className="text-muted-foreground text-xs">
-            {item.node.depth >= 0 ? `L${item.node.depth}` : "-"}
+            {item.node.depth >= 0
+              ? `${t("trace.logview.column.depth-prefix", "L")}${item.node.depth}`
+              : "-"}
           </span>
         ),
       },
       {
         key: "start",
-        header: "Start",
+        header: t("trace.logview.column.start", "Start"),
         width: showMilliseconds ? "w-20" : "w-12",
         align: "right" as const,
         render: (item) => (
@@ -73,7 +77,7 @@ export function useLogViewColumns({
       },
       {
         key: "duration",
-        header: "Duration",
+        header: t("trace.logview.column.duration", "Duration"),
         width: "w-16",
         align: "right" as const,
         render: (item) => (
