@@ -1874,5 +1874,10 @@
   "evals.inner.follow-docs-after": " 配置 instrumentation 以使用此过滤器。",
   "evals.evaluator-table.upgrade-tooltip-prefix": "此评估器需要更改才能从新功能和性能改进中受益。请按照",
   "evals.evaluator-table.upgrade-tooltip-suffix": "升级到新版本。",
-  "evals.evaluator-table.upgrade-tooltip-tail": "如果不升级，评估器将继续运行，但无法享受改进。"
+  "evals.evaluator-table.upgrade-tooltip-tail": "如果不升级，评估器将继续运行，但无法享受改进。",
+  "annotation-queues.shortcut-move-fields": "在评分字段间移动",
+  "annotation-queues.shortcut-select-option": "在聚焦字段上选择一个选项",
+  "annotation-queues.shortcut-edit-field": "编辑字段 / 打开下拉菜单",
+  "annotation-queues.shortcut-commit-number": "提交数字 / 离开文本字段",
+  "monitors.form.notifications": "通知"
 }

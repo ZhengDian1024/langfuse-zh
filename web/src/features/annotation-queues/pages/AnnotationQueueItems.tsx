@@ -19,8 +19,10 @@ import {
 } from "@/src/components/ui/side-panel";
 import { SubHeaderLabel } from "@/src/components/layouts/header";
 import { getScoreDataTypeIcon } from "@/src/features/scores/lib/scoreColumns";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export default function QueueItems() {
+  const { t } = useI18n();
   const router = useRouter();
   const projectId = router.query.projectId as string;
   const queueId = router.query.queueId as string;
@@ -97,7 +99,7 @@ export default function QueueItems() {
                   </CardDescription>
                 )}
                 <div className="flex flex-col gap-2">
-                  <SubHeaderLabel title="Score Configs" />
+                  <SubHeaderLabel title={t("annotation-queues.score-configs", "Score Configs")} />
                   <div className="flex flex-wrap gap-2">
                     {queue.data?.scoreConfigs.map((scoreConfig) => (
                       <Badge key={scoreConfig.id} variant="outline">

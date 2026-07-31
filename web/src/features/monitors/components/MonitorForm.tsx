@@ -785,7 +785,7 @@ export const MonitorForm = ({
                 </Accordion>
               </Section>
 
-              <Section title="Notifications" step={3} className="pb-2">
+              <Section title={t("monitors.form.notifications", "Notifications")} step={3} className="pb-2">
                 <FormField
                   control={form.control}
                   name="name"

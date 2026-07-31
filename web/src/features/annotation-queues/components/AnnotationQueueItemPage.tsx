@@ -564,13 +564,13 @@ export const AnnotationQueueItemPage: React.FC<{
               <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
                 Navigate
               </p>
-              <ShortcutRow label="Complete & go to next item">
+              <ShortcutRow label={t("annotation-queues.shortcut-complete", "Complete & go to next item")}>
                 <KeyboardShortcut keys={[modLabel, "↵"]} />
               </ShortcutRow>
-              <ShortcutRow label="Skip to next item">
+              <ShortcutRow label={t("annotation-queues.shortcut-skip", "Skip to next item")}>
                 <KeyboardShortcut>→</KeyboardShortcut>
               </ShortcutRow>
-              <ShortcutRow label="Previous item">
+              <ShortcutRow label={t("annotation-queues.shortcut-previous", "Previous item")}>
                 <KeyboardShortcut>←</KeyboardShortcut>
               </ShortcutRow>
             </div>
@@ -578,19 +578,19 @@ export const AnnotationQueueItemPage: React.FC<{
               <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide uppercase">
                 Score the item
               </p>
-              <ShortcutRow label="Move between score fields">
+              <ShortcutRow label={t("annotation-queues.shortcut-move-fields", "Move between score fields")}>
                 <KeyboardShortcut>↑</KeyboardShortcut>
                 <KeyboardShortcut>↓</KeyboardShortcut>
               </ShortcutRow>
-              <ShortcutRow label="Select an option on the focused field">
+              <ShortcutRow label={t("annotation-queues.shortcut-select-option", "Select an option on the focused field")}>
                 <KeyboardShortcut>1</KeyboardShortcut>
                 <span className="text-muted-foreground text-xs">–</span>
                 <KeyboardShortcut>9</KeyboardShortcut>
               </ShortcutRow>
-              <ShortcutRow label="Edit a field / open a dropdown">
+              <ShortcutRow label={t("annotation-queues.shortcut-edit-field", "Edit a field / open a dropdown")}>
                 <KeyboardShortcut>↵</KeyboardShortcut>
               </ShortcutRow>
-              <ShortcutRow label="Commit a number / leave a text field">
+              <ShortcutRow label={t("annotation-queues.shortcut-commit-number", "Commit a number / leave a text field")}>
                 <KeyboardShortcut>Esc</KeyboardShortcut>
                 <span className="text-muted-foreground text-xs">/</span>
                 <KeyboardShortcut>Tab</KeyboardShortcut>

@@ -101,7 +101,7 @@ export const UserAssignmentSection = ({
         searchResults={userSearch.searchResults}
         isLoading={userSearch.isLoading}
         disabled={!hasQueueAssignmentWriteAccess}
-        placeholder="Search users to add..."
+        placeholder={t("annotation-queues.search-users", "Search users to add...")}
         hasMoreResults={userSearch.hasMoreResults}
         getItemKey={(user) => user.id}
         onOpenChange={(open) => {

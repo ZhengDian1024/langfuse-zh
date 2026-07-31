@@ -76,6 +76,7 @@ import { useRouter } from "next/router";
 import { useAnnotationScoreConfigs } from "@/src/features/scores/hooks/useScoreConfigs";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const CHAR_CUTOFF = 6;
 
@@ -90,6 +91,7 @@ function CommentField({
   loading: boolean;
   onSave: (comment: string | null) => void;
 }) {
+  const { t } = useI18n();
   const [localValue, setLocalValue] = useState(savedComment || "");
 
   // Reset local value when saved comment changes (after mutation completes)
@@ -102,7 +104,7 @@ function CommentField({
   return (
     <div className="relative">
       <div className="mb-1 flex items-center justify-between">
-        <FormLabel className="text-sm">Score Comment</FormLabel>
+        <FormLabel className="text-sm">{t("scores.score-comment", "Score Comment")}</FormLabel>
         <div className="relative">
           {savedComment && (
             <PopoverClose asChild>
@@ -139,9 +141,7 @@ function CommentField({
               onClick={() => {
                 setLocalValue(savedComment || "");
               }}
-            >
-              Discard Changes
-            </Button>
+            > {t("scores.discard-changes", "Discard Changes")}</Button>
           </PopoverClose>
           <PopoverClose asChild>
             <Button
@@ -153,9 +153,7 @@ function CommentField({
               onClick={() => {
                 onSave(localValue);
               }}
-            >
-              Save Changes
-            </Button>
+            > {t("scores.save-changes", "Save Changes")}</Button>
           </PopoverClose>
         </div>
       )}
@@ -184,9 +182,10 @@ function AnnotateHeader({
   actionButtons: React.ReactNode;
   description: string;
 }) {
+  const { t } = useI18n();
   return (
     <Header
-      title="Annotate"
+      title={t("scores.annotate", "Annotate")}
       help={{
         description,
         href: "https://langfuse.com/docs/evaluation/evaluation-methods/annotation",
@@ -202,7 +201,7 @@ function AnnotateHeader({
             )}
           </div>
           <span className="text-muted-foreground text-xs">
-            {showSaving ? "Saving score data" : "Score data saved"}
+            {showSaving ? t("scores.saving", "Saving score data") : t("scores.saved", "Score data saved")}
           </span>
         </div>,
         actionButtons,
@@ -233,6 +232,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
   actionButtons,
   configControl,
 }: InnerAnnotationFormProps<Target>) {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
   const router = useRouter();
   const { configs, allowManualSelection } = configControl;
@@ -837,7 +837,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
         {allowManualSelection ? (
           <div className="grid grid-flow-col items-center">
             <MultiSelectKeyValues
-              placeholder="Value"
+              placeholder={t("scores.value", "Value")}
               align="end"
               items="empty scores"
               className="grid grid-cols-[auto_1fr_auto_auto] gap-2"
@@ -951,7 +951,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                 variant="link"
                                 type="button"
                                 size="xs"
-                                title="Add or view score comment"
+                                title={t("scores.add-view-comment", "Add or view score comment")}
                                 // LFE-7628: center the comment icon vertically
                                 // against the score label instead of stretching
                                 // to the full (possibly multi-line) row height,
@@ -1015,7 +1015,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                         maxLength={TEXT_SCORE_MAX_LENGTH}
                                         className="text-xs"
                                         disabled={isInputDisabled(config)}
-                                        placeholder="Enter free form text..."
+                                        placeholder={t("scores.free-form-placeholder", "Enter free form text...")}
                                         onBlur={() => handleTextUpsert(index)}
                                       />
                                     </FormControl>
@@ -1086,7 +1086,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                           value: category.label,
                                           disabled: category.isOutdated,
                                         }))}
-                                        placeholder="Select category"
+                                        placeholder={t("scores.select-category", "Select category")}
                                         searchPlaceholder="Search categories..."
                                         emptyText="No category found."
                                       />
@@ -1182,7 +1182,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                                   variant="link"
                                   type="button"
                                   className="px-0 pl-1"
-                                  title="Delete archived score"
+                                  title={t("scores.delete-archived", "Delete archived score")}
                                   disabled={isScoreUnsaved(score.id)}
                                 >
                                   <Archive className="h-4 w-4"></Archive>
@@ -1213,7 +1213,7 @@ function InnerAnnotationForm<Target extends ScoreTarget>({
                               variant="link"
                               type="button"
                               className="px-0 pl-1"
-                              title="Delete score from trace/observation"
+                              title={t("scores.delete-from-trace", "Delete score from trace/observation")}
                               disabled={
                                 isScoreUnsaved(score.id) ||
                                 updateMutation.isPending

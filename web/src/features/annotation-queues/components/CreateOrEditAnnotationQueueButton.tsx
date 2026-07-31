@@ -315,7 +315,7 @@ export const CreateOrEditAnnotationQueueButton = ({
                       <FormControl>
                         <Textarea
                           {...field}
-                          placeholder="Add description..."
+                          placeholder={t("annotation-queues.add-description", "Add description...")}
                           className="text-xs focus:ring-0 focus:outline-hidden focus-visible:ring-0 focus-visible:ring-offset-0 active:ring-0"
                         />
                       </FormControl>

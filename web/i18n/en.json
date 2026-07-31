@@ -1874,5 +1874,10 @@
   "evals.inner.follow-docs-after": " to configure your instrumentation to use this filter.",
   "evals.evaluator-table.upgrade-tooltip-prefix": "This evaluator requires changes to benefit from new features and performance improvements. Please follow",
   "evals.evaluator-table.upgrade-tooltip-suffix": "to upgrade to the new version.",
-  "evals.evaluator-table.upgrade-tooltip-tail": "If you do not upgrade, your evaluator will continue to run, but you will not benefit from improvements."
+  "evals.evaluator-table.upgrade-tooltip-tail": "If you do not upgrade, your evaluator will continue to run, but you will not benefit from improvements.",
+  "annotation-queues.shortcut-move-fields": "Move between score fields",
+  "annotation-queues.shortcut-select-option": "Select an option on the focused field",
+  "annotation-queues.shortcut-edit-field": "Edit a field / open a dropdown",
+  "annotation-queues.shortcut-commit-number": "Commit a number / leave a text field",
+  "monitors.form.notifications": "Notifications"
 }
