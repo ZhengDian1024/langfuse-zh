@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type EstimatedCostRowProps = {
   projectId: string;
@@ -21,6 +22,7 @@ function formatCostEstimate(cost: number): string {
 }
 
 export function EstimatedCostRow(props: EstimatedCostRowProps) {
+  const { t } = useI18n();
   const { projectId, evaluators, observationCount } = props;
 
   const evaluatorIds = evaluators.map((e) => e.id);
@@ -34,7 +36,10 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
     return (
       <div className="flex gap-2">
         <span className="text-muted-foreground shrink-0">
-          Est. LLM API Key Cost:
+          {t(
+            "batch-actions.run-eval.est-cost-label",
+            "Est. LLM API Key Cost:",
+          )}
         </span>
         <Skeleton className="h-4 w-16" />
       </div>
@@ -46,9 +51,14 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
     return (
       <div className="flex gap-2">
         <span className="text-muted-foreground shrink-0">
-          Est. LLM API Key Cost:
+          {t(
+            "batch-actions.run-eval.est-cost-label",
+            "Est. LLM API Key Cost:",
+          )}
         </span>
-        <span className="text-muted-foreground">No data</span>
+        <span className="text-muted-foreground">
+          {t("batch-actions.run-eval.no-data", "No data")}
+        </span>
       </div>
     );
   }
@@ -65,7 +75,10 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
   return (
     <div className="flex gap-2">
       <span className="text-muted-foreground shrink-0">
-        Est. LLM API Key Cost:
+        {t(
+          "batch-actions.run-eval.est-cost-label",
+          "Est. LLM API Key Cost:",
+        )}
       </span>
       <span className="flex items-center gap-1 font-medium">
         {formatCostEstimate(totalEstimate)}
@@ -77,8 +90,10 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
             </TooltipTrigger>
             <TooltipContent className="max-w-xs space-y-2 p-3">
               <p className="text-xs">
-                Expected cost on your linked API key (not Langfuse). Estimated
-                from average evaluator execution cost over the last 7 days.
+                {t(
+                  "batch-actions.run-eval.cost-tooltip",
+                  "Expected cost on your linked API key (not Langfuse). Estimated from average evaluator execution cost over the last 7 days.",
+                )}
               </p>
               <div className="space-y-1">
                 {evaluators.map(({ id, name }) => {
@@ -92,7 +107,7 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
                       <span className="shrink-0 tabular-nums">
                         {entry
                           ? formatCostEstimate(entry.avgCost * observationCount)
-                          : "No data"}
+                          : t("batch-actions.run-eval.no-data", "No data")}
                       </span>
                     </div>
                   );
@@ -100,7 +115,10 @@ export function EstimatedCostRow(props: EstimatedCostRowProps) {
               </div>
               {isPartial ? (
                 <p className="text-muted-foreground text-xs">
-                  *Partial estimate. Some evaluators have no execution history.
+                  {t(
+                    "batch-actions.run-eval.partial-estimate",
+                    "*Partial estimate. Some evaluators have no execution history.",
+                  )}
                 </p>
               ) : null}
             </TooltipContent>

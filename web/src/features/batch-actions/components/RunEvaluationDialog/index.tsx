@@ -25,6 +25,7 @@ import { ConfirmationStep } from "./ConfirmationStep";
 import { CreateEvaluatorDialog } from "./CreateEvaluatorDialog";
 import { buildQueryWithSelectedIds } from "./utils";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type RunEvaluationDialogProps = {
   projectId: string;
@@ -45,6 +46,7 @@ type RunEvaluationDialogProps = {
 type DialogStep = "select-evaluator" | "confirm";
 
 export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
+  const { t } = useI18n();
   const { isBetaEnabled } = useV4Beta();
   const {
     projectId,
@@ -73,7 +75,10 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
   const runEvaluationMutation =
     api.batchAction.runEvaluation.create.useMutation({
       onError: (error) => {
-        showErrorToast("Failed to schedule evaluation", error.message);
+        showErrorToast(
+          t("batch-actions.run-eval.toast-failed-title", "Failed to schedule evaluation"),
+          error.message,
+        );
       },
     });
 
@@ -175,15 +180,38 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
     }
 
     showSuccessToast({
-      title: "Evaluation queued",
+      title: t("batch-actions.run-eval.toast-success-title", "Evaluation queued"),
       description: isExperimentsSource
-        ? `Scheduled evaluation for items from ${displayCount} selected experiment${displayCount === 1 ? "" : "s"} with ${selectedEvaluators.length} ${selectedEvaluators.length === 1 ? "evaluator" : "evaluators"}.`
+        ? t(
+            "batch-actions.run-eval.toast-success-experiments",
+            "Scheduled evaluation for items from {count} selected experiment(s) with {evalCount} evaluator(s).",
+            {
+              count: String(displayCount),
+              evalCount: String(selectedEvaluators.length),
+            },
+          )
         : sourceTable === SourceTable.EXPERIMENT_ITEMS
-          ? `Scheduled evaluation for up to ${displayCount} experiment item${displayCount === 1 ? "" : "s"} across ${experimentItemsExperimentCount} experiment${experimentItemsExperimentCount === 1 ? "" : "s"} with ${selectedEvaluators.length} ${selectedEvaluators.length === 1 ? "evaluator" : "evaluators"}.`
-          : `Scheduled evaluation for ${displayCount} selected ${scopeLabel}${displayCount === 1 ? "" : "s"} with ${selectedEvaluators.length} ${selectedEvaluators.length === 1 ? "evaluator" : "evaluators"}.`,
+          ? t(
+              "batch-actions.run-eval.toast-success-experiment-items",
+              "Scheduled evaluation for up to {count} experiment item(s) across {expCount} experiment(s) with {evalCount} evaluator(s).",
+              {
+                count: String(displayCount),
+                expCount: String(experimentItemsExperimentCount),
+                evalCount: String(selectedEvaluators.length),
+              },
+            )
+          : t(
+              "batch-actions.run-eval.toast-success-default",
+              "Scheduled evaluation for {count} selected {scope}(s) with {evalCount} evaluator(s).",
+              {
+                count: String(displayCount),
+                scope: scopeLabel,
+                evalCount: String(selectedEvaluators.length),
+              },
+            ),
       link: {
         href: `/project/${projectId}/settings/batch-actions`,
-        text: "View batch actions",
+        text: t("batch-actions.run-eval.toast-link", "View batch actions"),
       },
     });
 
@@ -197,15 +225,40 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
           <DialogHeader>
             <DialogTitle>
               {isExperimentsSource
-                ? `Evaluate items from ${displayCount} experiment${displayCount === 1 ? "" : "s"}`
+                ? t(
+                    "batch-actions.run-eval.dialog-title-experiments",
+                    "Evaluate items from {count} experiment(s)",
+                    { count: String(displayCount) },
+                  )
                 : sourceTable === SourceTable.EXPERIMENT_ITEMS
-                  ? `Evaluate up to ${displayCount} experiment item${displayCount === 1 ? "" : "s"} across ${experimentItemsExperimentCount} experiment${experimentItemsExperimentCount === 1 ? "" : "s"}`
-                  : `Evaluate ${displayCount} ${scopeLabel}${displayCount === 1 ? "" : "s"}`}
+                  ? t(
+                      "batch-actions.run-eval.dialog-title-experiment-items",
+                      "Evaluate up to {count} experiment item(s) across {expCount} experiment(s)",
+                      {
+                        count: String(displayCount),
+                        expCount: String(experimentItemsExperimentCount),
+                      },
+                    )
+                  : t(
+                      "batch-actions.run-eval.dialog-title-default",
+                      "Evaluate {count} {scope}(s)",
+                      {
+                        count: String(displayCount),
+                        scope: scopeLabel,
+                      },
+                    )}
             </DialogTitle>
             <DialogDescription>
               {step === "confirm"
-                ? "Review your evaluation configuration before running."
-                : `Select one or more ${evaluatorScopeLabel}-scoped evaluators.`}
+                ? t(
+                    "batch-actions.run-eval.dialog-description-confirm",
+                    "Review your evaluation configuration before running.",
+                  )
+                : t(
+                    "batch-actions.run-eval.dialog-description-select",
+                    "Select one or more {scope}-scoped evaluators.",
+                    { scope: evaluatorScopeLabel },
+                  )}
             </DialogDescription>
           </DialogHeader>
 
@@ -256,7 +309,7 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
                 disabled={runEvaluationMutation.isPending}
               >
                 <ChevronLeft className="mr-1 h-4 w-4" />
-                Back
+                {t("batch-actions.back", "Back")}
               </Button>
             ) : (
               <div />
@@ -267,17 +320,20 @@ export function RunEvaluationDialog(props: RunEvaluationDialogProps) {
                 onClick={() => setStep("confirm")}
                 disabled={selectedEvaluators.length === 0}
               >
-                Continue{" "}
                 {selectedEvaluators.length > 0
-                  ? `with ${selectedEvaluators.length} evaluator(s)`
-                  : null}
+                  ? t(
+                      "batch-actions.run-eval.continue-with",
+                      "Continue with {count} evaluator(s)",
+                      { count: String(selectedEvaluators.length) },
+                    )
+                  : t("batch-actions.run-eval.continue", "Continue")}
               </Button>
             ) : (
               <Button
                 onClick={onSubmit}
                 loading={runEvaluationMutation.isPending}
               >
-                Run Evaluation
+                {t("batch-actions.run-eval.run", "Run Evaluation")}
               </Button>
             )}
           </DialogFooter>

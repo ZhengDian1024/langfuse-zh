@@ -16,12 +16,14 @@ import {
 import { cn } from "@/src/utils/tailwind";
 import { api } from "@/src/utils/api";
 import type { DatasetSelectStepProps } from "./types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function DatasetSelectStep({
   projectId,
   dataset,
   onDatasetSelect,
 }: DatasetSelectStepProps) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   // Fetch all datasets
@@ -32,9 +34,14 @@ export function DatasetSelectStep({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h3 className="text-lg font-medium">Select Dataset</h3>
+        <h3 className="text-lg font-medium">
+          {t("batch-actions.add-to-dataset.select.title", "Select Dataset")}
+        </h3>
         <p className="text-muted-foreground text-sm">
-          Choose an existing dataset to add your observations to
+          {t(
+            "batch-actions.add-to-dataset.select.description",
+            "Choose an existing dataset to add your observations to",
+          )}
         </p>
       </div>
 
@@ -46,14 +53,28 @@ export function DatasetSelectStep({
             aria-expanded={open}
             className="w-full justify-between py-6 text-base"
           >
-            {dataset.name || "Select dataset..."}
+            {dataset.name ||
+              t(
+                "batch-actions.add-to-dataset.select.placeholder",
+                "Select dataset...",
+              )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[500px] p-0" align="start">
           <Command>
-            <CommandInput placeholder="Search datasets..." />
-            <CommandEmpty>No dataset found.</CommandEmpty>
+            <CommandInput
+              placeholder={t(
+                "batch-actions.add-to-dataset.select.search-placeholder",
+                "Search datasets...",
+              )}
+            />
+            <CommandEmpty>
+              {t(
+                "batch-actions.add-to-dataset.select.no-dataset",
+                "No dataset found.",
+              )}
+            </CommandEmpty>
             <CommandGroup className="max-h-[300px] overflow-auto">
               {datasets.data?.map((d) => (
                 <CommandItem

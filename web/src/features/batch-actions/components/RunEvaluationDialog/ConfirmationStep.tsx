@@ -3,6 +3,7 @@ import { Badge } from "@/src/components/ui/badge";
 import { Separator } from "@/src/components/ui/separator";
 import { EstimatedCostRow } from "./EstimatedCostRow";
 import { BatchEvalSourceTable } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type ConfirmationStepProps = {
   projectId: string;
@@ -42,6 +43,7 @@ function getEffectiveObservationCount(
 }
 
 export function ConfirmationStep(props: ConfirmationStepProps) {
+  const { t } = useI18n();
   const {
     projectId,
     displayCount,
@@ -64,7 +66,9 @@ export function ConfirmationStep(props: ConfirmationStepProps) {
         <CardContent className="space-y-3 p-4 text-sm">
           {!hideCount && (
             <div className="flex gap-2">
-              <span className="text-muted-foreground">Observations:</span>
+              <span className="text-muted-foreground">
+                {t("batch-actions.run-eval.observations-label", "Observations:")}
+              </span>
               <span className="font-medium">{displayCount}</span>
             </div>
           )}
@@ -72,7 +76,7 @@ export function ConfirmationStep(props: ConfirmationStepProps) {
           {evaluators.length > 0 && (
             <div className="flex gap-2">
               <span className="text-muted-foreground shrink-0">
-                Evaluators:
+                {t("batch-actions.run-eval.evaluators-label", "Evaluators:")}
               </span>
               <div className="flex flex-wrap gap-1">
                 {evaluators.map((e) => (
@@ -89,10 +93,16 @@ export function ConfirmationStep(props: ConfirmationStepProps) {
           {showCostDisclaimer ? (
             <div className="flex gap-2">
               <span className="text-muted-foreground shrink-0">
-                Est. LLM API Key Cost:
+                {t(
+                  "batch-actions.run-eval.est-cost-label",
+                  "Est. LLM API Key Cost:",
+                )}
               </span>
               <span className="text-muted-foreground text-xs">
-                Cost estimate unavailable for experiment-scoped evaluations
+                {t(
+                  "batch-actions.run-eval.cost-unavailable",
+                  "Cost estimate unavailable for experiment-scoped evaluations",
+                )}
               </span>
             </div>
           ) : (
@@ -105,7 +115,10 @@ export function ConfirmationStep(props: ConfirmationStepProps) {
         </CardContent>
       </Card>
       <p className="text-muted-foreground text-xs">
-        Evaluations will run in the background.
+        {t(
+          "batch-actions.run-eval.background-note",
+          "Evaluations will run in the background.",
+        )}
       </p>
     </div>
   );

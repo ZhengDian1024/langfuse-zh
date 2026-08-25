@@ -14,6 +14,7 @@ import type {
   MappingTarget,
 } from "../types";
 import { isJsonPath } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type CustomMappingEditorProps = {
   config: CustomMappingConfig;
@@ -28,6 +29,7 @@ export function CustomMappingEditor({
   defaultSourceField,
   observationData,
 }: CustomMappingEditorProps) {
+  const { t } = useI18n();
   const handleTypeChange = (type: MappingTarget) => {
     if (type === "root") {
       onChange({
@@ -144,15 +146,24 @@ export function CustomMappingEditor({
   return (
     <div className="bg-muted/30 space-y-2 rounded-md border p-4">
       <div>
-        <Label className="text-sm font-medium">Target</Label>
+        <Label className="text-sm font-medium">
+          {t("batch-actions.add-to-dataset.mapping.target", "Target")}
+        </Label>
         <Tabs
           value={config.type}
           onValueChange={(v) => handleTypeChange(v as MappingTarget)}
           className="mt-2"
         >
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="root">Root</TabsTrigger>
-            <TabsTrigger value="keyValueMap">Key-value map</TabsTrigger>
+            <TabsTrigger value="root">
+              {t("batch-actions.add-to-dataset.mapping.root", "Root")}
+            </TabsTrigger>
+            <TabsTrigger value="keyValueMap">
+              {t(
+                "batch-actions.add-to-dataset.mapping.key-value-map",
+                "Key-value map",
+              )}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -160,7 +171,9 @@ export function CustomMappingEditor({
       {config.type === "root" && (
         <div className="space-y-4">
           <div>
-            <Label className="text-sm font-medium">Source</Label>
+            <Label className="text-sm font-medium">
+              {t("batch-actions.add-to-dataset.mapping.source", "Source")}
+            </Label>
             <div className="mt-1">
               <SourceFieldSelector
                 value={config.rootConfig?.sourceField ?? defaultSourceField}
@@ -169,7 +182,9 @@ export function CustomMappingEditor({
             </div>
           </div>
           <div>
-            <Label className="text-sm font-medium">JSONPath</Label>
+            <Label className="text-sm font-medium">
+              {t("batch-actions.add-to-dataset.mapping.jsonpath", "JSONPath")}
+            </Label>
             <div className="mt-1">
               <JsonPathInput
                 value={config.rootConfig?.jsonPath ?? "$."}
@@ -181,7 +196,10 @@ export function CustomMappingEditor({
               />
             </div>
             <p className="text-muted-foreground p-1 text-xs">
-              Start with $. to use a JSONPath (e.g., $.field)
+              {t(
+                "batch-actions.add-to-dataset.mapping.jsonpath-hint",
+                "Start with $. to use a JSONPath (e.g., $.field)",
+              )}
             </p>
           </div>
         </div>
@@ -189,10 +207,17 @@ export function CustomMappingEditor({
 
       {config.type === "keyValueMap" && (
         <div className="max-h-[35vh] space-y-3 overflow-auto">
-          <Label className="text-sm font-medium">Key-value mappings</Label>
+          <Label className="text-sm font-medium">
+            {t(
+              "batch-actions.add-to-dataset.mapping.key-value-mappings",
+              "Key-value mappings",
+            )}
+          </Label>
           <p className="text-muted-foreground text-xs">
-            Build an object with custom keys. Values starting with $ are treated
-            as JSONPaths.
+            {t(
+              "batch-actions.add-to-dataset.mapping.key-value-hint",
+              "Build an object with custom keys. Values starting with $ are treated as JSONPaths.",
+            )}
           </p>
 
           <div className="space-y-3">
@@ -230,7 +255,7 @@ export function CustomMappingEditor({
             className="w-full"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Add field
+            {t("batch-actions.add-to-dataset.mapping.add-field", "Add field")}
           </Button>
         </div>
       )}
@@ -257,6 +282,7 @@ function KeyValueEntryRow({
   canRemove,
   sourceData,
 }: KeyValueEntryRowProps) {
+  const { t } = useI18n();
   const isPath = isJsonPath(entry.value);
   const isSchemaField = entry.fromSchema === true;
   const isRequired = entry.isRequired === true;
@@ -270,10 +296,15 @@ function KeyValueEntryRow({
       <div className="grid grid-cols-[1fr_auto] gap-2">
         <div>
           <Label className="text-muted-foreground text-xs">
-            Key
+            {t("batch-actions.add-to-dataset.mapping.key", "Key")}
             {isRequired && <span className="text-destructive ml-1">*</span>}
             {isSchemaField && (
-              <span className="text-primary ml-2">(from schema)</span>
+              <span className="text-primary ml-2">
+                {t(
+                  "batch-actions.add-to-dataset.mapping.from-schema",
+                  "(from schema)",
+                )}
+              </span>
             )}
           </Label>
           <Input
@@ -295,8 +326,14 @@ function KeyValueEntryRow({
             className="h-8 w-8 p-0"
             title={
               isSchemaField && isRequired
-                ? "Required schema field cannot be removed"
-                : "Remove field"
+                ? t(
+                    "batch-actions.add-to-dataset.mapping.required-schema-tooltip",
+                    "Required schema field cannot be removed",
+                  )
+                : t(
+                    "batch-actions.add-to-dataset.mapping.remove-field-tooltip",
+                    "Remove field",
+                  )
             }
           >
             <Trash2
@@ -312,7 +349,9 @@ function KeyValueEntryRow({
 
       <div className="grid grid-cols-[38fr_62fr] gap-2">
         <div>
-          <Label className="text-muted-foreground text-xs">Source</Label>
+          <Label className="text-muted-foreground text-xs">
+            {t("batch-actions.add-to-dataset.mapping.source", "Source")}
+          </Label>
           <div className="mt-1">
             <SourceFieldSelector
               value={entry.sourceField}
@@ -323,7 +362,12 @@ function KeyValueEntryRow({
         </div>
         <div>
           <Label className="text-muted-foreground text-xs">
-            Value {!isPath && "(literal)"}
+            {isPath
+              ? t("batch-actions.add-to-dataset.mapping.value", "Value")
+              : t(
+                  "batch-actions.add-to-dataset.mapping.value-literal",
+                  "Value (literal)",
+                )}
           </Label>
           <div className="mt-1">
             {isPath ? (
@@ -338,13 +382,19 @@ function KeyValueEntryRow({
               <Input
                 value={entry.value}
                 onChange={(e) => onValueChange(e.target.value)}
-                placeholder="literal value"
+                placeholder={t(
+                  "batch-actions.add-to-dataset.mapping.literal-placeholder",
+                  "literal value",
+                )}
                 className="h-9"
               />
             )}
 
             <p className="text-muted-foreground pt-1 text-xs">
-              Start with $. to use a JSONPath (e.g., $.field)
+              {t(
+                "batch-actions.add-to-dataset.mapping.jsonpath-hint",
+                "Start with $. to use a JSONPath (e.g., $.field)",
+              )}
             </p>
           </div>
         </div>

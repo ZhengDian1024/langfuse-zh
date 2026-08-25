@@ -27,8 +27,10 @@ import {
 } from "@/src/components/ui/alert-dialog";
 import { useState } from "react";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function BatchExportsTable(props: { projectId: string }) {
+  const { t } = useI18n();
   const [paginationState, setPaginationState] = useQueryParams({
     pageIndex: withDefault(NumberParam, 0),
     pageSize: withDefault(NumberParam, 10),
@@ -59,7 +61,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "name",
       id: "name",
-      header: "Name",
+      header: t("batch-exports.table.col-name", "Name"),
       size: 200,
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
@@ -74,10 +76,17 @@ export function BatchExportsTable(props: { projectId: string }) {
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="space-y-1">
-                    <div>Created: {new Date(createdAt).toLocaleString()}</div>
                     <div>
-                      Finished:{" "}
-                      {finishedAt ? new Date(finishedAt).toLocaleString() : "-"}
+                      {t("batch-exports.table.created", "Created: {date}", {
+                        date: new Date(createdAt).toLocaleString(),
+                      })}
+                    </div>
+                    <div>
+                      {t("batch-exports.table.finished", "Finished: {date}", {
+                        date: finishedAt
+                          ? new Date(finishedAt).toLocaleString()
+                          : "-",
+                      })}
                     </div>
                   </div>
                 </TooltipContent>
@@ -90,7 +99,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "status",
       id: "status",
-      header: "Status",
+      header: t("batch-exports.table.col-status", "Status"),
       size: 90,
       cell: (row) => {
         const status = row.getValue() as string;
@@ -102,7 +111,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "url",
       id: "url",
-      header: "Download URL",
+      header: t("batch-exports.table.col-download-url", "Download URL"),
       size: 130,
       cell: (info) => {
         const url = info.getValue() as string | null;
@@ -110,11 +119,15 @@ export function BatchExportsTable(props: { projectId: string }) {
           return null;
         }
         if (url === "expired") {
-          return <span className="text-muted-foreground">Expired</span>;
+          return (
+            <span className="text-muted-foreground">
+              {t("batch-exports.table.expired", "Expired")}
+            </span>
+          );
         }
         return (
           <ActionButton href={url} icon={<DownloadIcon size={16} />} size="sm">
-            Download
+            {t("batch-exports.table.download", "Download")}
           </ActionButton>
         );
       },
@@ -122,13 +135,13 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "format",
       id: "format",
-      header: "Format",
+      header: t("batch-exports.table.col-format", "Format"),
       size: 70,
     },
     {
       accessorKey: "user",
       id: "user",
-      header: "Created By",
+      header: t("batch-exports.table.col-created-by", "Created By"),
       size: 150,
       cell: ({ row }) => {
         const user = row.getValue("user") as {
@@ -140,10 +153,15 @@ export function BatchExportsTable(props: { projectId: string }) {
             <Avatar className="h-7 w-7">
               <AvatarImage
                 src={user?.image ?? undefined}
-                alt={user?.name ?? "User Avatar"}
+                alt={
+                  user?.name ??
+                  t("batch-exports.user-avatar-alt", "User Avatar")
+                }
               />
             </Avatar>
-            <span>{user?.name ?? "Unknown"}</span>
+            <span>
+              {user?.name ?? t("batch-exports.unknown-user", "Unknown")}
+            </span>
           </div>
         );
       },
@@ -151,7 +169,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "log",
       id: "log",
-      header: "Log",
+      header: t("batch-exports.table.col-log", "Log"),
       size: 300,
       cell: (row) => {
         const log = row.getValue() as string | null;
@@ -161,7 +179,7 @@ export function BatchExportsTable(props: { projectId: string }) {
     {
       accessorKey: "actions",
       id: "actions",
-      header: "Actions",
+      header: t("batch-exports.table.col-actions", "Actions"),
       size: 100,
       cell: ({ row }) => {
         const id = row.original.id;
@@ -191,19 +209,28 @@ export function BatchExportsTable(props: { projectId: string }) {
                   setCancelDialogOpen(true);
                 }}
               >
-                Cancel
+                {t("common.cancel", "Cancel")}
               </ActionButton>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Cancel batch export?</AlertDialogTitle>
+                <AlertDialogTitle>
+                  {t(
+                    "batch-exports.cancel-dialog.title",
+                    "Cancel batch export?",
+                  )}
+                </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Are you sure you want to cancel this batch export? This action
-                  cannot be undone.
+                  {t(
+                    "batch-exports.cancel-dialog.description",
+                    "Are you sure you want to cancel this batch export? This action cannot be undone.",
+                  )}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>No, keep it</AlertDialogCancel>
+                <AlertDialogCancel>
+                  {t("batch-exports.cancel-dialog.keep", "No, keep it")}
+                </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
                     cancelBatchExport.mutate({
@@ -212,7 +239,10 @@ export function BatchExportsTable(props: { projectId: string }) {
                     });
                   }}
                 >
-                  Yes, cancel export
+                  {t(
+                    "batch-exports.cancel-dialog.confirm",
+                    "Yes, cancel export",
+                  )}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

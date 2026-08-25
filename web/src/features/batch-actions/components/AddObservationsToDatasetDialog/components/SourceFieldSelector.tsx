@@ -6,6 +6,7 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import type { SourceField } from "../types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type SourceFieldSelectorProps = {
   value: SourceField;
@@ -18,6 +19,7 @@ export function SourceFieldSelector({
   onChange,
   disabled = false,
 }: SourceFieldSelectorProps) {
+  const { t } = useI18n();
   return (
     <Select
       value={value}
@@ -28,9 +30,15 @@ export function SourceFieldSelector({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="input">Input</SelectItem>
-        <SelectItem value="output">Output</SelectItem>
-        <SelectItem value="metadata">Metadata</SelectItem>
+        <SelectItem value="input">
+          {t("batch-actions.add-to-dataset.field.input", "Input")}
+        </SelectItem>
+        <SelectItem value="output">
+          {t("batch-actions.add-to-dataset.field.output", "Output")}
+        </SelectItem>
+        <SelectItem value="metadata">
+          {t("batch-actions.add-to-dataset.field.metadata", "Metadata")}
+        </SelectItem>
       </SelectContent>
     </Select>
   );

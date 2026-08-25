@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Check, AlertCircle } from "lucide-react";
 import Spinner from "@/src/components/design-system/Spinner/Spinner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type StatusStepProps = {
   projectId: string;
@@ -29,6 +30,7 @@ export function StatusStep({
   expectedCount,
   onClose,
 }: StatusStepProps) {
+  const { t } = useI18n();
   const router = useRouter();
 
   // Poll for status updates
@@ -81,30 +83,63 @@ export function StatusStep({
           )}
 
           <h2 className="mb-2 text-2xl font-semibold">
-            {!isComplete && "Adding Observations to Dataset"}
-            {isSuccess && "Successfully Added!"}
-            {isComplete && !isSuccess && "Completed with Issues"}
+            {!isComplete &&
+              t(
+                "batch-actions.add-to-dataset.status.adding-title",
+                "Adding Observations to Dataset",
+              )}
+            {isSuccess &&
+              t(
+                "batch-actions.add-to-dataset.status.success-title",
+                "Successfully Added!",
+              )}
+            {isComplete &&
+              !isSuccess &&
+              t(
+                "batch-actions.add-to-dataset.status.issues-title",
+                "Completed with Issues",
+              )}
           </h2>
           <p className="text-muted-foreground text-sm">
             {!isComplete &&
-              `Adding ${totalCount} observations to ${dataset.name}`}
+              t(
+                "batch-actions.add-to-dataset.status.adding-desc",
+                "Adding {count} observations to {name}",
+                { count: String(totalCount), name: dataset.name },
+              )}
             {isSuccess &&
-              `${processedCount} observations have been added to ${dataset.name}`}
+              t(
+                "batch-actions.add-to-dataset.status.success-desc",
+                "{count} observations have been added to {name}",
+                { count: String(processedCount), name: dataset.name },
+              )}
             {isComplete &&
               !isSuccess &&
-              `${processedCount} observations added, ${failedCount} failed`}
+              t(
+                "batch-actions.add-to-dataset.status.issues-desc",
+                "{processed} observations added, {failed} failed",
+                {
+                  processed: String(processedCount),
+                  failed: String(failedCount),
+                },
+              )}
           </p>
           {!isComplete && (
             <p className="text-muted-foreground mt-2 text-sm">
-              You can safely close this dialog. The action is running in the
-              background and you can track its progress in the{" "}
+              {t(
+                "batch-actions.add-to-dataset.status.close-notice",
+                "You can safely close this dialog. The action is running in the background and you can track its progress in the ",
+              )}
               <Link
                 href={`/project/${projectId}/settings/batch-actions`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary underline hover:no-underline"
               >
-                batch actions table
+                {t(
+                  "batch-actions.add-to-dataset.status.batch-actions-link",
+                  "batch actions table",
+                )}
               </Link>
               .
             </p>
@@ -117,7 +152,15 @@ export function StatusStep({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
-                  {isComplete ? "Results" : "Progress"}
+                  {isComplete
+                    ? t(
+                        "batch-actions.add-to-dataset.status.results",
+                        "Results",
+                      )
+                    : t(
+                        "batch-actions.add-to-dataset.status.progress",
+                        "Progress",
+                      )}
                 </CardTitle>
                 <StatusBadge
                   type={status.data?.status?.toLowerCase() ?? "pending"}
@@ -130,7 +173,14 @@ export function StatusStep({
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        {processedCount} of {totalCount} processed
+                        {t(
+                          "batch-actions.add-to-dataset.status.processed-of",
+                          "{processed} of {total} processed",
+                          {
+                            processed: String(processedCount),
+                            total: String(totalCount),
+                          },
+                        )}
                       </span>
                       <span className="font-medium">{progressPercent}%</span>
                     </div>
@@ -139,11 +189,21 @@ export function StatusStep({
 
                   <div className="bg-muted/50 grid grid-cols-2 gap-4 rounded-lg p-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Processed</span>
+                      <span className="text-muted-foreground">
+                        {t(
+                          "batch-actions.add-to-dataset.status.processed",
+                          "Processed",
+                        )}
+                      </span>
                       <span className="font-semibold">{processedCount}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Failed</span>
+                      <span className="text-muted-foreground">
+                        {t(
+                          "batch-actions.add-to-dataset.status.failed",
+                          "Failed",
+                        )}
+                      </span>
                       <span
                         className={`font-semibold ${failedCount > 0 ? "text-destructive" : ""}`}
                       >
@@ -158,12 +218,20 @@ export function StatusStep({
                 <div className="bg-muted/50 rounded-lg p-4 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">
-                      Successfully processed
+                      {t(
+                        "batch-actions.add-to-dataset.status.successfully-processed",
+                        "Successfully processed",
+                      )}
                     </span>
                     <span className="font-semibold">{processedCount}</span>
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <span className="text-muted-foreground">Failed</span>
+                    <span className="text-muted-foreground">
+                      {t(
+                        "batch-actions.add-to-dataset.status.failed",
+                        "Failed",
+                      )}
+                    </span>
                     <span className="text-destructive font-semibold">
                       {failedCount}
                     </span>
@@ -174,7 +242,10 @@ export function StatusStep({
               {status.data?.log && (
                 <div className="border-destructive/50 bg-destructive/5 space-y-2 rounded-lg border p-3">
                   <p className="text-destructive text-xs font-medium">
-                    Error Summary:
+                    {t(
+                      "batch-actions.add-to-dataset.status.error-summary",
+                      "Error Summary:",
+                    )}
                   </p>
                   <pre className="text-muted-foreground max-h-32 overflow-auto text-[10px]">
                     {status.data.log}
@@ -193,7 +264,7 @@ export function StatusStep({
               onClick={onClose}
               className={isComplete && hasPartialSuccess ? "flex-1" : "w-full"}
             >
-              Close
+              {t("batch-actions.close", "Close")}
             </Button>
             {isComplete && hasPartialSuccess && (
               <Button
@@ -204,7 +275,10 @@ export function StatusStep({
                   )
                 }
               >
-                Go to Dataset
+                {t(
+                  "batch-actions.add-to-dataset.status.go-to-dataset",
+                  "Go to Dataset",
+                )}
               </Button>
             )}
           </div>

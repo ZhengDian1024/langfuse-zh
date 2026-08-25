@@ -14,6 +14,7 @@ import {
   issueTextVariants,
   type IssueVariant,
 } from "@/src/features/batch-actions/components/AddObservationsToDatasetDialog/components/IssueBanner";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const STEP_FOR_FIELD: Record<string, DialogStep> = {
   input: "input-mapping",
@@ -21,8 +22,12 @@ const STEP_FOR_FIELD: Record<string, DialogStep> = {
   metadata: "metadata-mapping",
 };
 
-const fieldLabel = (field: string) =>
-  field === "expectedOutput" ? "expected output" : field;
+const fieldLabelKey = (field: string) =>
+  field === "expectedOutput"
+    ? "batch-actions.add-to-dataset.field.expected-output"
+    : field === "input"
+      ? "batch-actions.add-to-dataset.field.input"
+      : "batch-actions.add-to-dataset.field.metadata";
 
 export function FinalPreviewStep({
   dataset,
@@ -31,6 +36,7 @@ export function FinalPreviewStep({
   totalCount,
   onEditStep,
 }: FinalPreviewStepProps) {
+  const { t } = useI18n();
   const previewResult = useMemo(() => {
     if (!observationData) return null;
 
@@ -64,19 +70,29 @@ export function FinalPreviewStep({
   return (
     <div className="h-[62vh] space-y-6 p-6">
       <div>
-        <h3 className="text-lg font-semibold">Review Configuration</h3>
+        <h3 className="text-lg font-semibold">
+          {t("batch-actions.add-to-dataset.preview.title", "Review Configuration")}
+        </h3>
         <p className="text-muted-foreground text-sm">
-          Adding {totalCount} observation{totalCount !== 1 ? "s" : ""} to
-          dataset &quot;
-          {dataset.name}&quot;
+          {t(
+            "batch-actions.add-to-dataset.preview.summary",
+            "Adding {count} observation(s) to dataset \"{name}\"",
+            { count: String(totalCount), name: dataset.name },
+          )}
         </p>
       </div>
 
       {errorFields.length > 0 && (
         <IssueBanner
           variant="error"
-          title="Some JSONPaths are invalid"
-          description="Items using these mappings will be skipped during processing."
+          title={t(
+            "batch-actions.add-to-dataset.preview.invalid-paths-title",
+            "Some JSONPaths are invalid",
+          )}
+          description={t(
+            "batch-actions.add-to-dataset.preview.invalid-paths-desc",
+            "Items using these mappings will be skipped during processing.",
+          )}
         >
           <EditMappingActions
             variant="error"
@@ -89,8 +105,14 @@ export function FinalPreviewStep({
       {missFields.length > 0 && (
         <IssueBanner
           variant="warning"
-          title="Some JSONPaths did not match the preview observation"
-          description="Observations with failed mappings will be skipped during processing."
+          title={t(
+            "batch-actions.add-to-dataset.preview.no-match-title",
+            "Some JSONPaths did not match the preview observation",
+          )}
+          description={t(
+            "batch-actions.add-to-dataset.preview.no-match-desc",
+            "Observations with failed mappings will be skipped during processing.",
+          )}
         >
           <EditMappingActions
             variant="warning"
@@ -101,33 +123,45 @@ export function FinalPreviewStep({
       )}
 
       <div className="text-muted-foreground text-sm">
-        Sample dataset item preview (from first selected observation):
+        {t(
+          "batch-actions.add-to-dataset.preview.sample-label",
+          "Sample dataset item preview (from first selected observation):",
+        )}
       </div>
 
       {!observationData ? (
         <div className="bg-muted/30 flex h-64 items-center justify-center rounded-md border p-4">
           <p className="text-muted-foreground text-sm">
-            No observation data available for preview
+            {t(
+              "batch-actions.add-to-dataset.preview.no-data",
+              "No observation data available for preview",
+            )}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           <PreviewCard
-            label="Input"
+            label={t("batch-actions.add-to-dataset.field.input", "Input")}
             data={previewResult?.input}
             onEdit={() => onEditStep("input-mapping")}
             pathErrors={errorsByField["input"]}
             pathMisses={missesByField["input"]}
           />
           <PreviewCard
-            label="Expected Output"
+            label={t(
+              "batch-actions.add-to-dataset.field.expected-output",
+              "Expected Output",
+            )}
             data={previewResult?.expectedOutput}
             onEdit={() => onEditStep("output-mapping")}
             pathErrors={errorsByField["expectedOutput"]}
             pathMisses={missesByField["expectedOutput"]}
           />
           <PreviewCard
-            label="Metadata"
+            label={t(
+              "batch-actions.add-to-dataset.field.metadata",
+              "Metadata",
+            )}
             data={previewResult?.metadata}
             onEdit={() => onEditStep("metadata-mapping")}
             pathErrors={errorsByField["metadata"]}
@@ -148,6 +182,7 @@ function EditMappingActions({
   fields: string[];
   onEditStep: (step: DialogStep) => void;
 }) {
+  const { t } = useI18n();
   return (
     <div className="flex flex-wrap gap-2 pt-1">
       {fields.map((field) => (
@@ -164,7 +199,11 @@ function EditMappingActions({
             if (step) onEditStep(step);
           }}
         >
-          Edit {fieldLabel(field)} mapping
+          {t(
+            "batch-actions.add-to-dataset.preview.edit-mapping",
+            "Edit {field} mapping",
+            { field: t(fieldLabelKey(field), field) },
+          )}
         </Button>
       ))}
     </div>
@@ -186,6 +225,7 @@ function PreviewCard({
   pathErrors = [],
   pathMisses = [],
 }: PreviewCardProps) {
+  const { t } = useI18n();
   const variant: IssueVariant | null =
     pathErrors.length > 0 ? "error" : pathMisses.length > 0 ? "warning" : null;
   const Icon = variant ? issueIcons[variant] : null;
@@ -208,7 +248,7 @@ function PreviewCard({
           className="h-7 gap-1 text-xs"
         >
           <Pencil className="h-3 w-3" />
-          Edit
+          {t("batch-actions.add-to-dataset.preview.edit", "Edit")}
         </Button>
       </div>
       <div className="max-h-62 overflow-auto">
@@ -225,13 +265,25 @@ function PreviewCard({
           <p className="text-xs">
             {[
               pathErrors.length > 0 &&
-                `${pathErrors.length} path${pathErrors.length !== 1 ? "s have" : " has"} invalid syntax`,
+                t(
+                  "batch-actions.add-to-dataset.preview.path-errors",
+                  "{count} path(s) have invalid syntax",
+                  { count: String(pathErrors.length) },
+                ),
               pathMisses.length > 0 &&
-                `${pathMisses.length} path${pathMisses.length !== 1 ? "s" : ""} did not match in preview observation`,
+                t(
+                  "batch-actions.add-to-dataset.preview.path-misses",
+                  "{count} path(s) did not match in preview observation",
+                  { count: String(pathMisses.length) },
+                ),
             ]
               .filter(Boolean)
               .join("; ")}
-            . These items will be skipped during processing.
+            {" "}
+            {t(
+              "batch-actions.add-to-dataset.preview.skipped-note",
+              "These items will be skipped during processing.",
+            )}
           </p>
         </div>
       )}

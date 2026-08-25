@@ -13,6 +13,7 @@ import type {
   MappingMode,
   CustomMappingConfig,
 } from "./types";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function MappingStep({
   field,
@@ -25,6 +26,7 @@ export function MappingStep({
   schema,
   onValidationChange,
 }: MappingStepProps) {
+  const { t } = useI18n();
   const hasSchema = schema !== null && schema !== undefined;
   const isObjectType = hasSchema && isObjectSchema(schema);
   const hasInitializedRef = useRef(false);
@@ -73,13 +75,26 @@ export function MappingStep({
   const getFullLabel = () => {
     switch (field) {
       case "input":
-        return "Full observation input";
+        return t(
+          "batch-actions.add-to-dataset.mapping.full-input",
+          "Full observation input",
+        );
       case "expectedOutput":
-        return "Full observation output";
+        return t(
+          "batch-actions.add-to-dataset.mapping.full-output",
+          "Full observation output",
+        );
       case "metadata":
-        return "Full observation metadata";
+        return t(
+          "batch-actions.add-to-dataset.mapping.full-metadata",
+          "Full observation metadata",
+        );
       default:
-        return `Full observation ${field}`;
+        return t(
+          "batch-actions.add-to-dataset.mapping.full-field",
+          "Full observation {field}",
+          { field },
+        );
     }
   };
 
@@ -118,7 +133,11 @@ export function MappingStep({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="grow text-lg font-semibold">
-              Dataset Item {fieldLabel}
+              {t(
+                "batch-actions.add-to-dataset.mapping.dataset-item-field",
+                "Dataset Item {fieldLabel}",
+                { fieldLabel },
+              )}
             </h3>
             {hasSchema && (
               <DatasetSchemaHoverCard
@@ -131,8 +150,11 @@ export function MappingStep({
             )}
           </div>
           <p className="text-muted-foreground text-sm">
-            Configure how observation data maps to the Dataset Item {fieldLabel}
-            .
+            {t(
+              "batch-actions.add-to-dataset.mapping.config-description",
+              "Configure how observation data maps to the Dataset Item {fieldLabel}.",
+              { fieldLabel },
+            )}
           </p>
         </div>
 

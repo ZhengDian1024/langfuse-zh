@@ -23,6 +23,7 @@ import {
   type JsonPathMissInfo,
   type JsonPathErrorInfo,
 } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type MappingPreviewPanelProps = {
   fieldLabel: string;
@@ -48,6 +49,7 @@ export function MappingPreviewPanel({
   schema,
   onValidationChange,
 }: MappingPreviewPanelProps) {
+  const { t } = useI18n();
   const hasSchema = schema !== null && schema !== undefined;
 
   // Compute source data to display
@@ -191,9 +193,17 @@ export function MappingPreviewPanel({
     return (
       <div className="space-y-4">
         <div>
-          <h3 className="text-sm font-semibold">Preview</h3>
+          <h3 className="text-sm font-semibold">
+            {t(
+              "batch-actions.add-to-dataset.preview.panel-title",
+              "Preview",
+            )}
+          </h3>
           <p className="text-muted-foreground text-xs">
-            Sample from first observation
+            {t(
+              "batch-actions.add-to-dataset.preview.sample-from",
+              "Sample from first observation",
+            )}
           </p>
         </div>
         <Skeleton className="h-32 w-full" />
@@ -206,14 +216,25 @@ export function MappingPreviewPanel({
     return (
       <div className="space-y-4">
         <div>
-          <h3 className="text-sm font-semibold">Preview</h3>
+          <h3 className="text-sm font-semibold">
+            {t(
+              "batch-actions.add-to-dataset.preview.panel-title",
+              "Preview",
+            )}
+          </h3>
           <p className="text-muted-foreground text-xs">
-            Sample from first observation
+            {t(
+              "batch-actions.add-to-dataset.preview.sample-from",
+              "Sample from first observation",
+            )}
           </p>
         </div>
         <div className="bg-muted/30 flex h-64 items-center justify-center rounded-md border p-4">
           <p className="text-muted-foreground text-sm">
-            No observation data available
+            {t(
+              "batch-actions.add-to-dataset.preview.no-observation-data",
+              "No observation data available",
+            )}
           </p>
         </div>
       </div>
@@ -223,16 +244,28 @@ export function MappingPreviewPanel({
   return (
     <div className="space-y-2">
       <div>
-        <h3 className="text-sm font-semibold">Preview</h3>
+        <h3 className="text-sm font-semibold">
+          {t(
+            "batch-actions.add-to-dataset.preview.panel-title",
+            "Preview",
+          )}
+        </h3>
         <p className="text-muted-foreground text-xs">
-          Sample from first observation
+          {t(
+            "batch-actions.add-to-dataset.preview.sample-from",
+            "Sample from first observation",
+          )}
         </p>
       </div>
 
       {/* Source data */}
       <div className="space-y-2">
         <p className="text-muted-foreground text-xs font-medium">
-          Source: {sourceLabel}
+          {t(
+            "batch-actions.add-to-dataset.preview.source-label",
+            "Source: {source}",
+            { source: sourceLabel },
+          )}
         </p>
         <div className="bg-muted/30 max-h-[21vh] overflow-auto rounded-md border">
           <JSONView json={sourceData} className="text-xs" />
@@ -248,7 +281,11 @@ export function MappingPreviewPanel({
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-xs font-medium">
-            Result: Dataset Item {fieldLabel}
+            {t(
+              "batch-actions.add-to-dataset.preview.result-label",
+              "Result: Dataset Item {fieldLabel}",
+              { fieldLabel },
+            )}
           </p>
           {/* Validation status indicator */}
           {config.mode !== "none" && (
@@ -284,7 +321,13 @@ export function MappingPreviewPanel({
 
         {/* JSONPath syntax errors (always blocking) */}
         {jsonPathErrors.length > 0 && config.mode !== "none" && (
-          <IssueList variant="error" title="Invalid JSONPath:">
+          <IssueList
+            variant="error"
+            title={t(
+              "batch-actions.add-to-dataset.preview.invalid-jsonpath-title",
+              "Invalid JSONPath:",
+            )}
+          >
             {jsonPathErrors.map((err, idx) => (
               <IssueItem key={idx}>
                 <span className="font-mono">{err.jsonPath}</span>
@@ -299,11 +342,20 @@ export function MappingPreviewPanel({
         {hasSchema &&
           jsonPathErrors.length === 0 &&
           validationResult.errors.length > 0 && (
-            <IssueList variant="error" title="Schema validation errors:">
+            <IssueList
+              variant="error"
+              title={t(
+                "batch-actions.add-to-dataset.preview.schema-errors-title",
+                "Schema validation errors:",
+              )}
+            >
               {validationResult.errors.map((error, idx) => (
                 <IssueItem key={idx}>
-                  <span className="font-mono">{error.path || "root"}</span>:{" "}
-                  {error.message}
+                  <span className="font-mono">
+                    {error.path ||
+                      t("batch-actions.add-to-dataset.preview.root", "root")}
+                  </span>
+                  : {error.message}
                 </IssueItem>
               ))}
             </IssueList>
@@ -313,12 +365,19 @@ export function MappingPreviewPanel({
         {jsonPathMisses.length > 0 && config.mode !== "none" && (
           <IssueList
             variant="warning"
-            title="JSONPath warnings (preview observation):"
+            title={t(
+              "batch-actions.add-to-dataset.preview.warnings-title",
+              "JSONPath warnings (preview observation):",
+            )}
           >
             {jsonPathMisses.map((miss, idx) => (
               <IssueItem key={idx}>
-                <span className="font-mono">{miss.jsonPath}</span> did not match
-                any data in {miss.sourceField}
+                <span className="font-mono">{miss.jsonPath}</span>{" "}
+                {t(
+                  "batch-actions.add-to-dataset.preview.did-not-match",
+                  "did not match any data in",
+                )}{" "}
+                {miss.sourceField}
                 {miss.mappingKey ? ` (key: "${miss.mappingKey}")` : ""}
               </IssueItem>
             ))}

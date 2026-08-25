@@ -2,9 +2,11 @@ import Header from "@/src/components/layouts/header";
 import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
 import { SettingsTableCard } from "@/src/components/layouts/settings-table-card";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { BatchActionsTable } from "./BatchActionsTable";
 
 export function BatchActionsSettingsPage(props: { projectId: string }) {
+  const { t } = useI18n();
   const hasAccess = useHasProjectAccess({
     projectId: props.projectId,
     scope: "datasets:CUD",
@@ -12,12 +14,12 @@ export function BatchActionsSettingsPage(props: { projectId: string }) {
 
   return (
     <>
-      <Header title="Batch Actions" />
+      <Header title={t("batch-actions.page.title", "Batch Actions")} />
       <p className="mb-4 text-sm">
-        Track the status of bulk operations performed on tables, such as adding
-        observations to datasets, deleting traces, and adding items to
-        annotation queues. Actions are processed asynchronously in the
-        background.
+        {t(
+          "batch-actions.page.description",
+          "Track the status of bulk operations performed on tables, such as adding observations to datasets, deleting traces, and adding items to annotation queues. Actions are processed asynchronously in the background.",
+        )}
       </p>
       {hasAccess ? (
         <SettingsTableCard>
@@ -25,9 +27,14 @@ export function BatchActionsSettingsPage(props: { projectId: string }) {
         </SettingsTableCard>
       ) : (
         <Alert>
-          <AlertTitle>Access Denied</AlertTitle>
+          <AlertTitle>
+            {t("batch-actions.access-denied.title", "Access Denied")}
+          </AlertTitle>
           <AlertDescription>
-            You do not have permission to view batch actions.
+            {t(
+              "batch-actions.access-denied.description",
+              "You do not have permission to view batch actions.",
+            )}
           </AlertDescription>
         </Alert>
       )}

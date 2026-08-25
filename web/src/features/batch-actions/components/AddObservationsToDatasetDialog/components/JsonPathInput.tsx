@@ -7,6 +7,7 @@ import { lightTheme } from "@/src/components/editor/light-theme";
 import { darkTheme } from "@/src/components/editor/dark-theme";
 import { cn } from "@/src/utils/tailwind";
 import { evaluateJsonPath } from "@langfuse/shared";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // JSONPath language mode for syntax highlighting
 const jsonPathLanguage = StreamLanguage.define({
@@ -75,6 +76,7 @@ export function JsonPathInput({
   error,
   className,
 }: JsonPathInputProps) {
+  const { t } = useI18n();
   const { resolvedTheme } = useTheme();
   const codeMirrorTheme = resolvedTheme === "dark" ? darkTheme : lightTheme;
 
@@ -108,7 +110,14 @@ export function JsonPathInput({
           setResolveError(null);
           setNoMatchWarning(result === undefined);
         } catch (e) {
-          setResolveError(e instanceof Error ? e.message : "Invalid JSONPath");
+          setResolveError(
+            e instanceof Error
+              ? e.message
+              : t(
+                  "batch-actions.add-to-dataset.mapping.invalid-jsonpath",
+                  "Invalid JSONPath",
+                ),
+          );
           setNoMatchWarning(false);
         }
       } else {
@@ -166,7 +175,10 @@ export function JsonPathInput({
       )}
       {showWarning && (
         <p className="text-xs text-amber-600 dark:text-amber-500">
-          No match found in source data
+          {t(
+            "batch-actions.add-to-dataset.mapping.no-match-warning",
+            "No match found in source data",
+          )}
         </p>
       )}
     </div>
