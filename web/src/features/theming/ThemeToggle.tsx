@@ -11,7 +11,7 @@ export function ThemeToggle() {
   const { t } = useI18n();
   return (
     <div className="flex items-center space-x-1">
-      <span className="mr-2">{t("user-menu.theme")}</span>
+      <span className="mr-2">{t("user-menu.theme")}11</span>
       <div title="Light mode">
         <Sun
           className={cn(
