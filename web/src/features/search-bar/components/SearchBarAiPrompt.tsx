@@ -23,6 +23,7 @@ import { KeyboardShortcut } from "@/src/components/ui/keyboard-shortcut";
 import type { SearchBarStore } from "@/src/features/search-bar/store/searchBarStore";
 import { api } from "@/src/utils/api";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export function SearchBarAiPrompt({
   projectId,
@@ -42,6 +43,7 @@ export function SearchBarAiPrompt({
   /** Leave AI mode and restore the grammar composer. */
   onExit: () => void;
 }) {
+  const { t } = useI18n();
   const [value, setValue] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -66,8 +68,14 @@ export function SearchBarAiPrompt({
   const refineContext = useStore(store, (s) => s.draft).trim();
   const refining = refineContext.length > 0;
   const placeholder = refining
-    ? "Refine your filters — e.g. only errors, or drop the env filter"
-    : "Describe the filters you want — e.g. slow production errors from today";
+    ? t(
+        "search-bar.ai.placeholder-refine",
+        "Refine your filters — e.g. only errors, or drop the env filter",
+      )
+    : t(
+        "search-bar.ai.placeholder-new",
+        "Describe the filters you want — e.g. slow production errors from today",
+      );
 
   const generateFilter = api.searchBar.generateFilter.useMutation();
   const pending = generateFilter.isPending;
@@ -106,11 +114,21 @@ export function SearchBarAiPrompt({
       // so mergeWithSkipped won't preserve it). Bail and let the user retry
       // against the updated filters instead.
       if (store.getState().draft.trim() !== refine) {
-        setError("Filters changed while generating — try again.");
+        setError(
+          t(
+            "search-bar.ai.error-filters-changed",
+            "Filters changed while generating — try again.",
+          ),
+        );
         return;
       }
       if (result.filters.length === 0) {
-        setError("Couldn't build filters from that — try rephrasing.");
+        setError(
+          t(
+            "search-bar.ai.error-no-filters",
+            "Couldn't build filters from that — try rephrasing.",
+          ),
+        );
         return;
       }
       onApply(result.filters as FilterState);
@@ -122,7 +140,12 @@ export function SearchBarAiPrompt({
       // an unhelpful "we have been notified" string anyway. The auth/precondition
       // cases are unreachable behind the cloud + aiFeaturesEnabled gate. Show one
       // generic, actionable message instead.
-      setError("Couldn't reach the AI service. Please try again.");
+      setError(
+        t(
+          "search-bar.ai.error-service",
+          "Couldn't reach the AI service. Please try again.",
+        ),
+      );
     }
   };
 
@@ -144,7 +167,9 @@ export function SearchBarAiPrompt({
             onMouseDown={(event) => event.preventDefault()}
             className="text-muted-foreground mb-1.5 flex min-w-0 items-center gap-1.5 pl-1 text-xs"
           >
-            <span className="shrink-0">Refining</span>
+            <span className="shrink-0">
+              {t("search-bar.ai.refining", "Refining")}
+            </span>
             <code className="bg-muted text-foreground/80 min-w-0 truncate rounded px-1.5 py-0.5 font-mono text-[11px]">
               {refineContext}
             </code>
@@ -155,8 +180,8 @@ export function SearchBarAiPrompt({
               you're in a sub-mode you can leave. */}
           <button
             type="button"
-            aria-label="Back to search"
-            title="Back (Esc)"
+            aria-label={t("search-bar.ai.back", "Back to search")}
+            title={t("search-bar.ai.back-title", "Back (Esc)")}
             onMouseDown={(event) => event.preventDefault()}
             onClick={onExit}
             className="text-muted-foreground hover:text-foreground hover:bg-accent -ml-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
@@ -169,7 +194,7 @@ export function SearchBarAiPrompt({
             value={value}
             disabled={pending}
             placeholder={placeholder}
-            aria-label="Ask AI to build filters"
+            aria-label={t("search-bar.ai.input-aria", "Ask AI to build filters")}
             data-testid="search-bar-ai-input"
             spellCheck={false}
             autoComplete="off"
@@ -206,20 +231,25 @@ export function SearchBarAiPrompt({
                 className="h-3.5 w-3.5 animate-spin"
                 aria-hidden="true"
               />
-              Generating…
+              {t("search-bar.ai.generating", "Generating…")}
             </span>
           ) : (
             <div className="flex shrink-0 items-center gap-1.5">
               {value.trim().length > 0 && (
-                <KeyboardShortcut title="Press Enter to generate">
+                <KeyboardShortcut
+                  title={t("search-bar.ai.enter-title", "Press Enter to generate")}
+                >
                   ↵
                 </KeyboardShortcut>
               )}
               <KeyboardShortcut>esc</KeyboardShortcut>
               <button
                 type="button"
-                aria-label="Generate filters"
-                title="Generate filters (Enter)"
+                aria-label={t("filters.ai.generate", "Generate filters")}
+                title={t(
+                  "search-bar.ai.generate-title",
+                  "Generate filters (Enter)",
+                )}
                 data-testid="search-bar-ai-submit"
                 disabled={value.trim().length === 0}
                 onMouseDown={(event) => event.preventDefault()}

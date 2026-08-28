@@ -49,9 +49,9 @@ import {
   WORD_JOINER,
 } from "@/src/features/search-bar/components/ComposerTokens";
 import {
-  COMPOSER_PLACEHOLDER,
   optionDomId,
 } from "@/src/features/search-bar/components/presentation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const LISTBOX_ID = "search-bar-listbox";
 // Word joiners (shared with ComposerTokens) give the DOM caret boundaries
@@ -305,6 +305,7 @@ export function SearchComposer({
     })),
   );
 
+  const { t } = useI18n();
   const [autocompleteOpen, setAutocompleteOpen] = React.useState(false);
   const [highlightedOptionId, setHighlightedOptionId] = React.useState<
     string | null
@@ -1319,13 +1320,16 @@ export function SearchComposer({
               onActivateAi !== undefined ? "pr-20" : "pr-8",
             )}
           >
-            {COMPOSER_PLACEHOLDER}
+            {t(
+              "search-bar.placeholder",
+              "Search — e.g. level:ERROR, -env:dev, latency:>2, scores.accuracy:>0.8",
+            )}
           </div>
         )}
         <div
           ref={rootRef}
           role="combobox"
-          aria-label="Search"
+          aria-label={t("search-bar.aria.search", "Search")}
           aria-expanded={plan !== null}
           aria-controls={plan !== null ? LISTBOX_ID : undefined}
           aria-autocomplete="list"
@@ -1387,11 +1391,17 @@ export function SearchComposer({
           <button
             type="button"
             data-testid="search-bar-ask-ai"
-            aria-label="Ask AI to build or refine filters"
+            aria-label={t(
+              "search-bar.ask-ai.aria",
+              "Ask AI to build or refine filters",
+            )}
             title={
               draft.trim().length === 0
-                ? "Describe filters in natural language"
-                : "Refine these filters with AI"
+                ? t(
+                    "search-bar.ask-ai.describe",
+                    "Describe filters in natural language",
+                  )
+                : t("search-bar.ask-ai.refine", "Refine these filters with AI")
             }
             onMouseDown={(event) => event.preventDefault()}
             onClick={(event) => {
@@ -1408,7 +1418,7 @@ export function SearchComposer({
             )}
           >
             <WandSparkles className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>Ask AI</span>
+            <span>{t("search-bar.ask-ai", "Ask AI")}</span>
           </button>
         )}
         {/* Bar-local overlay stacking ladder: token text (base) < remove-X

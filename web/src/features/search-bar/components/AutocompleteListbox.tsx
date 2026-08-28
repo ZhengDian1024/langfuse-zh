@@ -12,6 +12,7 @@ import type {
   CompletionPlan,
 } from "@/src/features/search-bar/lib/completions";
 import { optionDomId } from "@/src/features/search-bar/components/presentation";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function OptionIcon({ kind }: { kind: CompletionOption["kind"] }) {
   const cls = "h-3.5 w-3.5 flex-none opacity-55";
@@ -36,6 +37,7 @@ export function AutocompleteListbox({
   onHighlight,
   listboxId = "search-bar-listbox",
 }: AutocompleteListboxProps) {
+  const { t } = useI18n();
   // Hover may only highlight on REAL pointer movement. When the list
   // re-renders under a stationary mouse (typing/pasting grows the popover),
   // Chromium fires synthetic mouseover events — honoring those would arm
@@ -67,7 +69,7 @@ export function AutocompleteListbox({
     <div
       id={listboxId}
       role="listbox"
-      aria-label="Search suggestions"
+      aria-label={t("search-bar.aria.suggestions", "Search suggestions")}
       data-testid="search-bar-autocomplete"
       data-stage={plan.stage}
       className={cn(
