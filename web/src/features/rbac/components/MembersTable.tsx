@@ -38,6 +38,7 @@ import { SettingsTableCard } from "@/src/components/layouts/settings-table-card"
 import useSessionStorage from "@/src/components/useSessionStorage";
 import { useQueryParam, withDefault, StringParam } from "use-query-params";
 import { useEffect } from "react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type MembersTableRow = {
   user: {
@@ -145,12 +146,13 @@ export function MembersTable({
   });
 
   const projectRolesEntitlement = useHasEntitlement("rbac-project-roles");
+  const { t } = useI18n();
 
   const columns: LangfuseColumnDef<MembersTableRow>[] = [
     {
       accessorKey: "user",
       id: "user",
-      header: "Name",
+      header: t("rbac.col-name", "Name"),
       cell: ({ row }) => {
         const { name, image } = row.getValue("user") as MembersTableRow["user"];
         return (
@@ -178,12 +180,12 @@ export function MembersTable({
     {
       accessorKey: "email",
       id: "email",
-      header: "Email",
+      header: t("rbac.col-email", "Email"),
     },
     {
       accessorKey: "providers",
       id: "providers",
-      header: "SSO Provider",
+      header: t("rbac.col-sso-provider", "SSO Provider"),
       enableHiding: true,
       cell: ({ row }) => {
         const providers = row.getValue("providers") as string[];
@@ -195,10 +197,13 @@ export function MembersTable({
     {
       accessorKey: "orgRole",
       id: "orgRole",
-      header: "Organization Role",
+      header: t("rbac.col-org-role", "Organization Role"),
       headerTooltip: {
         description:
-          "The org-role is the default role for this user in this organization and applies to the organization and all its projects.",
+          t(
+            "rbac.org-role-tooltip",
+            "The org-role is the default role for this user in this organization and applies to the organization and all its projects.",
+          ),
         href: "https://langfuse.com/docs/administration/rbac",
       },
       cell: ({ row }) => {
@@ -257,10 +262,13 @@ export function MembersTable({
           {
             accessorKey: "projectRole",
             id: "projectRole",
-            header: "Project Role",
+            header: t("rbac.col-project-role", "Project Role"),
             headerTooltip: {
               description:
-                "The role for this user in this specific project. This role overrides the default project role.",
+                t(
+                  "rbac.project-role-tooltip",
+                  "The role for this user in this specific project. This role overrides the default project role.",
+                ),
               href: "https://langfuse.com/docs/administration/rbac",
             },
             cell: ({ row }) => {
@@ -271,7 +279,8 @@ export function MembersTable({
                 "meta",
               ) as MembersTableRow["meta"];
 
-              if (!projectRolesEntitlement) return "N/A on plan";
+              if (!projectRolesEntitlement)
+                return t("rbac.project-role-na-on-plan", "N/A on plan");
 
               return (
                 <ProjectRoleDropdown
@@ -292,7 +301,7 @@ export function MembersTable({
     {
       accessorKey: "createdAt",
       id: "createdAt",
-      header: "Member Since",
+      header: t("rbac.col-member-since", "Member Since"),
       enableHiding: true,
       defaultHidden: true,
       cell: ({ row }) => {
@@ -303,7 +312,7 @@ export function MembersTable({
     {
       accessorKey: "meta",
       id: "meta",
-      header: "Actions",
+      header: t("rbac.col-actions", "Actions"),
       enableHiding: false,
       cell: ({ row }) => {
         const { orgMembershipId, userId } = row.getValue(
@@ -317,8 +326,14 @@ export function MembersTable({
                 if (
                   confirm(
                     userId === session.data?.user?.id
-                      ? "Are you sure you want to leave the organization?"
-                      : "Are you sure you want to remove this member from the organization?",
+                      ? t(
+                          "rbac.confirm-leave-org",
+                          "Are you sure you want to leave the organization?",
+                        )
+                      : t(
+                          "rbac.confirm-remove-member",
+                          "Are you sure you want to remove this member from the organization?",
+                        ),
                   )
                 ) {
                   mutDeleteMember.mutate({ orgId, orgMembershipId });
@@ -367,9 +382,12 @@ export function MembersTable({
   if (project ? !hasProjectViewAccess : !hasOrgViewAccess) {
     return (
       <Alert>
-        <AlertTitle>Access Denied</AlertTitle>
+        <AlertTitle>{t("rbac.access-denied", "Access Denied")}</AlertTitle>
         <AlertDescription>
-          You do not have permission to view members of this organization.
+          {t(
+            "rbac.access-denied-desc",
+            "You do not have permission to view members of this organization.",
+          )}
         </AlertDescription>
       </Alert>
     );
@@ -480,6 +498,7 @@ const OrgRoleDropdown = ({
   userId: string;
   hasCudAccess: boolean;
 }) => {
+  const { t } = useI18n();
   const utils = api.useUtils();
   const session = useSession();
   const mut = api.members.updateOrgMembership.useMutation({
@@ -487,8 +506,11 @@ const OrgRoleDropdown = ({
       utils.members.invalidate();
       if (data.userId === session.data?.user?.id) session.update();
       showSuccessToast({
-        title: "Saved",
-        description: "Organization role updated successfully",
+        title: t("rbac.toast.saved", "Saved"),
+        description: t(
+          "rbac.toast.org-role-updated",
+          "Organization role updated successfully",
+        ),
         duration: 2000,
       });
     },
@@ -502,7 +524,10 @@ const OrgRoleDropdown = ({
         if (
           userId !== session.data?.user?.id ||
           confirm(
-            "Are you sure that you want to change your own organization role?",
+            t(
+              "rbac.confirm-change-own-org-role",
+              "Are you sure that you want to change your own organization role?",
+            ),
           )
         ) {
           mut.mutate({
@@ -542,13 +567,17 @@ const ProjectRoleDropdown = ({
 }) => {
   const utils = api.useUtils();
   const session = useSession();
+  const { t } = useI18n();
   const mut = api.members.updateProjectRole.useMutation({
     onSuccess: (data) => {
       utils.members.invalidate();
       if (data.userId === session.data?.user?.id) session.update();
       showSuccessToast({
-        title: "Saved",
-        description: "Project role updated successfully",
+        title: t("rbac.toast.saved", "Saved"),
+        description: t(
+          "rbac.toast.project-role-updated",
+          "Project role updated successfully",
+        ),
         duration: 2000,
       });
     },
@@ -561,7 +590,12 @@ const ProjectRoleDropdown = ({
       onValueChange={(value) => {
         if (
           userId !== session.data?.user?.id ||
-          confirm("Are you sure that you want to change your own project role?")
+          confirm(
+            t(
+              "rbac.confirm-change-own-project-role",
+              "Are you sure that you want to change your own project role?",
+            ),
+          )
         ) {
           mut.mutate({
             orgId,

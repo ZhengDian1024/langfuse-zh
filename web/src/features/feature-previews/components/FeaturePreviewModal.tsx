@@ -12,6 +12,7 @@ import {
 import { Switch } from "@/src/components/ui/switch";
 import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/utils/tailwind";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 import filterSearchBarDarkIllustration from "../assets/filter-search-bar-dark.svg";
 import filterSearchBarLightIllustration from "../assets/filter-search-bar-light.svg";
@@ -73,10 +74,6 @@ const PREVIEW_REGISTRY: PreviewRegistryItem[] = [
   },
 ];
 
-const FEATURE_PREVIEW_MODAL_TITLE = "Feature Preview";
-const FEATURE_PREVIEW_MODAL_SUBTITLE =
-  "Try upcoming and experimental product experiences before they become generally available.";
-
 export type FeaturePreviewModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -89,6 +86,7 @@ export function FeaturePreviewModal({
   onOpenChange,
   state,
 }: FeaturePreviewModalProps) {
+  const { t } = useI18n();
   const items = PREVIEW_REGISTRY.filter((item) => state[item.flag]);
   const [selectedFlag, setSelectedFlag] = useState<PreviewFlag | null>(
     items[0]?.flag ?? null,
@@ -113,10 +111,13 @@ export function FeaturePreviewModal({
       >
         <DialogHeader>
           <DialogTitle className="text-foreground text-lg font-semibold">
-            {FEATURE_PREVIEW_MODAL_TITLE}
+            {t("feature-previews.title", "Feature Preview")}
           </DialogTitle>
           <DialogDescription className="mt-0">
-            {FEATURE_PREVIEW_MODAL_SUBTITLE}
+            {t(
+              "feature-previews.subtitle",
+              "Try upcoming and experimental product experiences before they become generally available.",
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -143,7 +144,9 @@ export function FeaturePreviewModal({
                         {item.sidebarLabel}
                       </span>
                       <span className="text-muted-foreground mt-1 line-clamp-2 block text-xs">
-                        {state[item.flag]?.enabled ? "Enabled" : "Available"}
+                        {state[item.flag]?.enabled
+                          ? t("feature-previews.enabled", "Enabled")
+                          : t("feature-previews.available", "Available")}
                       </span>
                     </span>
                   </button>
@@ -175,7 +178,7 @@ export function FeaturePreviewModal({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Give feedback
+                        {t("feature-previews.give-feedback", "Give feedback")}
                       </a>
                     </Button>
                   </div>
@@ -184,7 +187,11 @@ export function FeaturePreviewModal({
                       checked={selectedState.enabled}
                       disabled={selectedState.isToggling === true}
                       onCheckedChange={selectedState.onToggle}
-                      aria-label={`Toggle ${selected.title}`}
+                      aria-label={t(
+                        "feature-previews.toggle-aria",
+                        "Toggle {title}",
+                        { title: selected.title },
+                      )}
                     />
                   </div>
                 </div>

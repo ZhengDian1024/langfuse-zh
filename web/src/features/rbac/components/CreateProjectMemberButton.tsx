@@ -40,6 +40,7 @@ import {
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { RoleSelectItem } from "@/src/features/rbac/components/RoleSelectItem";
 import { ActionButton } from "@/src/components/ActionButton";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const formSchema = z.object({
   email: z.string().trim().pipe(z.email()),
@@ -87,6 +88,7 @@ export function CreateProjectMemberButton(props: {
     !hasOrgAccess && hasProjectAccess && hasProjectRoleEntitlement;
 
   const utils = api.useUtils();
+  const { t } = useI18n();
   const mutCreateProjectMember = api.members.create.useMutation({
     onSuccess: () => utils.members.invalidate(),
     onError: (error) =>
@@ -147,15 +149,18 @@ export function CreateProjectMemberButton(props: {
             icon={<PlusIcon className="h-5 w-5" aria-hidden="true" />}
           >
             {hasOnlySingleProjectAccess
-              ? "Add project member"
-              : "Add new member"}
+              ? t("rbac.add-member.project", "Add project member")
+              : t("rbac.add-member.new", "Add new member")}
           </ActionButton>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              Add new member to the{" "}
-              {hasOnlySingleProjectAccess ? "project" : "organization"}
+              {t("rbac.add-member.title", "Add new member to the {scope}", {
+                scope: hasOnlySingleProjectAccess
+                  ? t("rbac.add-member.scope-project", "project")
+                  : t("rbac.add-member.scope-organization", "organization"),
+              })}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
@@ -166,7 +171,9 @@ export function CreateProjectMemberButton(props: {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>
+                        {t("rbac.add-member.email", "Email")}
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="jsdoe@example.com" {...field} />
                       </FormControl>
@@ -180,7 +187,9 @@ export function CreateProjectMemberButton(props: {
                     name="orgRole"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Organization Role</FormLabel>
+                        <FormLabel>
+                          {t("rbac.add-member.org-role", "Organization Role")}
+                        </FormLabel>
                         <Select
                           defaultValue={field.value}
                           onValueChange={(value) =>
@@ -191,7 +200,12 @@ export function CreateProjectMemberButton(props: {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select an organization role" />
+                              <SelectValue
+                                placeholder={t(
+                                  "rbac.add-member.select-org-role",
+                                  "Select an organization role",
+                                )}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -211,7 +225,9 @@ export function CreateProjectMemberButton(props: {
                     name="projectRole"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Role</FormLabel>
+                        <FormLabel>
+                          {t("rbac.add-member.project-role", "Project Role")}
+                        </FormLabel>
                         <Select
                           defaultValue={field.value}
                           onValueChange={(value) =>
@@ -222,7 +238,12 @@ export function CreateProjectMemberButton(props: {
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a project role" />
+                              <SelectValue
+                                placeholder={t(
+                                  "rbac.add-member.select-project-role",
+                                  "Select a project role",
+                                )}
+                              />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -243,8 +264,11 @@ export function CreateProjectMemberButton(props: {
                         </Select>
                         {!hasOnlySingleProjectAccess && (
                           <FormDescription>
-                            This project role will override the default role for
-                            this current project ({props.project!.name}).
+                            {t(
+                              "rbac.add-member.project-role-desc",
+                              "This project role will override the default role for this current project ({name}).",
+                              { name: props.project!.name },
+                            )}
                           </FormDescription>
                         )}
                         <FormMessage />
@@ -259,7 +283,7 @@ export function CreateProjectMemberButton(props: {
                   className="w-full"
                   loading={form.formState.isSubmitting}
                 >
-                  Grant access
+                  {t("rbac.add-member.grant-access", "Grant access")}
                 </Button>
                 <FormMessage />
               </DialogFooter>

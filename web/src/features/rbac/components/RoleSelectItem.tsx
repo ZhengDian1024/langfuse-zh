@@ -6,15 +6,11 @@ import {
 } from "@/src/components/ui/hover-card";
 import { SelectItem } from "@/src/components/ui/select";
 import { Role } from "@langfuse/shared";
-import {
-  organizationRoleAccessRights,
-  orgNoneRoleComment,
-} from "@/src/features/rbac/constants/organizationAccessRights";
-import {
-  projectNoneRoleComment,
-  projectRoleAccessRights,
-} from "@/src/features/rbac/constants/projectAccessRights";
+import { organizationRoleAccessRights } from "@/src/features/rbac/constants/organizationAccessRights";
+import { projectRoleAccessRights } from "@/src/features/rbac/constants/projectAccessRights";
 import { orderedRoles } from "@/src/features/rbac/constants/orderedRoles";
+import { useI18n } from "@/src/features/i18n/useI18n";
+import type { MessageKey } from "@/src/features/i18n/messages";
 
 export const RoleSelectItem = ({
   role,
@@ -23,10 +19,19 @@ export const RoleSelectItem = ({
   role: Role;
   isProjectRole?: boolean;
 }) => {
+  const { t } = useI18n();
   const isProjectNoneRole = role === Role.NONE && isProjectRole;
   const isOrgNoneRole = role === Role.NONE && !isProjectRole;
-  const orgScopes = reduceScopesToListItems(organizationRoleAccessRights, role);
-  const projectScopes = reduceScopesToListItems(projectRoleAccessRights, role);
+  const orgScopes = reduceScopesToListItems(
+    organizationRoleAccessRights,
+    role,
+    t,
+  );
+  const projectScopes = reduceScopesToListItems(
+    projectRoleAccessRights,
+    role,
+    t,
+  );
 
   return (
     <HoverCard openDelay={0} closeDelay={0}>
@@ -34,27 +39,52 @@ export const RoleSelectItem = ({
         <SelectItem value={role} className="max-w-56">
           <span>
             {formatRole(role)}
-            {isProjectNoneRole ? " (keep default role)" : ""}
+            {isProjectNoneRole
+              ? t("rbac.role.keep-default", " (keep default role)")
+              : ""}
           </span>
         </SelectItem>
       </HoverCardTrigger>
       <HoverCardPortal>
         <HoverCardContent hideWhenDetached={true} align="center" side="right">
           {isProjectNoneRole ? (
-            <div className="text-xs">{projectNoneRoleComment}</div>
+            <div className="text-xs">
+              {t(
+                "rbac.role.project-none-comment",
+                "Do not override the organization role for this project.",
+              )}
+            </div>
           ) : isOrgNoneRole ? (
-            <div className="text-xs">{orgNoneRoleComment}</div>
+            <div className="text-xs">
+              {t(
+                "rbac.role.org-none-comment",
+                "No access to organization resources by default. User needs to be granted project-level access via project roles.",
+              )}
+            </div>
           ) : (
             <>
-              <div className="font-bold">Role: {formatRole(role)}</div>
-              <p className="mt-2 text-xs font-semibold">Organization Scopes</p>
+              <div className="font-bold">
+                {t("rbac.role.label", "Role: {role}", {
+                  role: formatRole(role),
+                })}
+              </div>
+              <p className="mt-2 text-xs font-semibold">
+                {t("rbac.role.org-scopes", "Organization Scopes")}
+              </p>
               <ul className="list-inside list-disc text-xs">{orgScopes}</ul>
-              <p className="mt-2 text-xs font-semibold">Project Scopes</p>
+              <p className="mt-2 text-xs font-semibold">
+                {t("rbac.role.project-scopes", "Project Scopes")}
+              </p>
               <ul className="list-inside list-disc text-xs">{projectScopes}</ul>
               <p className="mt-2 border-t pt-2 text-xs">
-                Note:{" "}
-                <span className="text-muted-foreground">Muted scopes</span> are
-                inherited from lower role.
+                {t("rbac.role.note", "Note:")}{" "}
+                <span className="text-muted-foreground">
+                  {t("rbac.role.muted-scopes", "Muted scopes")}
+                </span>
+                {t(
+                  "rbac.role.inherited-note",
+                  " are inherited from lower role.",
+                )}
               </p>
             </>
           )}
@@ -67,6 +97,7 @@ export const RoleSelectItem = ({
 const reduceScopesToListItems = (
   accessRights: Record<string, string[]>,
   role: Role,
+  t: (key: MessageKey, defaultMessage?: string) => string,
 ) => {
   const currentRoleLevel = orderedRoles[role];
   const lowerRole = Object.entries(orderedRoles).find(
@@ -111,7 +142,7 @@ const reduceScopesToListItems = (
       })}
     </>
   ) : (
-    <li>None</li>
+    <li>{t("rbac.role.none", "None")}</li>
   );
 };
 
