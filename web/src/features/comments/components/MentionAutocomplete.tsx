@@ -8,6 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/src/components/ui/command";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 interface User {
   id: string;
@@ -32,6 +33,7 @@ export function MentionAutocomplete({
   onClose: _onClose,
   onSelectedIndexChange,
 }: MentionAutocompleteProps) {
+  const { t } = useI18n();
   const selectedItemRef = useRef<HTMLDivElement>(null);
 
   // Scroll selected item into view
@@ -51,12 +53,12 @@ export function MentionAutocomplete({
     <div
       className="absolute right-0 bottom-full left-0 z-50 mb-1"
       role="region"
-      aria-label="User mention suggestions"
+      aria-label={t("comments.aria.mention-suggestions", "User mention suggestions")}
     >
       <Command
         className="max-h-60 rounded-md border shadow-md"
         value={selectedUserId}
-        aria-label="Mention user autocomplete"
+        aria-label={t("comments.aria.mention-autocomplete", "Mention user autocomplete")}
       >
         <CommandList
           role="listbox"
@@ -73,7 +75,9 @@ export function MentionAutocomplete({
             </div>
           )}
           {!isLoading && users.length === 0 && (
-            <CommandEmpty role="status">No users found</CommandEmpty>
+            <CommandEmpty role="status">
+              {t("comments.no-users-found", "No users found")}
+            </CommandEmpty>
           )}
           {!isLoading && users.length > 0 && (
             <>

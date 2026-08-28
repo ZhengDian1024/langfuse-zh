@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
 import { MarkdownView } from "@/src/components/ui/MarkdownViewer";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Input } from "@/src/components/ui/input";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
@@ -129,6 +130,8 @@ export function CommentList({
     projectId,
     scope: "comments:read",
   });
+
+  const { t } = useI18n();
 
   const hasWriteAccess = useHasProjectAccess({
     projectId,
@@ -492,7 +495,7 @@ export function CommentList({
           <Spinner size="sm" variant="muted" />
         </span>
         <span className="text-muted-foreground text-sm opacity-60">
-          Loading comments...
+          {t("comments.loading", "Loading comments...")}
         </span>
       </div>
     );
@@ -507,20 +510,27 @@ export function CommentList({
     >
       {cardView && (
         <div className="shrink-0 border-b px-2 py-1 text-sm font-medium">
-          Comments ({comments.data?.length ?? 0})
+          {t("comments.title-count", "Comments ({count})", {
+            count: String(comments.data?.length ?? 0),
+          })}
         </div>
       )}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {!cardView && (
           <div className="shrink-0 border-b">
             <div className="flex items-center justify-between gap-2 px-2 py-1.5">
-              <div className="text-sm font-medium">Comments</div>
+              <div className="text-sm font-medium">
+                {t("comments.title", "Comments")}
+              </div>
               <div className="relative max-w-xs flex-1">
                 <Search className="text-muted-foreground absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2" />
                 <Input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Search comments..."
+                  placeholder={t(
+                    "comments.search-placeholder",
+                    "Search comments...",
+                  )}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-7 pr-7 pl-7 text-xs"
@@ -552,9 +562,14 @@ export function CommentList({
             <div className="text-muted-foreground px-2 pb-1 text-xs">
               {searchQuery.trim()
                 ? filteredComments && filteredComments.length > 0
-                  ? `Showing ${filteredComments.length} of ${comments.data?.length ?? 0} comments`
-                  : "No comments match your search"
-                : `${comments.data?.length ?? 0} comments`}
+                  ? t("comments.showing-count", "Showing {shown} of {total} comments", {
+                      shown: String(filteredComments.length),
+                      total: String(comments.data?.length ?? 0),
+                    })
+                  : t("comments.no-match", "No comments match your search")
+                : t("comments.count", "{count} comments", {
+                    count: String(comments.data?.length ?? 0),
+                  })}
             </div>
           </div>
         )}
@@ -681,12 +696,15 @@ export function CommentList({
                       type="button"
                       size="icon-xs"
                       variant="ghost"
-                      title="Delete comment"
+                      title={t("comments.delete-comment", "Delete comment")}
                       loading={deleteCommentMutation.isPending}
                       onClick={() => {
                         if (
                           confirm(
-                            "Are you sure you want to delete this comment?",
+                            t(
+                              "comments.delete-confirm",
+                              "Are you sure you want to delete this comment?",
+                            ),
                           )
                         )
                           deleteCommentMutation.mutateAsync({
@@ -709,9 +727,13 @@ export function CommentList({
         {hasWriteAccess && (
           <div className="bg-background shrink-0 px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
             <div className="text-muted-foreground relative flex flex-row items-center justify-between text-xs">
-              <span className="sr-only">New comment</span>
+              <span className="sr-only">
+                {t("comments.new-comment", "New comment")}
+              </span>
               <span></span>
-              <span>Markdown and @-mentions support</span>
+              <span>
+                {t("comments.markdown-hint", "Markdown and @-mentions support")}
+              </span>
             </div>
             <div className="border-border/60 relative mt-0.5 min-h-[70px] rounded-lg border pt-1">
               {/* Visually hidden header for accessibility */}
@@ -726,7 +748,10 @@ export function CommentList({
                         <div>
                           <FormControl>
                             <Textarea
-                              placeholder="Add a comment..."
+                              placeholder={t(
+                                "comments.add-placeholder",
+                                "Add a comment...",
+                              )}
                               {...field}
                               ref={(el) => {
                                 if (textareaRef.current !== el) {
@@ -786,7 +811,7 @@ export function CommentList({
                           type="submit"
                           size="icon-xs"
                           variant="outline"
-                          title="Submit comment"
+                          title={t("comments.submit", "Submit comment")}
                           loading={createCommentMutation.isPending}
                           onClick={() => {
                             form.handleSubmit(onSubmit)();
@@ -802,7 +827,9 @@ export function CommentList({
                         className="w-auto p-2"
                       >
                         <div className="flex items-center gap-2 text-sm">
-                          <span>Send comment</span>
+                          <span>
+                            {t("comments.send", "Send comment")}
+                          </span>
                           <KeyboardShortcut keys={["⌘", "Enter"]} />
                         </div>
                       </HoverCardContent>
