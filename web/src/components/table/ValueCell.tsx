@@ -17,6 +17,7 @@ import {
   type MetadataFilterOperator,
 } from "@/src/features/events/lib/eventsTablePaths";
 import { Copy, Check, EllipsisVertical, Filter, FilterX } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 /**
  * Enables the per-row actions menu in a metadata JSON view: copy value/
@@ -214,6 +215,7 @@ function ValueCellActionsMenu({
   metadataActions: MetadataFilterActions;
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const { value, type, hasChildren, level } = row.original;
 
   const filterValue = String(value);
@@ -274,8 +276,8 @@ function ValueCellActionsMenu({
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Value actions"
-          title="Actions"
+          aria-label={t("table.value-cell.actions-aria", "Value actions")}
+          title={t("table.value-cell.actions", "Actions")}
           className="bg-background/80 hover:bg-background absolute top-1/2 right-1 h-4 w-4 -translate-y-1/2 border p-0 opacity-0 shadow-xs transition-opacity duration-200 group-hover:opacity-100 data-[state=open]:opacity-100"
           onClick={(e) => e.stopPropagation()}
         >
@@ -289,11 +291,13 @@ function ValueCellActionsMenu({
       >
         <DropdownMenuItem className="text-xs" onSelect={handleCopyData}>
           <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />
-          {hasChildren ? "Copy structure" : "Copy value"}
+          {hasChildren
+            ? t("table.value-cell.copy-structure", "Copy structure")
+            : t("table.value-cell.copy-value", "Copy value")}
         </DropdownMenuItem>
         <DropdownMenuItem className="text-xs" onSelect={handleCopyPath}>
           <Copy className="mr-2 h-3.5 w-3.5 shrink-0" />
-          Copy path
+          {t("table.value-cell.copy-path", "Copy path")}
         </DropdownMenuItem>
         {isScalarLeaf && (
           <>
@@ -304,7 +308,9 @@ function ValueCellActionsMenu({
             >
               <Filter className="mr-2 h-3.5 w-3.5 shrink-0" />
               <span className="flex min-w-0 flex-col">
-                <span>Include in filter</span>
+                <span>
+                  {t("table.value-cell.include-filter", "Include in filter")}
+                </span>
                 <span className="text-muted-foreground truncate font-mono">
                   metadata.{metadataKey} {includeOperator} {displayValue}
                 </span>
@@ -316,7 +322,9 @@ function ValueCellActionsMenu({
             >
               <FilterX className="mr-2 h-3.5 w-3.5 shrink-0" />
               <span className="flex min-w-0 flex-col">
-                <span>Exclude from filter</span>
+                <span>
+                  {t("table.value-cell.exclude-filter", "Exclude from filter")}
+                </span>
                 <span className="text-muted-foreground truncate font-mono">
                   metadata.{metadataKey} {excludeOperator} {displayValue}
                 </span>
@@ -343,6 +351,7 @@ export const ValueCell = memo(
     preserveStringWhitespace?: boolean;
     metadataActions?: MetadataFilterActions;
   }) => {
+    const { t } = useI18n();
     const { value, type } = row.original;
     const cellId = `${row.id}-value`;
     const isCellExpanded = expandedCells.has(cellId);
@@ -487,8 +496,8 @@ export const ValueCell = memo(
             size="icon"
             className="bg-background/80 hover:bg-background absolute top-0 right-0 h-5 w-5 border p-0.5 opacity-0 shadow-xs transition-opacity duration-200 group-hover:opacity-100"
             onClick={handleCopy}
-            title="Copy value"
-            aria-label="Copy cell value"
+            title={t("table.value-cell.copy-value", "Copy value")}
+            aria-label={t("table.value-cell.copy-aria", "Copy cell value")}
           >
             {showCopySuccess ? (
               <Check className="h-2.5 w-2.5 text-green-600" />

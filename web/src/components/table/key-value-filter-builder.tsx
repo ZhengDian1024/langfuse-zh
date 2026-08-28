@@ -29,6 +29,7 @@ import type {
   NumericKeyValueFilterEntry,
   StringKeyValueFilterEntry,
 } from "@/src/features/filters/hooks/useSidebarFilterState";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type KeyValueFilterBuilderProps =
   | {
@@ -75,8 +76,11 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
     keyOptions,
     activeFilters,
     onChange,
-    keyPlaceholder = "Key",
+    keyPlaceholder,
   } = props;
+  const { t } = useI18n();
+  const resolvedKeyPlaceholder =
+    keyPlaceholder ?? t("table.kv.key", "Key");
   const availableValues = mode === "categorical" ? props.availableValues : {};
 
   // Track which popover is open (by index)
@@ -220,7 +224,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                       <span
                         className={cn(!filter.key && "text-muted-foreground")}
                       >
-                        {filter.key || keyPlaceholder}
+                        {filter.key || resolvedKeyPlaceholder}
                       </span>
                       <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -228,11 +232,13 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                   <PopoverContent className="w-[200px] p-0" align="start">
                     <InputCommand>
                       <InputCommandInput
-                        placeholder="Search keys..."
+                        placeholder={t("table.kv.search-keys", "Search keys...")}
                         variant="bottom"
                       />
                       <InputCommandList>
-                        <InputCommandEmpty>No keys found.</InputCommandEmpty>
+                        <InputCommandEmpty>
+                          {t("table.kv.no-keys", "No keys found.")}
+                        </InputCommandEmpty>
                         <InputCommandGroup>
                           {mergedKeyOptions.map((option) => (
                             <InputCommandItem
@@ -303,14 +309,18 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any of">any of</SelectItem>
-                    <SelectItem value="none of">none of</SelectItem>
+                    <SelectItem value="any of">
+                      {t("table.kv.any-of", "any of")}
+                    </SelectItem>
+                    <SelectItem value="none of">
+                      {t("table.kv.none-of", "none of")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
                 {/* Values multi-select */}
                 <MultiSelect
-                  title="Values"
+                  title={t("table.kv.values", "Values")}
                   options={availableValuesForKey.map((v) => ({ value: v }))}
                   values={filter.value as string[]}
                   onValueChange={(values) =>
@@ -347,7 +357,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                 {/* Numeric value input */}
                 <Input
                   type="number"
-                  placeholder="Value"
+                  placeholder={t("filters.value", "Value")}
                   value={filter.value}
                   onChange={(e) =>
                     handleFilterChange(index, {
@@ -386,7 +396,7 @@ export function KeyValueFilterBuilder(props: KeyValueFilterBuilderProps) {
                 {/* String value input */}
                 <Input
                   type="text"
-                  placeholder="Value"
+                  placeholder={t("filters.value", "Value")}
                   value={filter.value as string}
                   onChange={(e) =>
                     handleFilterChange(index, {

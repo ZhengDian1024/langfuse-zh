@@ -57,6 +57,7 @@ import {
   hasFullTextSearchType,
   searchModeToType,
 } from "@/src/components/table/utils/searchUtils";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface MultiSelect {
   selectAll: boolean;
@@ -214,6 +215,7 @@ export function DataTableToolbar<TData, TValue>({
   filterWithAI = false,
   viewModeToggle,
 }: DataTableToolbarProps<TData, TValue>) {
+  const { t } = useI18n();
   const [searchString, setSearchString] = useState(
     searchConfig?.currentQuery ?? "",
   );
@@ -432,8 +434,8 @@ export function DataTableToolbar<TData, TValue>({
         )}
         {environmentFilter && (
           <MultiSelectFilter
-            title="Environment"
-            label="Env"
+            title={t("dashboard.filter.environment", "Environment")}
+            label={t("dashboard.filter.environment-label", "Env")}
             values={environmentFilter.values}
             onValueChange={environmentFilter.onValueChange}
             options={environmentFilter.options}

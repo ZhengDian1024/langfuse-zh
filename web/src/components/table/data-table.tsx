@@ -55,6 +55,8 @@ import {
   useTableRowIsSelected,
   useTableSelectAll,
 } from "@/src/components/table/table-selection-store";
+import { useI18n } from "@/src/features/i18n/useI18n";
+import type { MessageKey } from "@/src/features/i18n/messages";
 
 interface DataTableProps<TData, TValue> {
   columns: LangfuseColumnDef<TData, TValue>[];
@@ -205,6 +207,7 @@ export function DataTable<TData extends object, TValue>({
   topAlignCells = false,
   cellPadding = "compact",
 }: DataTableProps<TData, TValue>) {
+  const { t } = useI18n();
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const rowheighttw = getRowHeightTailwindClass(rowHeight, customRowHeights);
   const capture = usePostHogClientCapture();
@@ -495,7 +498,7 @@ export function DataTable<TData extends object, TValue>({
                               />
                             )}
                             {orderBy?.column === columnDef.id
-                              ? renderOrderingIndicator(orderBy)
+                              ? renderOrderingIndicator(orderBy, t)
                               : null}
 
                             <div
@@ -583,11 +586,17 @@ export function DataTable<TData extends object, TValue>({
   );
 }
 
-function renderOrderingIndicator(orderBy?: OrderByState) {
+function renderOrderingIndicator(
+  orderBy: OrderByState | undefined,
+  t: (key: MessageKey, defaultMessage?: string) => string,
+) {
   if (!orderBy) return null;
   if (orderBy.order === "ASC") return <span className="ml-1">▲</span>;
   return (
-    <span className="ml-1" title="Sort by this column">
+    <span
+      className="ml-1"
+      title={t("table.sort-by-column", "Sort by this column")}
+    >
       ▼
     </span>
   );

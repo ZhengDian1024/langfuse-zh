@@ -62,6 +62,7 @@ import { useTableViewManager } from "@/src/components/table/table-view-presets/h
 import TableIdOrName from "@/src/components/table/table-id";
 import { usePaginationState } from "@/src/hooks/usePaginationState";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type ScoresTableRow = {
   id: string;
@@ -195,6 +196,7 @@ export default function ScoresTable({
     [environmentFilterOptions.data],
   );
 
+  const { t } = useI18n();
   const [orderByState, setOrderByState] = useOrderByState({
     column: "timestamp",
     order: "DESC",
@@ -203,9 +205,11 @@ export default function ScoresTable({
   const scoreDeleteMutation = api.scores.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Scores deleted",
-        description:
+        title: t("table.scores.deleted-title", "Scores deleted"),
+        description: t(
+          "table.scores.deleted-desc",
           "Selected scores will be deleted. Scores are removed asynchronously and may continue to be visible for up to 15 minutes.",
+        ),
       });
     },
     onSettled: () => {
@@ -575,10 +579,13 @@ export default function ScoresTable({
     },
     {
       accessorKey: "userId",
-      header: "User",
+      header: t("table.scores.col-user", "User"),
       id: "userId",
       headerTooltip: {
-        description: "The user ID associated with the trace.",
+        description: t(
+          "table.scores.user-tooltip",
+          "The user ID associated with the trace.",
+        ),
         href: "https://langfuse.com/docs/observability/features/users",
       },
       enableHiding: true,
@@ -656,7 +663,10 @@ export default function ScoresTable({
         />
       ),
       headerTooltip: {
-        description: "Add metadata to scores to track additional information.",
+        description: t(
+          "table.scores.metadata-tooltip",
+          "Add metadata to scores to track additional information.",
+        ),
         // TODO: docs for metadata on scores
         href: "https://langfuse.com/docs/observability/features/metadata",
       },
@@ -773,9 +783,11 @@ export default function ScoresTable({
           {
             id: "score-delete",
             type: BatchActionType.Delete,
-            label: "Delete Scores",
-            description:
+            label: t("table.scores.delete-label", "Delete Scores"),
+            description: t(
+              "table.scores.delete-desc",
               "This action permanently deletes scores and cannot be undone. Score deletion happens asynchronously and may take up to 15 minutes.",
+            ),
             accessCheck: {
               scope: "traces:delete",
               entitlement: "trace-deletion",
@@ -981,14 +993,14 @@ export default function ScoresTable({
               columns={columns}
               noResultsMessage={
                 <div className="flex flex-col items-center">
-                  <span>No scores found.</span>
+                  <span>{t("table.scores.no-results", "No scores found.")}</span>
                   <a
                     href="https://langfuse.com/faq/all/what-are-scores"
                     className="text-primary pointer-events-auto italic underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    What are scores?
+                    {t("table.scores.what-are", "What are scores?")}
                   </a>
                 </div>
               }

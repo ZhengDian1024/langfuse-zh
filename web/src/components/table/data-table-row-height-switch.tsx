@@ -11,6 +11,7 @@ import {
 import useLocalStorage from "@/src/components/useLocalStorage";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { Rows3, Rows2, Rows4 } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const heightOptions = [
   { id: "s", label: "Small", icon: <Rows4 /> },
@@ -55,18 +56,25 @@ export const DataTableRowHeightSwitch = ({
   setRowHeight: (e: RowHeight) => void;
 }) => {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" title="Row height">
+        <Button
+          variant="outline"
+          size="icon"
+          title={t("table.row-height.title", "Row height")}
+        >
           <Rows3 className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Row height</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {t("table.row-height.title", "Row height")}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {heightOptions.map(({ id, label }) => (
+          {heightOptions.map(({ id }) => (
             <DropdownMenuCheckboxItem
               key={id}
               checked={rowHeight === id}
@@ -79,7 +87,11 @@ export const DataTableRowHeightSwitch = ({
                 setRowHeight(id);
               }}
             >
-              {label}
+              {id === "s"
+                ? t("table.row-height.small", "Small")
+                : id === "m"
+                  ? t("table.row-height.medium", "Medium")
+                  : t("table.row-height.large", "Large")}
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>
