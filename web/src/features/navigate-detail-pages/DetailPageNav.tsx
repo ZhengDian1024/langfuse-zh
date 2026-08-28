@@ -11,6 +11,7 @@ import {
   useDetailPageLists,
 } from "@/src/features/navigate-detail-pages/context";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { cn } from "@/src/utils/tailwind";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useRouter } from "next/router";
@@ -43,6 +44,7 @@ export const DetailPageNav = (props: {
   );
 
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const router = useRouter();
   const currentIndex = entries.findIndex((entry) => entry.id === currentId);
   const previousPageEntry =
@@ -148,7 +150,7 @@ export const DetailPageNav = (props: {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <span>Navigate up</span>
+            <span>{t("navigate-detail-pages.up", "Navigate up")}</span>
             <InputCommandShortcut className="ml-2">K</InputCommandShortcut>
           </TooltipContent>
         </Tooltip>
@@ -173,7 +175,7 @@ export const DetailPageNav = (props: {
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <span>Navigate down</span>
+            <span>{t("navigate-detail-pages.down", "Navigate down")}</span>
             <InputCommandShortcut className="ml-2">J</InputCommandShortcut>
           </TooltipContent>
         </Tooltip>
