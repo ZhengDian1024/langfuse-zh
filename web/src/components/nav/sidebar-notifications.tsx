@@ -10,6 +10,7 @@ import { X } from "lucide-react";
 import useLocalStorage from "../useLocalStorage";
 import Link from "next/link";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
 
@@ -90,6 +91,7 @@ export const notifications: SidebarNotification[] = [
 const STORAGE_KEY = "dismissed-sidebar-notifications";
 
 export function SidebarNotifications() {
+  const { t } = useI18n();
   const capture = usePostHogClientCapture();
 
   const [dismissedNotifications, setDismissedNotifications] = useLocalStorage<
@@ -161,7 +163,7 @@ export function SidebarNotifications() {
               });
               dismissNotification(frontNotification.id);
             }}
-            title="Dismiss"
+            title={t("common.dismiss", "Dismiss")}
           >
             <X className="h-3.5 w-3.5" />
           </Button>

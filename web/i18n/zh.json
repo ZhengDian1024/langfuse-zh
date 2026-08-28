@@ -2085,6 +2085,7 @@
   "chat.search.close": "关闭搜索",
   "chat.message.select-tool-call-id": "选择工具调用 ID",
   "chat.message.delete-aria": "删除消息",
+  "chat.message.select-call-id": "请选择调用 ID",
   "common.toggle-sidebar": "切换侧边栏",
   "common.show-details": "显示详情",
   "common.hide-details": "隐藏详情",

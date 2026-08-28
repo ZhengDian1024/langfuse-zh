@@ -314,7 +314,12 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
                     )}
                     className="bg-muted h-[25px] w-[96px] border-0 text-[9px]"
                   >
-                    <SelectValue placeholder="Select Call ID" />
+                    <SelectValue
+                      placeholder={t(
+                        "chat.message.select-call-id",
+                        "Select Call ID",
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {toolCallIds?.map((id) => (

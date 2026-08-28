@@ -2085,6 +2085,7 @@
   "chat.search.close": "Close search",
   "chat.message.select-tool-call-id": "Select Tool Call ID",
   "chat.message.delete-aria": "Delete message",
+  "chat.message.select-call-id": "Select Call ID",
   "common.toggle-sidebar": "Toggle Sidebar",
   "common.show-details": "Show details",
   "common.hide-details": "Hide details",
