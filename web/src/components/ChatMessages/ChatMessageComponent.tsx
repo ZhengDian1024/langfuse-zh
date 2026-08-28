@@ -37,6 +37,7 @@ import {
   useOptionalMessageSearchActions,
   useOptionalMessageSearchPageId,
 } from "./MessageSearch";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type ChatMessageProps = Pick<
   MessagesContext,
@@ -96,6 +97,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
   toolCallIds,
 }) => {
   const [roleIndex, setRoleIndex] = useState(1);
+  const { t } = useI18n();
   const playgroundContext = useOptionalPlaygroundContext();
   const searchPageId = useOptionalMessageSearchPageId();
   const messageSearchActions = useOptionalMessageSearchActions();
@@ -306,7 +308,10 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
                   }
                 >
                   <SelectTrigger
-                    title="Select Tool Call ID"
+                    title={t(
+                      "chat.message.select-tool-call-id",
+                      "Select Tool Call ID",
+                    )}
                     className="bg-muted h-[25px] w-[96px] border-0 text-[9px]"
                   >
                     <SelectValue placeholder="Select Call ID" />
@@ -350,7 +355,7 @@ export const ChatMessageComponent: React.FC<ChatMessageProps> = ({
             size="icon"
             onClick={() => deleteMessage(message.id)}
             className="h-5 w-5 shrink-0 rounded-full p-0 opacity-60 transition-all hover:opacity-100"
-            aria-label="Delete message"
+            aria-label={t("chat.message.delete-aria", "Delete message")}
           >
             <MinusCircleIcon size={14} />
           </Button>

@@ -9,6 +9,7 @@ import {
 } from "@/src/components/ui/popover";
 import { api } from "@/src/utils/api";
 import useProjectIdFromURL from "@/src/hooks/useProjectIdFromURL";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export interface MediaButtonGroupProps {
   media: MediaReturnType[];
@@ -54,6 +55,7 @@ function VideoPlayer({ src }: { src?: string }) {
  * ImagePreview - Renders 96x96px image that opens in new tab when clicked
  */
 function ImagePreview({ src }: { src?: string }) {
+  const { t } = useI18n();
   if (!src) return null;
 
   const openInNewTab = () => {
@@ -64,7 +66,7 @@ function ImagePreview({ src }: { src?: string }) {
     <button
       onClick={openInNewTab}
       className="bg-muted h-24 w-24 overflow-hidden rounded-md border transition-opacity hover:opacity-80"
-      aria-label="Open image in new tab"
+      aria-label={t("common.open-image-new-tab", "Open image in new tab")}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

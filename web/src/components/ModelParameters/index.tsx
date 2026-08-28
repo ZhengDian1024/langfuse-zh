@@ -36,6 +36,7 @@ import {
 import { LLMApiKeyComponent } from "./LLMApiKeyComponent";
 import { FormDescription } from "@/src/components/ui/form";
 import { CodeMirrorEditor } from "../editor";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type ModelParamsContext = {
   modelParams: UIModelParams;
@@ -68,6 +69,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
   isEmbedded = false,
 }) => {
   const projectId = useProjectIdFromURL();
+  const { t } = useI18n();
   const [modelSettingsOpen, setModelSettingsOpen] = useState(false);
   const [modelSettingsUsed, setModelSettingsUsed] = useState(false);
 
@@ -138,7 +140,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
         </div>
         <div className="space-y-4">
           <ModelParamsSlider
-            title="Temperature"
+            title={t("playground.model-params.temperature", "Temperature")}
             modelParamsKey="temperature"
             formDisabled={formDisabled}
             enabled={modelParams.temperature.enabled}
@@ -147,11 +149,17 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             min={0}
             max={modelParams.maxTemperature.value}
             step={0.01}
-            tooltip="The sampling temperature. Higher values will make the output more random, while lower values will make it more focused and deterministic."
+            tooltip={t(
+              "playground.model-params.temperature-tooltip",
+              "The sampling temperature. Higher values will make the output more random, while lower values will make it more focused and deterministic.",
+            )}
             updateModelParam={updateModelParamValue}
           />
           <ModelParamsSlider
-            title="Output token limit"
+            title={t(
+              "playground.model-params.output-token-limit",
+              "Output token limit",
+            )}
             modelParamsKey="max_tokens"
             formDisabled={formDisabled}
             enabled={modelParams.max_tokens.enabled}
@@ -160,11 +168,14 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             min={1}
             max={16384}
             step={1}
-            tooltip="The maximum number of tokens that can be generated in the chat completion."
+            tooltip={t(
+              "playground.model-params.output-token-limit-tooltip",
+              "The maximum number of tokens that can be generated in the chat completion.",
+            )}
             updateModelParam={updateModelParamValue}
           />
           <ModelParamsSlider
-            title="Top P"
+            title={t("playground.model-params.top-p", "Top P")}
             modelParamsKey="top_p"
             formDisabled={formDisabled}
             enabled={modelParams.top_p.enabled}
@@ -173,13 +184,19 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             min={0}
             max={1}
             step={0.01}
-            tooltip="An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both."
+            tooltip={t(
+              "playground.model-params.top-p-tooltip",
+              "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both.",
+            )}
             updateModelParam={updateModelParamValue}
           />
           {modelParams.adapter.value === LLMAdapter.VertexAI &&
             modelParams.maxReasoningTokens && (
               <ModelParamsSlider
-                title="Max. Reasoning Tokens"
+                title={t(
+                  "playground.model-params.max-reasoning-tokens",
+                  "Max. Reasoning Tokens",
+                )}
                 modelParamsKey="maxReasoningTokens"
                 formDisabled={formDisabled}
                 enabled={modelParams.maxReasoningTokens.enabled}
@@ -188,7 +205,10 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
                 min={-1}
                 max={24576}
                 step={1}
-                tooltip="Maximum tokens for model thinking/reasoning. Set to -1 for default (auto) thinking, 0 to disable. Only supported on Gemini 2.5+ models."
+                tooltip={t(
+                  "playground.model-params.max-reasoning-tokens-tooltip",
+                  "Maximum tokens for model thinking/reasoning. Set to -1 for default (auto) thinking, 0 to disable. Only supported on Gemini 2.5+ models.",
+                )}
                 updateModelParam={updateModelParamValue}
               />
             )}
@@ -293,7 +313,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
       <div className="space-y-4">
         <div className="space-y-3">
           <ModelParamsSelect
-            title="Provider"
+            title={t("playground.model-params.provider", "Provider")}
             modelParamsKey="provider"
             disabled={formDisabled}
             value={modelParams.provider.value}
@@ -302,7 +322,7 @@ export const ModelParameters: React.FC<ModelParamsContext> = ({
             layout="vertical"
           />
           <ModelParamsSelect
-            title="Model name"
+            title={t("playground.model-params.model-name", "Model name")}
             modelParamsKey="model"
             disabled={formDisabled}
             value={modelParams.model.value}
@@ -455,6 +475,7 @@ const ModelParamsSlider = ({
   enabled,
   formDisabled,
 }: ModelParamsSliderProps) => {
+  const { t } = useI18n();
   return (
     <div className="space-y-3" title={tooltip}>
       <div className="flex flex-row">
@@ -484,7 +505,11 @@ const ModelParamsSlider = ({
           />
           {setModelParamEnabled ? (
             <Switch
-              title={`Control sending the ${title} parameter`}
+              title={t(
+                "playground.model-params.control-sending",
+                "Control sending the {title} parameter",
+                { title },
+              )}
               disabled={formDisabled}
               checked={enabled}
               onCheckedChange={(checked) => {
@@ -523,6 +548,7 @@ const ProviderOptionsInput = ({
   enabled,
   formDisabled,
 }: ProviderOptionsInputProps) => {
+  const { t } = useI18n();
   const [inputValue, setInputValue] = useState<string>(
     value ? JSON.stringify(value, null, 2) : "{}",
   );
@@ -553,7 +579,10 @@ const ProviderOptionsInput = ({
         <div className="flex flex-row space-x-3">
           {setModelParamEnabled ? (
             <Switch
-              title={`Control sending the additional options parameter`}
+              title={t(
+                "playground.model-params.control-sending-options",
+                "Control sending the additional options parameter",
+              )}
               disabled={formDisabled}
               checked={enabled}
               onCheckedChange={(checked) => {

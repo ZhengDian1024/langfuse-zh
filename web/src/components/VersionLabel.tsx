@@ -25,9 +25,11 @@ import { usePlan } from "@/src/features/entitlements/hooks";
 import { isSelfHostedPlan, planLabels } from "@langfuse/shared";
 import { StatusBadge } from "@/src/components/layouts/status-badge";
 import { useLangfuseCloudRegion } from "@/src/features/organizations/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const VersionLabel = ({ className }: { className?: string }) => {
   const { isLangfuseCloud } = useLangfuseCloudRegion();
+  const { t } = useI18n();
 
   const backgroundMigrationStatus = api.backgroundMigrations.status.useQuery(
     undefined,
@@ -107,14 +109,18 @@ export const VersionLabel = ({ className }: { className?: string }) => {
         {hasUpdate ? (
           <>
             <DropdownMenuLabel>
-              New {checkUpdate.data?.updateType} version:{" "}
-              {checkUpdate.data?.latestRelease}
+              {t("version-label.new-version", "New {updateType} version: {version}", {
+                updateType: checkUpdate.data?.updateType ?? "",
+                version: checkUpdate.data?.latestRelease ?? "",
+              })}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
         ) : !isLangfuseCloud ? (
           <>
-            <DropdownMenuLabel>This is the latest release</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {t("version-label.latest", "This is the latest release")}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
         ) : null}

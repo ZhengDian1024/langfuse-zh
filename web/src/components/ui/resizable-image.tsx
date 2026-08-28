@@ -10,6 +10,7 @@ import { captureException } from "@sentry/nextjs";
 import { useSession } from "next-auth/react";
 import { buildResizableImageSrc } from "./resizable-image.utils";
 import { getSafeImageUrl } from "@/src/components/ui/safe-url";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export const COMPACT_IMAGE_MAX_HEIGHT_REM = 16;
 
@@ -74,6 +75,7 @@ export const ResizableImage = ({
   compactWidth?: string;
 }) => {
   const safeSrc = getSafeImageUrl(src);
+  const { t } = useI18n();
   const [isZoomedIn, setIsZoomedIn] = useState(true);
   const [hasFetchError, setHasFetchError] = useState(false);
   const [isImageVisible, setIsImageVisible] = useState(isDefaultVisible);
@@ -99,12 +101,19 @@ export const ResizableImage = ({
   if (isValidImage.isLoading && isImageVisible) {
     return (
       <Skeleton className="h-8 w-1/2 items-center p-2 text-xs">
-        <span className="opacity-80">Loading image...</span>
+        <span className="opacity-80">
+          {t("common.loading-image", "Loading image...")}
+        </span>
       </Skeleton>
     );
   }
 
-  const displayError = `Cannot load image. ${src.includes("http") ? "Http images are not rendered in Langfuse for security reasons" : "Invalid image URL"}`;
+  const displayError = src.includes("http")
+    ? t(
+        "common.image-error-http",
+        "Cannot load image. Http images are not rendered in Langfuse for security reasons",
+      )
+    : t("common.image-error-invalid", "Cannot load image. Invalid image URL");
 
   return (
     <div
@@ -162,7 +171,7 @@ export const ResizableImage = ({
           ) : (
             <div className="bg-muted/30 text-muted-foreground/60 flex w-full items-center gap-2 rounded border border-dashed p-2 text-xs">
               <Button
-                title="Render image"
+                title={t("common.render-image", "Render image")}
                 type="button"
                 size="sm"
                 variant="secondary"

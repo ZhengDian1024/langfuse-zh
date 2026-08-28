@@ -26,6 +26,7 @@ import { AIFeaturesDisabledNotice } from "@/src/features/organizations/component
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
 import { useSupportDrawer } from "@/src/features/support-chat/SupportDrawerProvider";
 import { useWatchedPromiseCallback } from "@/src/hooks/useWatchedPromiseCallback";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 function DeleteConversationDialog({
   close,
@@ -36,6 +37,7 @@ function DeleteConversationDialog({
   conversation: InAppAgentWindowConversation | null;
   onDeleteConversation: (conversationId: string) => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [deleteConversation, isDeletingConversation] =
     useWatchedPromiseCallback(async () => {
       if (!conversation) {
@@ -58,9 +60,12 @@ function DeleteConversationDialog({
           close();
         }
       }}
-      title="Delete conversation"
-      description="This removes the conversation from your recent conversations. This action cannot be undone."
-      confirmLabel="Delete conversation"
+      title={t("nav.delete-conversation", "Delete conversation")}
+      description={t(
+        "nav.delete-conversation-desc",
+        "This removes the conversation from your recent conversations. This action cannot be undone.",
+      )}
+      confirmLabel={t("nav.delete-conversation", "Delete conversation")}
       loading={isDeletingConversation}
       onConfirm={deleteConversation}
     />

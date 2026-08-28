@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { cn } from "@/src/utils/tailwind";
 import { diffLines as calculateDiffLines, diffWords } from "diff";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 type DiffSegmentPart = {
   value: string;
@@ -92,12 +93,17 @@ const calculateSegmentDiff = (oldString: string, newString: string) => {
 const DiffViewer: React.FC<DiffViewerProps> = ({
   oldString,
   newString,
-  oldLabel = "Original Version",
-  newLabel = "New Version",
+  oldLabel,
+  newLabel,
   oldSubLabel,
   newSubLabel,
   className,
 }) => {
+  const { t } = useI18n();
+  const resolvedOldLabel =
+    oldLabel ?? t("diff-viewer.original-version", "Original Version");
+  const resolvedNewLabel =
+    newLabel ?? t("diff-viewer.new-version", "New Version");
   const [diffLines, setDiffLines] = useState<{
     left: DiffSegment[];
     right: DiffSegment[];
@@ -201,7 +207,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
         <CardContent className="p-0">
           <div className="grid grid-cols-2">
             <div className="bg-muted flex flex-row gap-1 border-r border-b px-4 py-2 text-xs font-semibold">
-              {oldLabel}
+              {resolvedOldLabel}
               {oldSubLabel && (
                 <div
                   className="text-muted-foreground truncate text-xs"
@@ -212,7 +218,7 @@ const DiffViewer: React.FC<DiffViewerProps> = ({
               )}
             </div>
             <div className="bg-muted flex flex-row gap-1 border-b px-4 py-2 text-xs font-semibold">
-              {newLabel}
+              {resolvedNewLabel}
               {newSubLabel && (
                 <div
                   className="text-muted-foreground truncate text-xs"

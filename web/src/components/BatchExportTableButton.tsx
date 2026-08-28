@@ -21,6 +21,7 @@ import React from "react";
 import { api } from "@/src/utils/api";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type BatchExportTableButtonProps = {
   projectId: string;
@@ -34,6 +35,7 @@ export type BatchExportTableButtonProps = {
 export const BatchExportTableButton: React.FC<BatchExportTableButtonProps> = (
   props,
 ) => {
+  const { t } = useI18n();
   const [isExporting, setIsExporting] = React.useState(false);
   const createExport = api.batchExport.create.useMutation({
     onSettled: () => {
@@ -41,12 +43,15 @@ export const BatchExportTableButton: React.FC<BatchExportTableButtonProps> = (
     },
     onSuccess: () => {
       showSuccessToast({
-        title: "Export queued",
-        description: "You will receive an email when the export is ready.",
+        title: t("batch-exports.table.queued", "Export queued"),
+        description: t(
+          "batch-exports.table.queued-desc",
+          "You will receive an email when the export is ready.",
+        ),
         duration: 10000,
         link: {
           href: `/project/${props.projectId}/settings/exports`,
-          text: "View exports",
+          text: t("batch-exports.table.view-exports", "View exports"),
         },
       });
     },
@@ -97,7 +102,11 @@ export const BatchExportTableButton: React.FC<BatchExportTableButtonProps> = (
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" title="Export">
+        <Button
+          variant="outline"
+          size="icon"
+          title={t("batch-exports.table.export", "Export")}
+        >
           {isExporting ? (
             <Spinner size="sm" />
           ) : (
@@ -107,7 +116,9 @@ export const BatchExportTableButton: React.FC<BatchExportTableButtonProps> = (
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuContent className="w-80">
-          <DropdownMenuLabel>Export</DropdownMenuLabel>
+          <DropdownMenuLabel>
+            {t("batch-exports.table.export", "Export")}
+          </DropdownMenuLabel>
           {warningMessage && (
             <div className="text-muted-foreground px-2 py-1.5 text-xs">
               <div className="flex items-start gap-1.5">

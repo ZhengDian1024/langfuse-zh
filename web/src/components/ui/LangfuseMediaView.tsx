@@ -24,6 +24,7 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 // Above this, "preview" media falls back to the click-to-open icon instead of
 // rendering inline, so a large file isn't fetched/decoded just by opening a view.
@@ -47,6 +48,7 @@ export const LangfuseMediaView = ({
 }) => {
   let mediaData: { id: string; type: MediaContentType } | null = null;
 
+  const { t } = useI18n();
   const projectId = useProjectIdFromURL();
 
   if (mediaReferenceString && typeof mediaReferenceString === "string") {
@@ -72,7 +74,7 @@ export const LangfuseMediaView = ({
   if (!mediaData)
     return (
       <div className="flex items-center gap-2">
-        <span title="Invalid Langfuse Media Tag">
+        <span title={t("common.invalid-media-tag", "Invalid Langfuse Media Tag")}>
           <ImageOff className="h-4 w-4" />
         </span>
         <span className="truncate text-sm">Invalid Langfuse Media Tag</span>
