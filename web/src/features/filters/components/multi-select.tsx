@@ -23,6 +23,7 @@ import { type FilterOption } from "@langfuse/shared";
 import { Input } from "@/src/components/ui/input";
 import { useRef, useState, useMemo, useCallback } from "react";
 import { PropertyHoverCard } from "@/src/features/widgets/components/WidgetPropertySelectItem";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 const getFreeTextInput = (
   isCustomSelectEnabled: boolean,
@@ -54,6 +55,7 @@ export function MultiSelect({
   isCustomSelectEnabled?: boolean;
   labelTruncateCutOff?: number;
 }) {
+  const { t } = useI18n();
   const selectedValues = useMemo(() => new Set(values), [values]);
   const optionValues = new Set(options.map((option) => option.value));
   const freeTextInput = getFreeTextInput(
@@ -145,7 +147,7 @@ export function MultiSelect({
           )}
           disabled={disabled}
         >
-          {label ?? "Select"}
+          {label ?? t("filters.select", "Select")}
           <ChevronDown className="h-4 w-4 opacity-50" />
           {selectedValues.size > 0 && (
             <>
@@ -162,13 +164,17 @@ export function MultiSelect({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} selected
+                    {t("filters.n-selected", "{count} selected", {
+                      count: String(selectedValues.size),
+                    })}
                   </Badge>
                 ) : (
                   getSelectedOptions().map((option) => {
                     const displayValue =
                       option.displayValue ??
-                      (option.value === "" ? "(empty)" : option.value);
+                      (option.value === ""
+                        ? t("filters.empty-value", "(empty)")
+                        : option.value);
                     return (
                       <Badge
                         variant="secondary"
@@ -194,7 +200,9 @@ export function MultiSelect({
           <InputCommandList>
             {/* if isCustomSelectEnabled we always show custom select hence never empty */}
             {!isCustomSelectEnabled && (
-              <InputCommandEmpty>No results found.</InputCommandEmpty>
+              <InputCommandEmpty>
+                {t("filters.no-results", "No results found.")}
+              </InputCommandEmpty>
             )}
             <InputCommandGroup>
               {selectableOptions.length > 0 && (
@@ -211,7 +219,9 @@ export function MultiSelect({
                       <Check className="h-4 w-4" />
                     </div>
                     <div className="font-medium">
-                      {allSelectedState ? "Deselect All" : "Select All"}
+                      {allSelectedState
+                        ? t("filters.deselect-all", "Deselect All")
+                        : t("filters.select-all", "Select All")}
                     </div>
                   </InputCommandItem>
                   <InputCommandSeparator />
@@ -222,10 +232,14 @@ export function MultiSelect({
                 const isSelected = selectedValues.has(option.value);
                 const displayValue =
                   option.displayValue ??
-                  (option.value === "" ? "(empty)" : option.value);
+                  (option.value === ""
+                    ? t("filters.empty-value", "(empty)")
+                    : option.value);
                 const displayTitle =
                   option.displayValue ??
-                  (option.value === "" ? "(empty)" : option.value);
+                  (option.value === ""
+                    ? t("filters.empty-value", "(empty)")
+                    : option.value);
 
                 const commandItem = (
                   <InputCommandItem
@@ -333,7 +347,10 @@ export function MultiSelect({
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    placeholder="Enter custom value"
+                    placeholder={t(
+                      "filters.enter-custom-value",
+                      "Enter custom value",
+                    )}
                     className="h-6 w-full rounded-none border-t-0 border-r-0 border-b-2 border-l-0 border-dotted p-0 text-sm"
                   />
                 </InputCommandItem>
