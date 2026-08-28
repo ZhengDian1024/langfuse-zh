@@ -17,6 +17,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 
 export type DeleteButtonProps = {
   itemId: string;
@@ -85,6 +86,7 @@ export function DeleteButton({
 }: BaseDeleteButtonProps) {
   const [isDeleted, setIsDeleted] = useState(false);
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
   const router = useRouter();
   const capture = usePostHogClientCapture();
   const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
@@ -127,12 +129,14 @@ export function DeleteButton({
           <span className="inline-flex">
             <IconOnlyButton
               icon={<TrashIcon className="h-4 w-4" />}
-              label={title ?? "Delete"}
-              aria-label={ariaLabel ?? "delete"}
+              label={title ?? t("delete-button.label", "Delete")}
+              aria-label={ariaLabel ?? t("delete-button.aria", "delete")}
               disabledReason={
                 hasAccess
                   ? undefined
-                  : `You don't have permission to delete this ${entityToDeleteName}.`
+                  : t("delete-button.no-permission", "You don't have permission to delete this {entity}.", {
+                      entity: entityToDeleteName,
+                    })
               }
               variant={variant ?? "outline-solid"}
               size={size ?? "icon"}
@@ -169,23 +173,30 @@ export function DeleteButton({
             ) : (
               <LockIcon className="mr-2 h-4 w-4" />
             )}
-            Delete
+            {t("delete-button.label", "Delete")}
           </Button>
         </PopoverTrigger>
       )}
       <PopoverContent onClick={(e) => e.stopPropagation()}>
         {deleteBlocker ?? (
           <>
-            <h2 className="mb-3 font-semibold">Please confirm</h2>
+            <h2 className="mb-3 font-semibold">
+              {t("delete-button.confirm-title", "Please confirm")}
+            </h2>
             <p className="mb-3 max-w-72 text-sm">
               {customDeletePrompt ??
-                `This action cannot be undone. It removes all the data associated with
-            this ${entityToDeleteName}. If this is the project default, it will be deleted for all users.`}
+                t(
+                  "delete-button.default-prompt",
+                  "This action cannot be undone. It removes all the data associated with this {entity}. If this is the project default, it will be deleted for all users.",
+                  { entity: entityToDeleteName },
+                )}
             </p>
             {deleteConfirmation && (
               <div className="mb-4 grid w-full gap-1.5">
                 <Label htmlFor="delete-confirmation">
-                  Type &quot;{deleteConfirmation}&quot; to confirm
+                  {t("delete-button.type-confirm", 'Type "{confirmation}" to confirm', {
+                    confirmation: deleteConfirmation,
+                  })}
                 </Label>
                 <Input
                   id="delete-confirmation"
@@ -204,13 +215,15 @@ export function DeleteButton({
                     deleteConfirmation &&
                     deleteConfirmationInput !== deleteConfirmation
                   ) {
-                    alert("Please type the correct confirmation");
+                    alert(t("delete-button.confirm-alert", "Please type the correct confirmation"));
                     return;
                   }
                   executeDeleteMutation(onDeleteSuccess);
                 }}
               >
-                Delete {entityToDeleteName}
+                {t("delete-button.confirm-delete", "Delete {entity}", {
+                  entity: entityToDeleteName,
+                })}
               </Button>
             </div>
           </>
