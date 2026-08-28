@@ -125,7 +125,7 @@ export function JsonPathInput({
         setNoMatchWarning(false);
       }
     },
-    [onChange, parsedSourceData],
+    [onChange, parsedSourceData, t],
   );
 
   const displayError = error || resolveError;
