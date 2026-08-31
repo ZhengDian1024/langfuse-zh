@@ -1,6 +1,7 @@
 import { useSupportDrawer } from "@/src/features/support-chat/SupportDrawerProvider";
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { X, Slash } from "lucide-react";
 import {
   Breadcrumb,
@@ -23,6 +24,7 @@ export const SupportDrawer = ({
   className?: string;
 }) => {
   const { open, setOpen } = useSupportDrawer();
+  const { t } = useI18n();
   const [currentMode, setCurrentMode] = useState<"intro" | "form" | "success">(
     "intro",
   );
@@ -43,7 +45,9 @@ export const SupportDrawer = ({
             <BreadcrumbList>
               {currentMode === "intro" ? (
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Support</BreadcrumbPage>
+                  <BreadcrumbPage>
+                    {t("support-chat.drawer.support", "Support")}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               ) : (
                 <>
@@ -54,7 +58,7 @@ export const SupportDrawer = ({
                         onClick={() => setCurrentMode("intro")}
                         className="text-foreground"
                       >
-                        Support
+                        {t("support-chat.drawer.support", "Support")}
                       </button>
                     </BreadcrumbLink>
                   </BreadcrumbItem>
@@ -62,7 +66,9 @@ export const SupportDrawer = ({
                     <Slash />
                   </BreadcrumbSeparator>
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Email Engineer</BreadcrumbPage>
+                    <BreadcrumbPage>
+                      {t("support-chat.drawer.email-engineer", "Email Engineer")}
+                    </BreadcrumbPage>
                   </BreadcrumbItem>
                 </>
               )}
@@ -73,7 +79,7 @@ export const SupportDrawer = ({
               variant="ghost"
               size="icon"
               onClick={close}
-              aria-label="Close"
+              aria-label={t("support-chat.drawer.close", "Close")}
             >
               <X className="h-4 w-4" />
             </Button>

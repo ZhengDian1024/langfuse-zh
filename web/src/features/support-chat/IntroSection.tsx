@@ -12,6 +12,7 @@ import {
 import { SiDiscord, SiGithub } from "react-icons/si";
 import { RainbowButton } from "@/src/components/magicui/rainbow-button";
 import { Separator } from "@/src/components/ui/separator";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePlan } from "@/src/features/entitlements/hooks";
 import { isCloudPlan } from "@langfuse/shared";
 import { useUiCustomization } from "@/src/ee/features/ui-customization/useUiCustomization";
@@ -24,6 +25,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
   const uiCustomization = useUiCustomization();
   const { isLangfuseCloud } = useLangfuseCloudRegion();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   // Note: We previously added an entitlement for in-app support, but removed it for now.
   //       The issue was that on global routes e.g., https://langfuse.com/setup, the entitlement
@@ -52,11 +54,14 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
     <div className="mt-1 flex flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2 text-base font-semibold">
-          <Sparkles className="h-4 w-4" /> Ask AI
+          <Sparkles className="h-4 w-4" />{" "}
+          {t("support-chat.intro.ask-ai-title", "Ask AI")}
         </div>
         <p className="text-muted-foreground mt-1 text-sm">
-          Get instant, helpful answers. Our AI knows the docs, examples, and
-          best practices to guide you fast.
+          {t(
+            "support-chat.intro.ask-ai-desc",
+            "Get instant, helpful answers. Our AI knows the docs, examples, and best practices to guide you fast.",
+          )}
         </p>
 
         <RainbowButton asChild>
@@ -65,7 +70,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
             target="_blank"
             rel="noopener"
           >
-            Chat with AI
+            {t("support-chat.intro.chat-with-ai", "Chat with AI")}
           </a>
         </RainbowButton>
       </div>
@@ -74,11 +79,14 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2 text-base font-semibold">
-          <LibraryBig className="h-4 w-4" /> Docs
+          <LibraryBig className="h-4 w-4" />{" "}
+          {t("support-chat.intro.docs-title", "Docs")}
         </div>
         <p className="text-muted-foreground text-sm">
-          Dive into guides, concepts, and API reference — clear steps and
-          examples to move quickly.
+          {t(
+            "support-chat.intro.docs-desc",
+            "Dive into guides, concepts, and API reference — clear steps and examples to move quickly.",
+          )}
         </p>
 
         <Button asChild variant="outline">
@@ -89,7 +97,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
             target="_blank"
             rel="noopener"
           >
-            View documentation
+            {t("support-chat.intro.view-docs", "View documentation")}
           </a>
         </Button>
       </div>
@@ -100,11 +108,14 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
         <>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-base font-semibold">
-              <LifeBuoy className="h-4 w-4" /> Support
+              <LifeBuoy className="h-4 w-4" />{" "}
+              {t("support-chat.intro.support-title", "Support")}
             </div>
             <p className="text-muted-foreground text-sm">
-              Ask AI & Docs did not unblock you? Get in touch with the support
-              team.
+              {t(
+                "support-chat.intro.custom-desc",
+                "Ask AI & Docs did not unblock you? Get in touch with the support team.",
+              )}
             </p>
             <Button variant="outline" asChild>
               <a
@@ -112,7 +123,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 target="_blank"
                 rel="noopener"
               >
-                Open Support
+                {t("support-chat.intro.open-support", "Open Support")}
               </a>
             </Button>
             {uiCustomization?.feedbackHref && (
@@ -122,7 +133,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                   target="_blank"
                   rel="noopener"
                 >
-                  Submit Feedback
+                  {t("support-chat.intro.submit-feedback", "Submit Feedback")}
                 </a>
               </Button>
             )}
@@ -134,7 +145,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                     target="_blank"
                     rel="noopener"
                   >
-                    Feature request
+                    {t("support-chat.intro.feature-request", "Feature request")}
                   </a>
                 </Button>
                 <Button variant="outline" asChild>
@@ -143,7 +154,7 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                     target="_blank"
                     rel="noopener"
                   >
-                    Report a bug
+                    {t("support-chat.intro.report-bug", "Report a bug")}
                   </a>
                 </Button>
               </>
@@ -158,14 +169,23 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
         <>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-base font-semibold">
-              <LifeBuoy className="h-4 w-4" /> Email a Support Engineer
+              <LifeBuoy className="h-4 w-4" />{" "}
+              {t(
+                "support-chat.intro.email-engineer-title",
+                "Email a Support Engineer",
+              )}
             </div>
             <p className="text-muted-foreground text-sm">
-              Ask AI & Docs did not unblock you? One of our support engineers
-              will help you get unblocked.
+              {t(
+                "support-chat.intro.in-app-desc",
+                "Ask AI & Docs did not unblock you? One of our support engineers will help you get unblocked.",
+              )}
             </p>
             <Button variant="outline" onClick={onStartForm}>
-              Email a Support Engineer
+              {t(
+                "support-chat.intro.email-engineer-button",
+                "Email a Support Engineer",
+              )}
             </Button>
           </div>
 
@@ -177,11 +197,17 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
         <>
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 text-base font-semibold">
-              <LifeBuoy className="h-4 w-4" /> Community Support
+              <LifeBuoy className="h-4 w-4" />{" "}
+              {t(
+                "support-chat.intro.community-title",
+                "Community Support",
+              )}
             </div>
             <p className="text-muted-foreground text-sm">
-              Ask AI & Docs did not unblock you? Get help from and share
-              feedback with the community.
+              {t(
+                "support-chat.intro.community-desc",
+                "Ask AI & Docs did not unblock you? Get help from and share feedback with the community.",
+              )}
             </p>
             <Button variant="outline" asChild>
               <a
@@ -189,7 +215,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 target="_blank"
                 rel="noopener"
               >
-                <SiGithub className="mr-2 h-4 w-4" /> Get Help ↗
+                <SiGithub className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.get-help", "Get Help ↗")}
               </a>
             </Button>
             <Button variant="outline" asChild>
@@ -198,7 +225,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 target="_blank"
                 rel="noopener"
               >
-                <Lightbulb className="mr-2 h-4 w-4" /> Feature request ↗
+                <Lightbulb className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.feature-request-arrow", "Feature request ↗")}
               </a>
             </Button>
             <Button variant="outline" asChild>
@@ -207,7 +235,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 target="_blank"
                 rel="noopener"
               >
-                <Bug className="mr-2 h-4 w-4" /> Report a bug ↗
+                <Bug className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.report-bug-arrow", "Report a bug ↗")}
               </a>
             </Button>
           </div>
@@ -219,10 +248,17 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
       {supportType !== "custom" && (
         <div>
           <div className="flex items-center gap-2 text-base font-semibold">
-            <SiGithub className="h-4 w-4" /> Community & Resources
+            <SiGithub className="h-4 w-4" />{" "}
+            {t(
+              "support-chat.intro.community-resources-title",
+              "Community & Resources",
+            )}
           </div>
           <p className="text-muted-foreground mt-1 text-sm">
-            Join the conversation and connect with the Langfuse community.
+            {t(
+              "support-chat.intro.community-resources-desc",
+              "Join the conversation and connect with the Langfuse community.",
+            )}
           </p>
           <div className="mt-3 grid grid-cols-1 gap-2">
             <Button asChild variant="ghost" className="justify-start px-1.5">
@@ -231,7 +267,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 target="_blank"
                 rel="noopener"
               >
-                <SiGithub className="mr-2 h-4 w-4" /> GitHub ↗
+                <SiGithub className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.github", "GitHub ↗")}
               </a>
             </Button>
             <Button asChild variant="ghost" className="justify-start px-1.5">
@@ -241,7 +278,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 rel="noopener"
                 className="flex items-center"
               >
-                <SiDiscord className="mr-2 h-4 w-4" /> Discord ↗
+                <SiDiscord className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.discord", "Discord ↗")}
               </a>
             </Button>
             <Button asChild variant="ghost" className="justify-start px-1.5">
@@ -252,7 +290,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                 className="flex items-center"
                 onClick={() => capture("support_chat:community_hours_click")}
               >
-                <Calendar className="mr-2 h-4 w-4" /> Community Hours ↗
+                <Calendar className="mr-2 h-4 w-4" />{" "}
+                {t("support-chat.intro.community-hours", "Community Hours ↗")}
               </a>
             </Button>
 
@@ -264,7 +303,8 @@ export function IntroSection({ onStartForm }: { onStartForm: () => void }) {
                   rel="noopener"
                   className="flex items-center"
                 >
-                  <Radio className="mr-2 h-4 w-4" /> Status Page ↗
+                  <Radio className="mr-2 h-4 w-4" />{" "}
+                  {t("support-chat.intro.status-page", "Status Page ↗")}
                 </a>
               </Button>
             )}

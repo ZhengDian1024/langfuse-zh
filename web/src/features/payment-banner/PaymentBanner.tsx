@@ -4,6 +4,7 @@ import { AlertCircle, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { useQueryProjectOrOrganization } from "@/src/features/projects/hooks";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useIsCloudBillingAvailable } from "@/src/ee/features/billing/utils/isCloudBilling";
 import { useTopBannerRegistration } from "@/src/features/top-banner";
 import { cn } from "@/src/utils/tailwind";
@@ -19,6 +20,7 @@ export function PaymentBanner() {
   const { organization } = useQueryProjectOrOrganization();
   const isCloudBilling = useIsCloudBillingAvailable();
   const bannerRef = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
 
   const subscriptionStatus = useMemo(() => {
     // Don't show banner if:
@@ -96,9 +98,15 @@ export function PaymentBanner() {
       <div className="flex items-center gap-3">
         <AlertCircle className="h-4 w-4 shrink-0" />
         <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-2">
-          <span className="text-sm font-semibold">Billing Issue:</span>
+          <span className="text-sm font-semibold">
+            {t("payment-banner.title", "Billing Issue:")}
+          </span>
           <span className="text-sm">
-            {`We have problems collecting subscription payment for your organization '${organization.name}'. Please update your payment information to continue using Langfuse.`}
+            {t(
+              "payment-banner.description",
+              "We have problems collecting subscription payment for your organization '{name}'. Please update your payment information to continue using Langfuse.",
+              { name: organization.name },
+            )}
           </span>
         </div>
       </div>
@@ -109,7 +117,7 @@ export function PaymentBanner() {
             href={`${basePath}/organization/${organization.id}/settings/billing`}
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            Update Payment
+            {t("payment-banner.update-payment", "Update Payment")}
           </Link>
         </Button>
       </div>

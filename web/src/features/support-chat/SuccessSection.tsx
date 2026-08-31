@@ -1,9 +1,11 @@
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import { CheckCircle2 } from "lucide-react";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { IntroSection } from "@/src/features/support-chat/IntroSection";
 
 export function SuccessSection({ onAnother }: { onAnother: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="mt-1 flex flex-col gap-6">
       {/* Success card */}
@@ -11,9 +13,17 @@ export function SuccessSection({ onAnother }: { onAnother: () => void }) {
         <div className="flex items-start gap-3">
           <CheckCircle2 className="mt-0.5 h-5 w-5 text-green-600" />
           <div className="space-y-0.5">
-            <div className="text-sm font-medium">Thanks for your message</div>
+            <div className="text-sm font-medium">
+              {t(
+                "support-chat.success.title",
+                "Thanks for your message",
+              )}
+            </div>
             <div className="text-muted-foreground text-sm">
-              We created a support ticket and will reply via email.
+              {t(
+                "support-chat.success.desc",
+                "We created a support ticket and will reply via email.",
+              )}
             </div>
           </div>
         </div>
@@ -21,7 +31,7 @@ export function SuccessSection({ onAnother }: { onAnother: () => void }) {
         {/* Primary actions */}
         <div className="mt-4 flex flex-wrap items-center justify-start gap-2 pl-7">
           <Button variant="outline" size="sm" onClick={onAnother}>
-            Submit another
+            {t("support-chat.success.another", "Submit another")}
           </Button>
         </div>
       </div>

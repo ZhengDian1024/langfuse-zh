@@ -18,6 +18,7 @@ import {
 
 import { api } from "@/src/utils/api";
 
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { Button } from "@/src/components/ui/button";
 import {
   Form,
@@ -60,6 +61,8 @@ import Spinner from "@/src/components/design-system/Spinner/Spinner";
 type SupportFormInput = z.input<typeof SupportFormSchema>;
 type SupportFormValues = z.output<typeof SupportFormSchema>;
 
+type TranslateFn = ReturnType<typeof useI18n>["t"];
+
 /**
  * File upload constraints - single source of truth for validation
  * Uses Pylon's file size limit
@@ -78,7 +81,10 @@ const FILE_UPLOAD_CONSTRAINTS = {
  * Validates files against upload constraints
  * @returns {isValid: boolean, error?: string}
  */
-function validateFiles(files: File[] | undefined): {
+function validateFiles(
+  files: File[] | undefined,
+  t: TranslateFn,
+): {
   isValid: boolean;
   error?: string;
 } {
@@ -93,7 +99,9 @@ function validateFiles(files: File[] | undefined): {
   if (files.length > maxFiles) {
     return {
       isValid: false,
-      error: `Please upload at most ${maxFiles} files.`,
+      error: t("support-chat.form.file-error-too-many", "Please upload at most {count} files.", {
+        count: String(maxFiles),
+      }),
     };
   }
 
@@ -103,7 +111,11 @@ function validateFiles(files: File[] | undefined): {
     const maxMB = (maxFileSizeBytes / (1024 * 1024)).toFixed(0);
     return {
       isValid: false,
-      error: `File "${oversizedFile.name}" is too large. Maximum file size is ${maxMB}MB per file.`,
+      error: t(
+        "support-chat.form.file-error-file-too-large",
+        'File "{name}" is too large. Maximum file size is {max}MB per file.',
+        { name: oversizedFile.name, max: maxMB },
+      ),
     };
   }
 
@@ -114,7 +126,11 @@ function validateFiles(files: File[] | undefined): {
     const maxMB = (maxCombinedBytes / (1024 * 1024)).toFixed(0);
     return {
       isValid: false,
-      error: `Total attachment size (${totalMB}MB) exceeds the limit of ${maxMB}MB.`,
+      error: t(
+        "support-chat.form.file-error-total-size",
+        "Total attachment size ({total}MB) exceeds the limit of {max}MB.",
+        { total: totalMB, max: maxMB },
+      ),
     };
   }
 
@@ -124,7 +140,7 @@ function validateFiles(files: File[] | undefined): {
 /**
  * Converts technical file error messages to user-friendly ones
  */
-function formatFileError(error: Error): string {
+function formatFileError(error: Error, t: TranslateFn): string {
   const msg = error.message.toLowerCase();
   const { maxFiles, maxFileSizeBytes, maxCombinedBytes } =
     FILE_UPLOAD_CONSTRAINTS;
@@ -138,7 +154,11 @@ function formatFileError(error: Error): string {
     msg.includes("10mb") ||
     msg.includes("too large")
   ) {
-    return `File is too large. Maximum file size is ${maxMB}MB per file.`;
+    return t(
+      "support-chat.form.file-error-generic-too-large",
+      "File is too large. Maximum file size is {max}MB per file.",
+      { max: maxMB },
+    );
   }
 
   // File count errors
@@ -147,20 +167,35 @@ function formatFileError(error: Error): string {
     msg.includes("maxfiles") ||
     msg.includes("5 files")
   ) {
-    return `Too many files. Maximum ${maxFiles} files allowed.`;
+    return t("support-chat.form.file-error-generic-too-many", "Too many files. Maximum {count} files allowed.", {
+      count: String(maxFiles),
+    });
   }
 
   // Combined size errors
   if (msg.includes("total") && (msg.includes("50mb") || msg.includes("size"))) {
-    return `Total attachment size exceeds limit. Maximum combined size is ${maxCombinedMB}MB.`;
+    return t(
+      "support-chat.form.file-error-generic-total",
+      "Total attachment size exceeds limit. Maximum combined size is {max}MB.",
+      { max: maxCombinedMB },
+    );
   }
 
   // File type errors
   if (msg.includes("file type") || msg.includes("accept")) {
-    return "File type not supported. Please select a different file.";
+    return t(
+      "support-chat.form.file-error-type",
+      "File type not supported. Please select a different file.",
+    );
   }
 
-  return error.message || "File upload failed. Please try again.";
+  return (
+    error.message ||
+    t(
+      "support-chat.form.file-error-fallback",
+      "File upload failed. Please try again.",
+    )
+  );
 }
 
 export function SupportFormSection({
@@ -172,6 +207,7 @@ export function SupportFormSection({
 }) {
   const { organization, project } = useQueryProjectOrOrganization();
   const session = useSession();
+  const { t } = useI18n();
 
   // The support drawer is mounted globally and reachable from pages without an
   // org/project in the URL (home, setup, onboarding, account settings), where
@@ -222,8 +258,14 @@ export function SupportFormSection({
         // attachments) intact so the user can retry instead of wiping it.
         if (data.pylonIssueFailed) {
           showErrorToast(
-            "Support request was not sent",
-            "Please contact support@langfuse.com",
+            t(
+              "support-chat.form.send-failed-title",
+              "Support request was not sent",
+            ),
+            t(
+              "support-chat.form.send-failed-desc",
+              "Please contact support@langfuse.com",
+            ),
           );
           return;
         }
@@ -286,7 +328,7 @@ export function SupportFormSection({
       setIsSubmittingLocal(true);
 
       // Validate files using centralized validation function
-      const validation = validateFiles(files);
+      const validation = validateFiles(files, t);
       if (!validation.isValid) {
         throw new Error(validation.error);
       }
@@ -328,7 +370,12 @@ export function SupportFormSection({
       setIsSubmittingLocal(false);
       form.setError("message", {
         type: "manual",
-        message: err?.message ?? "Failed to submit support request.",
+        message:
+          err?.message ??
+          t(
+            "support-chat.form.submit-failed",
+            "Failed to submit support request.",
+          ),
       });
     }
   };
@@ -343,11 +390,16 @@ export function SupportFormSection({
   return (
     <div className="mt-1 flex flex-col gap-3">
       <div className="flex items-center gap-2 text-base font-semibold">
-        E-Mail a Support Engineer
+        {t(
+          "support-chat.form.title",
+          "E-Mail a Support Engineer",
+        )}
       </div>
       <p className="text-muted-foreground text-sm">
-        Details speed things up. The clearer your request, the quicker you get
-        the answer you need.
+        {t(
+          "support-chat.form.desc",
+          "Details speed things up. The clearer your request, the quicker you get the answer you need.",
+        )}
       </p>
 
       <Form {...form}>
@@ -361,7 +413,9 @@ export function SupportFormSection({
             name="messageType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Message Type</FormLabel>
+                <FormLabel>
+                  {t("support-chat.form.message-type", "Message Type")}
+                </FormLabel>
                 <FormControl>
                   <RadioGroup
                     className="grid grid-cols-3 gap-2"
@@ -384,7 +438,10 @@ export function SupportFormSection({
                   </RadioGroup>
                 </FormControl>
                 <FormDescription className="sr-only">
-                  Choose the type of your message.
+                  {t(
+                    "support-chat.form.message-type-desc",
+                    "Choose the type of your message.",
+                  )}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -398,11 +455,16 @@ export function SupportFormSection({
             name="severity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Priority</FormLabel>
+                <FormLabel>{t("support-chat.form.priority", "Priority")}</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a priority" />
+                      <SelectValue
+                        placeholder={t(
+                          "support-chat.form.priority-placeholder",
+                          "Select a priority",
+                        )}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {SEVERITIES.map((s) =>
@@ -426,8 +488,14 @@ export function SupportFormSection({
                             </TooltipTrigger>
                             <TooltipContent className="max-w-xs">
                               {s === SEVERITY_1
-                                ? "Severity 1 is available on the Team and Enterprise plans."
-                                : "Severity 2 is available on the Pro plan and above."}
+                                ? t(
+                                    "support-chat.form.severity-1-tooltip",
+                                    "Severity 1 is available on the Team and Enterprise plans.",
+                                  )
+                                : t(
+                                    "support-chat.form.severity-2-tooltip",
+                                    "Severity 2 is available on the Pro plan and above.",
+                                  )}
                             </TooltipContent>
                           </Tooltip>
                         ),
@@ -446,19 +514,27 @@ export function SupportFormSection({
             name="topic"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Topic</FormLabel>
+                <FormLabel>{t("support-chat.form.topic", "Topic")}</FormLabel>
                 <FormControl>
                   <Select
                     value={(field.value as string | undefined) ?? undefined}
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a topic" />
+                      <SelectValue
+                        placeholder={t(
+                          "support-chat.form.topic-placeholder",
+                          "Select a topic",
+                        )}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       <div className="p-2">
                         <div className="text-muted-foreground mb-2 text-xs font-medium">
-                          Product Features
+                          {t(
+                            "support-chat.form.topic-group-product-features",
+                            "Product Features",
+                          )}
                         </div>
                         {TopicGroups["Product Features"].map((t) => (
                           <SelectItem key={t} value={t}>
@@ -468,7 +544,10 @@ export function SupportFormSection({
                       </div>
                       <div className="border-t p-2">
                         <div className="text-muted-foreground mb-2 text-xs font-medium">
-                          Operations
+                          {t(
+                            "support-chat.form.topic-group-operations",
+                            "Operations",
+                          )}
                         </div>
                         {TopicGroups.Operations.map((t) => (
                           <SelectItem key={t} value={t}>
@@ -491,11 +570,21 @@ export function SupportFormSection({
               name="integrationType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Integration Type (optional)</FormLabel>
+                  <FormLabel>
+                    {t(
+                      "support-chat.form.integration-type",
+                      "Integration Type (optional)",
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select integration type" />
+                        <SelectValue
+                          placeholder={t(
+                            "support-chat.form.integration-type-placeholder",
+                            "Select integration type",
+                          )}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {INTEGRATION_TYPES.map((it) => (
@@ -518,10 +607,12 @@ export function SupportFormSection({
             name="message"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Message</FormLabel>
+                <FormLabel>{t("support-chat.form.message-label", "Message")}</FormLabel>
                 <div className="text-muted-foreground text-xs">
-                  We will email you at your account address. Replies may take up
-                  to one business day.
+                  {t(
+                    "support-chat.form.message-desc",
+                    "We will email you at your account address. Replies may take up to one business day.",
+                  )}
                 </div>
                 <FormControl>
                   <div className="relative w-full">
@@ -530,8 +621,14 @@ export function SupportFormSection({
                       rows={8}
                       placeholder={
                         isProductFeatureTopic
-                          ? "Please explain as fully as possible what you're aiming to do, and what you'd like help with.\n\nIf your question involves a specific trace, prompt, score, etc. please include a link to it."
-                          : "Please explain as fully as possible what you're aiming to do, and what you'd like help with."
+                          ? t(
+                              "support-chat.form.message-placeholder-product",
+                              "Please explain as fully as possible what you're aiming to do, and what you'd like help with.\n\nIf your question involves a specific trace, prompt, score, etc. please include a link to it.",
+                            )
+                          : t(
+                              "support-chat.form.message-placeholder",
+                              "Please explain as fully as possible what you're aiming to do, and what you'd like help with.",
+                            )
                       }
                     />
                   </div>
@@ -543,9 +640,10 @@ export function SupportFormSection({
                     role="status"
                     aria-live="polite"
                   >
-                    The message seems short — adding a bit more context can help
-                    us get you a quicker, smarter answer. You can submit again
-                    as is, or add more details.
+                    {t(
+                      "support-chat.form.message-short-warning",
+                      "The message seems short — adding a bit more context can help us get you a quicker, smarter answer. You can submit again as is, or add more details.",
+                    )}
                   </p>
                 )}
 
@@ -564,8 +662,12 @@ export function SupportFormSection({
                     })
                   }
                   onError={(error) => {
-                    const userMessage = formatFileError(error);
-                    showErrorToast("File Upload Error", userMessage, "WARNING");
+                    const userMessage = formatFileError(error, t);
+                    showErrorToast(
+                      t("support-chat.form.file-upload-error", "File Upload Error"),
+                      userMessage,
+                      "WARNING",
+                    );
                   }}
                   src={files}
                 >
@@ -575,8 +677,16 @@ export function SupportFormSection({
                       <Paperclip className="h-4 w-4" />
                       <span className="truncate">
                         {hasFiles
-                          ? `${files!.length} file${files!.length > 1 ? "s" : ""} • ${totalMB} MB`
-                          : "Attach files"}
+                          ? t(
+                              files!.length > 1
+                                ? "support-chat.form.files-selected.other"
+                                : "support-chat.form.files-selected.one",
+                              files!.length > 1
+                                ? "{count} files • {size} MB"
+                                : "{count} file • {size} MB",
+                              { count: String(files!.length), size: totalMB },
+                            )
+                          : t("support-chat.form.attach-files", "Attach files")}
                       </span>
                     </div>
                   </DropzoneEmptyState>
@@ -584,7 +694,9 @@ export function SupportFormSection({
                   <DropzoneContent>
                     <div className="flex w-full cursor-pointer items-center justify-start gap-2 p-2 text-xs">
                       <Paperclip className="h-4 w-4" />
-                      <span className="truncate">Attach files</span>
+                      <span className="truncate">
+                        {t("support-chat.form.attach-files", "Attach files")}
+                      </span>
                     </div>
                   </DropzoneContent>
                 </Dropzone>
@@ -592,7 +704,7 @@ export function SupportFormSection({
                 {files && files.length > 0 && (
                   <div className="p-0 text-left text-sm font-medium">
                     <div className="text-muted-foreground mb-2 text-xs font-medium">
-                      Attached files
+                      {t("support-chat.form.attached-files", "Attached files")}
                     </div>
                     {files?.map((file) => (
                       <div
@@ -608,7 +720,9 @@ export function SupportFormSection({
                           }
                           className="p-0"
                         >
-                          <span className="sr-only">Remove file</span>
+                          <span className="sr-only">
+                            {t("support-chat.form.remove-file", "Remove file")}
+                          </span>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                         {file.name}
@@ -632,7 +746,7 @@ export function SupportFormSection({
               }}
               className="w-full"
             >
-              Cancel
+              {t("common.cancel", "Cancel")}
             </Button>
 
             <Button
@@ -643,20 +757,22 @@ export function SupportFormSection({
               {isSubmittingLocal ? (
                 <span className="inline-flex items-center gap-2">
                   <Spinner size="sm" />
-                  Submitting…
+                  {t("support-chat.form.submitting", "Submitting…")}
                 </span>
               ) : messageIsShortAfterWarning ? (
-                "Submit Anyways"
+                t("support-chat.form.submit-anyways", "Submit Anyways")
               ) : (
-                "Submit"
+                t("support-chat.form.submit", "Submit")
               )}
             </Button>
           </div>
 
           {isSubmittingLocal && (
             <div className="text-muted-foreground text-xs">
-              This can take a few seconds — hang tight while we submit your
-              request.
+              {t(
+                "support-chat.form.submitting-desc",
+                "This can take a few seconds — hang tight while we submit your request.",
+              )}
             </div>
           )}
         </form>
