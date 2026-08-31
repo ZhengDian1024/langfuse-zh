@@ -3486,5 +3486,17 @@
   "batch-exports.cancel-dialog.title": "Cancel batch export?",
   "batch-exports.cancel-dialog.description": "Are you sure you want to cancel this batch export? This action cannot be undone.",
   "batch-exports.cancel-dialog.keep": "No, keep it",
-  "batch-exports.cancel-dialog.confirm": "Yes, cancel export"
+  "batch-exports.cancel-dialog.confirm": "Yes, cancel export",
+  "notifications.close": "Close",
+  "notifications.error.path": "Path: {path}",
+  "notifications.error.report-issue": "Report issue to Langfuse team",
+  "notifications.version-update.message": "We have released a new version of Langfuse. Please refresh your browser to get the latest update.",
+  "notifications.version-update.refresh": "Refresh page",
+  "notifications.settings.title": "Notification Settings",
+  "notifications.settings.loading": "Loading preferences...",
+  "notifications.settings.email-title": "Email Notifications",
+  "notifications.settings.email-desc": "Manage your email notification preferences for this project.",
+  "notifications.settings.comment-mentions": "Comment Mentions",
+  "notifications.settings.comment-mentions-desc": "Receive an email when someone mentions you in a comment",
+  "notifications.settings.update-failed": "Failed to update notification preference. Please try again."
 }

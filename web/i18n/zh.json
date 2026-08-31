@@ -3486,5 +3486,17 @@
   "batch-exports.cancel-dialog.title": "取消此批量导出？",
   "batch-exports.cancel-dialog.description": "确定要取消此批量导出吗？此操作无法撤销。",
   "batch-exports.cancel-dialog.keep": "不，保留",
-  "batch-exports.cancel-dialog.confirm": "是的，取消导出"
+  "batch-exports.cancel-dialog.confirm": "是的，取消导出",
+  "notifications.close": "关闭",
+  "notifications.error.path": "路径：{path}",
+  "notifications.error.report-issue": "向 Langfuse 团队报告问题",
+  "notifications.version-update.message": "我们发布了新版本的 Langfuse。请刷新浏览器以获取最新更新。",
+  "notifications.version-update.refresh": "刷新页面",
+  "notifications.settings.title": "通知设置",
+  "notifications.settings.loading": "正在加载偏好设置...",
+  "notifications.settings.email-title": "邮件通知",
+  "notifications.settings.email-desc": "管理您在此项目的邮件通知偏好。",
+  "notifications.settings.comment-mentions": "评论提及",
+  "notifications.settings.comment-mentions-desc": "当有人在评论中提及您时接收邮件",
+  "notifications.settings.update-failed": "更新通知偏好失败，请重试。"
 }

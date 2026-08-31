@@ -1,4 +1,5 @@
 import { Button } from "@/src/components/ui/button";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { useSupportDrawer } from "@/src/features/support-chat/SupportDrawerProvider";
 import { AlertTriangle, X } from "lucide-react";
@@ -22,6 +23,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
 }) => {
   const { setOpen } = useSupportDrawer();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const isError = type === "ERROR";
   const textColor = isError
     ? "text-destructive-foreground"
@@ -54,7 +56,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
         )}
         {path && (
           <div className={`text-sm leading-tight ${textColor}`}>
-            Path: {path}
+            {t("notifications.error.path", "Path: {path}", { path })}
           </div>
         )}
 
@@ -70,7 +72,10 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
               setOpen(true);
             }}
           >
-            Report issue to Langfuse team
+            {t(
+              "notifications.error.report-issue",
+              "Report issue to Langfuse team",
+            )}
           </Button>
         )}
       </div>
@@ -91,7 +96,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
           e.stopPropagation();
           e.preventDefault();
         }}
-        aria-label="Close"
+        aria-label={t("notifications.close", "Close")}
       >
         <X size={14} />
       </button>
