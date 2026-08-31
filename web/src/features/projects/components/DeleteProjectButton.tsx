@@ -22,12 +22,14 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useQueryProject } from "@/src/features/projects/hooks";
 import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAccess";
 import { env } from "@/src/env.mjs";
 
 export function DeleteProjectButton() {
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   //code for dynamic confirmation message
   const { project, organization } = useQueryProject();
@@ -37,7 +39,11 @@ export function DeleteProjectButton() {
 
   const formSchema = z.object({
     name: z.string().includes(confirmMessage, {
-      message: `Please confirm with "${confirmMessage}"`,
+      message: t(
+        "projects.confirm-error",
+        'Please confirm with "{name}"',
+        { name: confirmMessage },
+      ),
     }),
   });
 
@@ -75,16 +81,20 @@ export function DeleteProjectButton() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="destructive-secondary" disabled={!hasAccess}>
-          Delete Project
+          {t("projects.delete.button", "Delete Project")}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Delete Project
+            {t("projects.delete.title", "Delete Project")}
           </DialogTitle>
           <DialogDescription className=" ">
-            {`To confirm, type "${confirmMessage}" in the input box `}
+            {t(
+              "projects.confirm-hint",
+              'To confirm, type "{name}" in the input box',
+              { name: confirmMessage },
+            )}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -110,7 +120,7 @@ export function DeleteProjectButton() {
                 loading={deleteProject.isPending}
                 className="w-full"
               >
-                Delete project
+                {t("projects.delete.confirm", "Delete project")}
               </Button>
             </DialogFooter>
           </form>

@@ -14,6 +14,7 @@ import {
 } from "@/src/components/ui/form";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
 import Header from "@/src/components/layouts/header";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { LockIcon } from "lucide-react";
 import { useQueryProject } from "@/src/features/projects/hooks";
@@ -24,6 +25,7 @@ export default function RenameProject() {
   const { update: updateSession } = useSession();
   const { project } = useQueryProject();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const hasAccess = useHasProjectAccess({
     projectId: project?.id,
     scope: "project:update",
@@ -60,20 +62,23 @@ export default function RenameProject() {
 
   return (
     <div>
-      <Header title="Project Name" />
+      <Header title={t("projects.rename.title", "Project Name")} />
       <Card className="mb-4 p-3">
         {form.getValues().name !== "" ? (
           <p className="text-primary mb-4 text-sm">
-            Your Project will be renamed from &quot;
-            {project?.name ?? ""}
-            &quot; to &quot;
-            <b>{form.watch().name}</b>&quot;.
+            {t(
+              "projects.rename.will-rename",
+              'Your Project will be renamed from "{from}" to "{to}".',
+              { from: project?.name ?? "", to: form.watch().name },
+            )}
           </p>
         ) : (
           <p className="text-primary mb-4 text-sm">
-            Your Project is currently named &quot;
-            <b>{project?.name ?? ""}</b>
-            &quot;.
+            {t(
+              "projects.rename.current-name",
+              'Your Project is currently named "{name}".',
+              { name: project?.name ?? "" },
+            )}
           </p>
         )}
         <Form {...form}>
@@ -96,7 +101,7 @@ export default function RenameProject() {
                         disabled={!hasAccess}
                       />
                       {!hasAccess && (
-                        <span title="No access">
+                        <span title={t("projects.no-access", "No access")}>
                           <LockIcon className="text-muted absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform" />
                         </span>
                       )}
@@ -114,7 +119,7 @@ export default function RenameProject() {
                 disabled={form.getValues().name === "" || !hasAccess}
                 className="mt-4"
               >
-                Save
+                {t("common.save", "Save")}
               </Button>
             )}
           </form>

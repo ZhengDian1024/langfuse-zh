@@ -14,6 +14,7 @@ import { Input } from "@/src/components/ui/input";
 import { api } from "@/src/utils/api";
 import { useSession } from "next-auth/react";
 import { projectNameSchema } from "@/src/features/auth/lib/projectNameSchema";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
 export const NewProjectForm = ({
@@ -25,6 +26,7 @@ export const NewProjectForm = ({
 }) => {
   const capture = usePostHogClientCapture();
   const { update: updateSession } = useSession();
+  const { t } = useI18n();
 
   const form = useForm({
     resolver: zodResolver(projectNameSchema),
@@ -72,7 +74,9 @@ export const NewProjectForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Project name</FormLabel>
+              <FormLabel>
+                {t("projects.new.name-label", "Project name")}
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="my-llm-project"
@@ -85,7 +89,7 @@ export const NewProjectForm = ({
           )}
         />
         <Button type="submit" loading={createProjectMutation.isPending}>
-          Create
+          {t("common.create", "Create")}
         </Button>
       </form>
     </Form>
