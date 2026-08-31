@@ -11,6 +11,7 @@ import {
 } from "@/src/features/top-banner";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { V4IntroDialog } from "@/src/features/events/components/V4IntroDialog";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 
 const CHANGELOG_URL =
@@ -41,6 +42,7 @@ export function V4PromoBanner() {
     isLoading,
   } = useV4Beta();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
   const { getTopBannerOffset } = useTopBanner();
   const [isDismissed, setIsDismissed] = useLocalStorage<boolean>(
     DISMISSED_STORAGE_KEY,
@@ -52,7 +54,13 @@ export function V4PromoBanner() {
 
   // Match the v4BetaToggleVisible logic from navigationFilters.ts.
   const isToggleVisible = canToggleV4;
-  const pageMessage = PAGE_MESSAGES[router.pathname];
+  const pageMessageKey =
+    PAGE_MESSAGES[router.pathname] === "Faster dashboards available."
+      ? "v4.promo.dashboards-message"
+      : "v4.promo.traces-message";
+  const pageMessage = PAGE_MESSAGES[router.pathname]
+    ? t(pageMessageKey, PAGE_MESSAGES[router.pathname])
+    : undefined;
 
   const isVisible =
     isAuthenticated &&
@@ -92,13 +100,17 @@ export function V4PromoBanner() {
         <ZapIcon className="h-4 w-4 shrink-0" />
         <p
           className="flex flex-1 gap-1 overflow-hidden text-sm"
-          title={`${pageMessage} Enable the Fast (Preview) toggle for a more performant experience.`}
+          title={t(
+            "v4.promo.title",
+            "{message} Enable the Fast (Preview) toggle for a more performant experience.",
+            { message: pageMessage ?? "" },
+          )}
         >
           <span className="truncate">
             <span className="hidden font-semibold md:inline">
               {pageMessage}
             </span>{" "}
-            Enable the{" "}
+            {t("v4.promo.enable-the", "Enable the")}{" "}
             <button
               className="inline cursor-pointer font-semibold underline underline-offset-2"
               onClick={() => {
@@ -110,9 +122,12 @@ export function V4PromoBanner() {
               }}
               disabled={isLoading}
             >
-              Fast (Preview)
+              {t("v4.promo.fast-preview", "Fast (Preview)")}
             </button>{" "}
-            toggle for a more performant experience.{" "}
+            {t(
+              "v4.promo.toggle-for-performance",
+              "toggle for a more performant experience.",
+            )}{" "}
           </span>
 
           <Link
@@ -120,7 +135,7 @@ export function V4PromoBanner() {
             target="_blank"
             className="flex flex-row items-center gap-1 whitespace-nowrap underline underline-offset-2"
           >
-            Learn more
+            {t("v4.promo.learn-more", "Learn more")}
             <ExternalLink className="h-3 w-3 shrink-0" />
           </Link>
         </p>
@@ -129,8 +144,8 @@ export function V4PromoBanner() {
           size="sm"
           className="h-6 w-6 shrink-0 p-0"
           onClick={() => setIsDismissed(true)}
-          aria-label="Dismiss banner"
-          title="Dismiss"
+          aria-label={t("v4.promo.dismiss-aria", "Dismiss banner")}
+          title={t("v4.promo.dismiss", "Dismiss")}
         >
           <X className="h-4 w-4 shrink-0" />
         </Button>

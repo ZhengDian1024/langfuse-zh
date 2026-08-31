@@ -8,6 +8,7 @@ import {
 } from "@/src/components/ui/tooltip";
 import { useV4Beta } from "@/src/features/events/hooks/useV4Beta";
 import { V4IntroDialog } from "@/src/features/events/components/V4IntroDialog";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { usePostHogClientCapture } from "@/src/features/posthog-analytics/usePostHogClientCapture";
 import { ZapIcon } from "lucide-react";
 import { useRouter } from "next/router";
@@ -16,8 +17,6 @@ import {
   toExperimentsResultsUrl,
 } from "@/src/features/experiments/utils/experimentUrlTranslation";
 
-const PREVIEW_FAST_DESCRIPTION =
-  "Get a more performant Langfuse experience. Upgrade SDKs to the latest major for real-time data. This is a personal setting.";
 const PREVIEW_FAST_DESCRIPTION_ID = "preview-fast-toggle-description";
 
 function asSingleValue(value: string | string[] | undefined) {
@@ -42,6 +41,7 @@ export function V4SidebarToggle() {
     isLoading,
   } = useV4Beta();
   const capture = usePostHogClientCapture();
+  const { t } = useI18n();
 
   if (!canToggleV4) {
     return null;
@@ -115,7 +115,7 @@ export function V4SidebarToggle() {
               htmlFor="v4-beta-toggle"
               className="block min-w-0 flex-1 cursor-pointer truncate text-sm font-normal"
             >
-              Fast (Preview)
+              {t("v4.sidebar-toggle.label", "Fast (Preview)")}
             </Label>
           </div>
           <Tooltip>
@@ -128,17 +128,26 @@ export function V4SidebarToggle() {
                   onCheckedChange={handleToggle}
                   disabled={isLoading}
                   className="shrink-0"
-                  aria-label="Toggle Preview (fast)"
+                  aria-label={t(
+                    "v4.sidebar-toggle.aria-label",
+                    "Toggle Preview (fast)",
+                  )}
                   aria-describedby={PREVIEW_FAST_DESCRIPTION_ID}
                 />
               </div>
             </TooltipTrigger>
             <TooltipContent side="right" className="max-w-xs text-xs">
-              {PREVIEW_FAST_DESCRIPTION}
+              {t(
+                "v4.sidebar-toggle.description",
+                "Get a more performant Langfuse experience. Upgrade SDKs to the latest major for real-time data. This is a personal setting.",
+              )}
             </TooltipContent>
           </Tooltip>
           <span id={PREVIEW_FAST_DESCRIPTION_ID} className="sr-only">
-            {PREVIEW_FAST_DESCRIPTION}
+            {t(
+              "v4.sidebar-toggle.description",
+              "Get a more performant Langfuse experience. Upgrade SDKs to the latest major for real-time data. This is a personal setting.",
+            )}
           </span>
         </div>
       </SidebarMenuButton>

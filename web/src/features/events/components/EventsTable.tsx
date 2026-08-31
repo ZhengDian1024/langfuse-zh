@@ -101,6 +101,7 @@ import { RunEvaluationDialog } from "@/src/features/batch-actions/components/Run
 import { AddObservationsToDatasetDialog } from "@/src/features/batch-actions/components/AddObservationsToDatasetDialog/index";
 import { useHasEntitlement } from "@/src/features/entitlements/hooks";
 import { showSuccessToast } from "@/src/features/notifications/showSuccessToast";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import { useSearchBarEnabled } from "@/src/features/search-bar/hooks/useSearchBarEnabled";
 import { useEventsSearchBar } from "@/src/features/search-bar/hooks/useEventsSearchBar";
 import { EventsSearchBarRow } from "@/src/features/search-bar/components/EventsSearchBarRow";
@@ -202,6 +203,7 @@ export default function ObservationsEventsTable({
 }: EventsTableProps) {
   const peekContext = usePeekTableState();
   const router = useRouter();
+  const { t } = useI18n();
   const { viewId } = router.query;
   const eventsFilterConfig = useMemo(
     () => getObservationEventsFilterConfig(omittedFilter),
@@ -603,9 +605,11 @@ export default function ObservationsEventsTable({
   const traceDeleteMutation = api.traces.deleteMany.useMutation({
     onSuccess: () => {
       showSuccessToast({
-        title: "Traces deleted",
-        description:
+        title: t("events.delete.success-title", "Traces deleted"),
+        description: t(
+          "events.delete.success-desc",
           "Selected traces will be deleted. Traces are removed asynchronously and may continue to be visible for up to 15 minutes.",
+        ),
       });
     },
     onSettled: () => {
@@ -647,9 +651,15 @@ export default function ObservationsEventsTable({
 
   const isSelectAllCountUnavailable = isTotalCountLoading || isTotalCountError;
   const selectAllCountUnavailableReason = isTotalCountLoading
-    ? "Counting selected observations."
+    ? t(
+        "events.actions.counting",
+        "Counting selected observations.",
+      )
     : isTotalCountError
-      ? "Could not count selected observations. Clear selection and try again."
+      ? t(
+          "events.actions.count-error",
+          "Could not count selected observations. Clear selection and try again.",
+        )
       : undefined;
   const tableActions: TableAction[] = [
     ...(hasTraceDeletionEntitlement
@@ -657,13 +667,21 @@ export default function ObservationsEventsTable({
           {
             id: ActionId.TraceDelete,
             type: BatchActionType.Delete,
-            label: "Delete Traces",
-            description:
+            label: t("events.actions.delete-traces", "Delete Traces"),
+            description: t(
+              "events.actions.delete-traces-desc",
               "This permanently deletes all observations within this trace(s), as well as the trace(s), even if you only have single observations selected. This action cannot be undone. Trace deletion happens asynchronously and may take up to 24 hours.",
+            ),
             disabled: selectAll || selectedTraceIds.length === 0,
             disabledReason: selectAll
-              ? "Delete traces is only available for observations selected on the current page."
-              : "Selected observations are missing trace IDs.",
+              ? t(
+                  "events.actions.delete-traces-disabled-select-all",
+                  "Delete traces is only available for observations selected on the current page.",
+                )
+              : t(
+                  "events.actions.delete-traces-disabled-no-ids",
+                  "Selected observations are missing trace IDs.",
+                ),
             accessCheck: {
               scope: "traces:delete",
               entitlement: "trace-deletion",
@@ -675,9 +693,18 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationAddToAnnotationQueue,
       type: BatchActionType.Create,
-      label: "Add to Annotation Queue",
-      description: "Add selected observations to an annotation queue.",
-      targetLabel: "Annotation Queue",
+      label: t(
+        "events.actions.add-annotation-queue",
+        "Add to Annotation Queue",
+      ),
+      description: t(
+        "events.actions.add-annotation-queue-desc",
+        "Add selected observations to an annotation queue.",
+      ),
+      targetLabel: t(
+        "events.actions.annotation-queue-target",
+        "Annotation Queue",
+      ),
       execute: handleAddToAnnotationQueue,
       accessCheck: {
         scope: "annotationQueues:CUD",
@@ -686,8 +713,11 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationAddToDataset,
       type: BatchActionType.Create,
-      label: "Add to Dataset",
-      description: "Add selected observations to a dataset",
+      label: t("events.actions.add-dataset", "Add to Dataset"),
+      description: t(
+        "events.actions.add-dataset-desc",
+        "Add selected observations to a dataset",
+      ),
       customDialog: true,
       disabled: isSelectAllCountUnavailable,
       disabledReason: selectAllCountUnavailableReason,
@@ -698,8 +728,11 @@ export default function ObservationsEventsTable({
     {
       id: ActionId.ObservationBatchEvaluation,
       type: BatchActionType.Create,
-      label: "Evaluate",
-      description: "Run evaluations on selected observations.",
+      label: t("events.actions.evaluate", "Evaluate"),
+      description: t(
+        "events.actions.evaluate-desc",
+        "Run evaluations on selected observations.",
+      ),
       customDialog: true,
       icon: <LightbulbIcon className="h-4 w-4 sm:mr-2" />,
       disabled: isSelectAllCountUnavailable,
@@ -833,7 +866,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "metadata",
-      header: "Metadata",
+      header: t("events.columns.metadata", "Metadata"),
       size: 300,
       loadingCell: () => (
         <JsonSkeleton
@@ -843,7 +876,10 @@ export default function ObservationsEventsTable({
         />
       ),
       headerTooltip: {
-        description: "Add metadata to traces to track additional information.",
+        description: t(
+          "events.columns.metadata-tooltip",
+          "Add metadata to traces to track additional information.",
+        ),
         href: "https://langfuse.com/docs/observability/features/metadata",
       },
       cell: ({ row }) => {
@@ -873,8 +909,10 @@ export default function ObservationsEventsTable({
       header: getEventsColumnName("level"),
       size: 100,
       headerTooltip: {
-        description:
+        description: t(
+          "events.columns.level-tooltip",
           "You can differentiate the importance of observations with the level attribute to control the verbosity of your traces and highlight errors and warnings.",
+        ),
         href: "https://langfuse.com/docs/observability/features/log-levels",
       },
       enableHiding: true,
@@ -900,8 +938,10 @@ export default function ObservationsEventsTable({
       id: "statusMessage",
       size: 150,
       headerTooltip: {
-        description:
+        description: t(
+          "events.columns.status-message-tooltip",
           "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
+        ),
         href: "https://langfuse.com/docs/observability/features/log-levels",
       },
       enableHiding: true,
@@ -957,7 +997,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "cost",
-      header: "Cost",
+      header: t("events.columns.cost", "Cost"),
       id: "cost",
       enableHiding: true,
       defaultHidden: true,
@@ -1059,7 +1099,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "usage",
-      header: "Usage",
+      header: t("events.columns.usage", "Usage"),
       id: "usage",
       enableHiding: true,
       defaultHidden: true,
@@ -1072,7 +1112,7 @@ export default function ObservationsEventsTable({
         {
           accessorKey: "tokensPerSecond",
           id: "tokensPerSecond",
-          header: "Tokens per second",
+          header: t("events.columns.tokens-per-second", "Tokens per second"),
           size: 200,
           cell: ({ row }) => {
             const latency: number | undefined = row.getValue("latency");
@@ -1176,7 +1216,10 @@ export default function ObservationsEventsTable({
       id: "promptName",
       header: getEventsColumnName("promptName"),
       headerTooltip: {
-        description: "Link to prompt version in Langfuse prompt management.",
+        description: t(
+          "events.columns.prompt-name-tooltip",
+          "Link to prompt version in Langfuse prompt management.",
+        ),
         href: "https://langfuse.com/docs/prompt-management/get-started",
       },
       size: 200,
@@ -1235,7 +1278,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "scores",
-      header: "Scores",
+      header: t("events.columns.scores", "Scores"),
       id: "scores",
       enableHiding: true,
       defaultHidden: true,
@@ -1246,7 +1289,7 @@ export default function ObservationsEventsTable({
     },
     {
       accessorKey: "traceScores",
-      header: "Trace Scores",
+      header: t("events.columns.trace-scores", "Trace Scores"),
       id: "traceScores",
       enableHiding: true,
       defaultHidden: true,
@@ -1297,7 +1340,10 @@ export default function ObservationsEventsTable({
       header: getEventsColumnName("version"),
       size: 100,
       headerTooltip: {
-        description: "Track changes via the version tag.",
+        description: t(
+          "events.columns.version-tooltip",
+          "Track changes via the version tag.",
+        ),
         href: "https://langfuse.com/docs/experimentation",
       },
       enableHiding: true,

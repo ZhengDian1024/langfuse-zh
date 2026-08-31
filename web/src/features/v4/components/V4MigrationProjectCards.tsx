@@ -14,6 +14,7 @@ import {
 } from "@/src/components/ui/chart";
 import { DashboardCard } from "@/src/features/dashboard/components/cards/DashboardCard";
 import { encodeFiltersGeneric } from "@/src/features/filters/lib/filter-query-encoding";
+import { useI18n } from "@/src/features/i18n/useI18n";
 import {
   getV4MigrationStatus,
   normalizeLegacyApiEntrypoint,
@@ -241,24 +242,29 @@ const Section = ({
   isCountLoading?: boolean;
   detailsHref: ProductHref;
   children: ReactNode;
-}) => (
-  <section>
-    <div className="flex items-center justify-between gap-3">
-      <h3 className="text-sm font-medium">{title}</h3>
-      <div className="flex items-center gap-2">
-        {isCountLoading ? (
-          <Skeleton className="h-5 w-8 rounded-full" />
-        ) : (
-          <Badge variant="outline-solid" size="sm">
-            {numberFormatter(count, 0)}
-          </Badge>
-        )}
-        <InlineLink href={detailsHref}>Go to details</InlineLink>
+}) => {
+  const { t } = useI18n();
+  return (
+    <section>
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="text-sm font-medium">{title}</h3>
+        <div className="flex items-center gap-2">
+          {isCountLoading ? (
+            <Skeleton className="h-5 w-8 rounded-full" />
+          ) : (
+            <Badge variant="outline-solid" size="sm">
+              {numberFormatter(count, 0)}
+            </Badge>
+          )}
+          <InlineLink href={detailsHref}>
+            {t("v4.cards.go-to-details", "Go to details")}
+          </InlineLink>
+        </div>
       </div>
-    </div>
-    <div className="mt-3 flex flex-col gap-2">{children}</div>
-  </section>
-);
+      <div className="mt-3 flex flex-col gap-2">{children}</div>
+    </section>
+  );
+};
 
 const getStackedChartSeries = (
   series: UsageSeries[],
@@ -298,6 +304,7 @@ const UsageStackedBarOverview = ({
   series: UsageSeries[];
   valueLabel: string;
 }) => {
+  const { t } = useI18n();
   const chartSeries = useMemo(() => getStackedChartSeries(series), [series]);
   const chartData = useMemo(
     () =>
@@ -336,7 +343,9 @@ const UsageStackedBarOverview = ({
   return (
     <div className="rounded-md border p-3">
       <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="text-sm font-medium">Usage over time</span>
+        <span className="text-sm font-medium">
+          {t("v4.cards.usage-over-time", "Usage over time")}
+        </span>
         <span className="text-muted-foreground text-xs">
           {numberFormatter(total, 0, 2)} {valueLabel}
         </span>
@@ -421,32 +430,37 @@ const ActionRow = ({
   detail: string;
   total?: number;
   usageLabel?: string;
-}) => (
-  <div className="grid gap-3 rounded-md border px-3 py-2 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
-    <div className="min-w-0">
-      <div className={cn("truncate text-sm font-medium", titleClassName)}>
-        {title}
+}) => {
+  const { t } = useI18n();
+  return (
+    <div className="grid gap-3 rounded-md border px-3 py-2 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
+      <div className="min-w-0">
+        <div className={cn("truncate text-sm font-medium", titleClassName)}>
+          {title}
+        </div>
+        <div className="text-muted-foreground mt-0.5 truncate text-xs">
+          {detail}
+        </div>
       </div>
-      <div className="text-muted-foreground mt-0.5 truncate text-xs">
-        {detail}
+      <div className="md:text-right">
+        {typeof total === "number" ? (
+          <>
+            <div className="text-sm font-medium">
+              {numberFormatter(total, 0, 2)}
+            </div>
+            <div className="text-muted-foreground text-xs">
+              {usageLabel ?? t("v4.cards.uses", "uses")}
+            </div>
+          </>
+        ) : (
+          <span className="text-muted-foreground text-sm">
+            {t("v4.cards.configuration", "Configuration")}
+          </span>
+        )}
       </div>
     </div>
-    <div className="md:text-right">
-      {typeof total === "number" ? (
-        <>
-          <div className="text-sm font-medium">
-            {numberFormatter(total, 0, 2)}
-          </div>
-          <div className="text-muted-foreground text-xs">
-            {usageLabel ?? "uses"}
-          </div>
-        </>
-      ) : (
-        <span className="text-muted-foreground text-sm">Configuration</span>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 export const V4MigrationProjectCards = ({
   projectId,
@@ -479,6 +493,7 @@ export const V4MigrationProjectCards = ({
   hasLegacyApiUsageError: boolean;
   hasTraceLevelEvalExecutionsError: boolean;
 }) => {
+  const { t } = useI18n();
   const traceLevelEvalsHref = useMemo(
     () => getTraceLevelEvalsHref(projectId),
     [projectId],
@@ -538,27 +553,38 @@ export const V4MigrationProjectCards = ({
 
   return (
     <DashboardCard
-      title="Required changes"
+      title={t("v4.cards.title", "Required changes")}
       description={
         isSummaryLoading
-          ? "Loading V4 migration data."
+          ? t("v4.cards.loading", "Loading V4 migration data.")
           : hasAnyError
-            ? `${projectName ? `${projectName} - ` : ""}Some migration data could not be loaded.`
+            ? `${projectName ? `${projectName} - ` : ""}${t(
+                "v4.cards.error",
+                "Some migration data could not be loaded.",
+              )}`
             : isTimelineLoading
-              ? `${projectName ? `${projectName} - ` : ""}Loading usage timelines.`
-              : `${projectName ? `${projectName} - ` : ""}${numberFormatter(
-                  activeTaskCount,
-                  0,
-                )} required ${
-                  activeTaskCount === 1 ? "change" : "changes"
-                } in the selected time range`
+              ? `${projectName ? `${projectName} - ` : ""}${t(
+                  "v4.cards.loading-timelines",
+                  "Loading usage timelines.",
+                )}`
+              : `${projectName ? `${projectName} - ` : ""}${t(
+                  "v4.cards.required-changes",
+                  "{count} required changes in the selected time range",
+                  {
+                    count: `${numberFormatter(activeTaskCount, 0)} ${
+                      activeTaskCount === 1
+                        ? t("v4.cards.change", "change")
+                        : t("v4.cards.changes", "changes")
+                    }`,
+                  },
+                )}`
       }
       isLoading={isSummaryLoading}
       headerRight={
         isSummaryLoading ? undefined : (
           <div className="flex items-center gap-2">
             <InlineLink href={V4_DOCS_LINK.href} external>
-              {V4_DOCS_LINK.label}
+              {t("v4.cards.docs", "Docs")}
             </InlineLink>
             <Badge
               variant={
@@ -569,17 +595,19 @@ export const V4MigrationProjectCards = ({
               className="whitespace-nowrap"
             >
               {hasAnyError
-                ? "Unavailable"
+                ? t("v4.cards.unavailable", "Unavailable")
                 : isTimelineLoading
-                  ? "Loading"
-                  : migrationStatus.label}
+                  ? t("v4.cards.loading-badge", "Loading")
+                  : migrationStatus.badgeVariant === "warning"
+                    ? t("v4.status.not-migrated", "Not migrated")
+                    : t("v4.status.migrated", "Migrated")}
             </Badge>
           </div>
         )
       }
     >
       <Section
-        title="Legacy public APIs"
+        title={t("v4.cards.legacy-apis", "Legacy public APIs")}
         count={legacyApiSeries.length}
         isCountLoading={isLegacyApiUsageLoading}
         detailsHref={`/project/${projectId}/settings/api-keys`}
@@ -587,20 +615,30 @@ export const V4MigrationProjectCards = ({
         {isLegacyApiUsageLoading ? (
           <SectionLoading />
         ) : hasLegacyApiUsageError ? (
-          <Notice>Failed to load public API usage.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.legacy-apis-error",
+              "Failed to load public API usage.",
+            )}
+          </Notice>
         ) : legacyApiSeries.length ? (
           <UsageStackedBarOverview
             bucketTimes={legacyApiBucketTimes}
             series={legacyApiSeries}
-            valueLabel="calls"
+            valueLabel={t("v4.cards.calls", "calls")}
           />
         ) : (
-          <Notice>No legacy public API usage in this range.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.legacy-apis-empty",
+              "No legacy public API usage in this range.",
+            )}
+          </Notice>
         )}
       </Section>
 
       <Section
-        title="Trace-level evals"
+        title={t("v4.cards.trace-level-evals", "Trace-level evals")}
         count={traceLevelEvalCount}
         isCountLoading={isTraceLevelEvalSummaryLoading}
         detailsHref={traceLevelEvalsHref}
@@ -609,28 +647,44 @@ export const V4MigrationProjectCards = ({
           <SectionLoading />
         ) : hasTraceLevelEvalSummaryError ||
           hasTraceLevelEvalExecutionsError ? (
-          <Notice>Failed to load trace-level eval data.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.trace-level-evals-error",
+              "Failed to load trace-level eval data.",
+            )}
+          </Notice>
         ) : evalExecutionSeries.length ? (
           <UsageStackedBarOverview
             bucketTimes={evalExecutionBucketTimes}
             series={evalExecutionSeries}
-            valueLabel="executions"
+            valueLabel={t("v4.cards.executions", "executions")}
           />
         ) : traceLevelEvalCount > 0 ? (
           <ActionRow
-            title={`${numberFormatter(
-              traceLevelEvalCount,
-              0,
-            )} configured trace-level evals`}
-            detail="No executions found in the selected range."
+            title={t(
+              "v4.cards.configured-evals",
+              "{count} configured trace-level evals",
+              {
+                count: numberFormatter(traceLevelEvalCount, 0),
+              },
+            )}
+            detail={t(
+              "v4.cards.no-executions",
+              "No executions found in the selected range.",
+            )}
           />
         ) : (
-          <Notice>No trace-level evals detected.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.no-trace-level-evals",
+              "No trace-level evals detected.",
+            )}
+          </Notice>
         )}
       </Section>
 
       <Section
-        title="Integrations"
+        title={t("v4.cards.integrations", "Integrations")}
         count={legacyIntegrationLinks.length}
         isCountLoading={isLegacyIntegrationSummaryLoading}
         detailsHref={`/project/${projectId}/settings/integrations`}
@@ -638,17 +692,30 @@ export const V4MigrationProjectCards = ({
         {isLegacyIntegrationSummaryLoading ? (
           <SectionLoading />
         ) : hasLegacyIntegrationSummaryError ? (
-          <Notice>Failed to load integration data.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.integrations-error",
+              "Failed to load integration data.",
+            )}
+          </Notice>
         ) : legacyIntegrationLinks.length ? (
           legacyIntegrationLinks.map((integration) => (
             <ActionRow
               key={integration.key}
               title={integration.label}
-              detail="Legacy traces and observations export is enabled."
+              detail={t(
+                "v4.cards.integration-export-enabled",
+                "Legacy traces and observations export is enabled.",
+              )}
             />
           ))
         ) : (
-          <Notice>No legacy integration exports detected.</Notice>
+          <Notice>
+            {t(
+              "v4.cards.no-integrations",
+              "No legacy integration exports detected.",
+            )}
+          </Notice>
         )}
       </Section>
     </DashboardCard>
