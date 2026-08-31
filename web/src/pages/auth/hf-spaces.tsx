@@ -42,7 +42,7 @@ export default function HfSpaces({ deploymentDomain }: PageProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/huggingface-logo.svg"
-              alt="Hugging Face Logo"
+              alt={t("auth.hf-spaces.logo-alt", "Hugging Face Logo")}
               width={36}
               height={36}
             />
