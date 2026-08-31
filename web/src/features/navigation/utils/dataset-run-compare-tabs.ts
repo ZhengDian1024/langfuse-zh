@@ -1,3 +1,10 @@
+import type { MessageKey } from "@/src/features/i18n/messages";
+
+type TranslateFn = (
+  key: MessageKey,
+  defaultMessage?: string,
+) => string;
+
 import { type ParsedUrlQuery } from "querystring";
 
 export const DATASET_RUN_COMPARE_TABS = {
@@ -11,16 +18,17 @@ export type DatasetRunCompareTab =
 export const getDatasetRunCompareTabs = (
   projectId: string,
   datasetId: string,
+  t: TranslateFn,
 ) => [
   {
     value: DATASET_RUN_COMPARE_TABS.COMPARE,
-    label: "Outputs",
+    label: t("nav.outputs", "Outputs"),
     href: `/project/${projectId}/datasets/${datasetId}/compare`,
     querySelector: (query: ParsedUrlQuery) => ({ runs: query.runs }),
   },
   {
     value: DATASET_RUN_COMPARE_TABS.CHARTS,
-    label: "Charts",
+    label: t("nav.charts", "Charts"),
     href: `/project/${projectId}/datasets/${datasetId}/compare/charts`,
     querySelector: (query: ParsedUrlQuery) => ({ runs: query.runs }),
   },

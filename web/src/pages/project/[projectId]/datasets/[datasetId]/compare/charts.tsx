@@ -92,7 +92,7 @@ export default function DatasetCompare() {
           name: dataset.data?.name ?? datasetId,
         }),
         tabsProps: {
-          tabs: getDatasetRunCompareTabs(projectId, datasetId),
+          tabs: getDatasetRunCompareTabs(projectId, datasetId, t),
           activeTab: DATASET_RUN_COMPARE_TABS.CHARTS,
         },
         breadcrumb: [

@@ -54,7 +54,7 @@ export default function Generations() {
           isBetaEnabled || isInitializing
             ? undefined
             : {
-                tabs: getTracingTabs(projectId),
+                tabs: getTracingTabs(projectId, t),
                 activeTab: TRACING_TABS.OBSERVATIONS,
               },
       }}

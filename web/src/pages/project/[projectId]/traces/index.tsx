@@ -102,7 +102,7 @@ export default function Traces() {
           isBetaEnabled || isInitializing
             ? undefined
             : {
-                tabs: getTracingTabs(projectId),
+                tabs: getTracingTabs(projectId, t),
                 activeTab: TRACING_TABS.TRACES,
               },
       }}

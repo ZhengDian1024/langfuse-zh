@@ -91,7 +91,7 @@ export default function EvaluatorsPage() {
             href: "https://langfuse.com/docs/evaluation/evaluation-methods/llm-as-a-judge",
           },
           tabsProps: {
-            tabs: getEvalsTabs(projectId),
+            tabs: getEvalsTabs(projectId, t),
             activeTab: EVALS_TABS.CONFIGS,
           },
           actionButtonsRight: (

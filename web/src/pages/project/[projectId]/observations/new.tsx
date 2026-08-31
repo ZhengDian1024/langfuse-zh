@@ -49,7 +49,7 @@ export default function Events() {
           href: "https://langfuse.com/docs/observability/data-model",
         },
         tabsProps: {
-          tabs: getTracingTabs(projectId),
+          tabs: getTracingTabs(projectId, t),
           activeTab: TRACING_TABS.OBSERVATIONS,
         },
       }}

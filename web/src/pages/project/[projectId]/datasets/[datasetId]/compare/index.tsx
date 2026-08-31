@@ -114,7 +114,7 @@ function DatasetCompareInternal() {
           ),
         },
         tabsProps: {
-          tabs: getDatasetRunCompareTabs(projectId, datasetId),
+          tabs: getDatasetRunCompareTabs(projectId, datasetId, t),
           activeTab: DATASET_RUN_COMPARE_TABS.COMPARE,
         },
         actionButtonsRight: (

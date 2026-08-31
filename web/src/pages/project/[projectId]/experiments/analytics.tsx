@@ -53,7 +53,7 @@ export default function ExperimentAnalytics() {
           { name: t("nav.experiments", "Experiments"), href: `/project/${projectId}/experiments` },
         ],
         tabsProps: {
-          tabs: getExperimentRunTabs(projectId, handleResultsClick),
+          tabs: getExperimentRunTabs(projectId, handleResultsClick, t),
           activeTab: EXPERIMENT_RUN_TABS.ANALYTICS,
         },
       }}

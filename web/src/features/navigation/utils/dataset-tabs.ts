@@ -1,3 +1,10 @@
+import type { MessageKey } from "@/src/features/i18n/messages";
+
+type TranslateFn = (
+  key: MessageKey,
+  defaultMessage?: string,
+) => string;
+
 export const DATASET_TABS = {
   ITEMS: "items",
   EXPERIMENTS: "experiments",
@@ -5,16 +12,20 @@ export const DATASET_TABS = {
 
 export type DatasetTab = (typeof DATASET_TABS)[keyof typeof DATASET_TABS];
 
-export const getDatasetTabs = (projectId: string, datasetId: string) => {
+export const getDatasetTabs = (
+  projectId: string,
+  datasetId: string,
+  t: TranslateFn,
+) => {
   return [
     {
       value: DATASET_TABS.ITEMS,
-      label: "Items",
+      label: t("nav.items", "Items"),
       href: `/project/${projectId}/datasets/${datasetId}/items`,
     },
     {
       value: DATASET_TABS.EXPERIMENTS,
-      label: "Experiments",
+      label: t("nav.experiments", "Experiments"),
       href: `/project/${projectId}/datasets/${datasetId}/experiments`,
     },
   ];

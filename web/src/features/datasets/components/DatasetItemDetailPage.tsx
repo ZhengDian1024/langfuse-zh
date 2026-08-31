@@ -133,7 +133,7 @@ export const DatasetItemDetailPage = ({
           },
         ],
         tabsProps: {
-          tabs: getDatasetItemTabs({ projectId, datasetId, itemId }),
+          tabs: getDatasetItemTabs({ projectId, datasetId, itemId, t }),
           activeTab,
         },
         actionButtonsLeft: (

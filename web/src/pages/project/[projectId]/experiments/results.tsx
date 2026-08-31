@@ -95,7 +95,7 @@ export default function ExperimentResults() {
           { name: t("nav.experiments", "Experiments"), href: `/project/${projectId}/experiments` },
         ],
         tabsProps: {
-          tabs: getExperimentRunTabs(projectId),
+          tabs: getExperimentRunTabs(projectId, undefined, t),
           activeTab: EXPERIMENT_RUN_TABS.RESULTS,
         },
         actionButtonsRight: (

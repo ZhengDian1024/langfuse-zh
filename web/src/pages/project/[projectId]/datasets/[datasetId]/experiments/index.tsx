@@ -171,7 +171,7 @@ export default function Dataset() {
           itemType: "DATASET",
           breadcrumb,
           tabsProps: {
-            tabs: getDatasetTabs(projectId, datasetId),
+            tabs: getDatasetTabs(projectId, datasetId, t),
             activeTab: DATASET_TABS.EXPERIMENTS,
           },
           actionButtonsRight: (
@@ -252,7 +252,7 @@ export default function Dataset() {
             }
           : undefined,
         tabsProps: {
-          tabs: getDatasetTabs(projectId, datasetId),
+          tabs: getDatasetTabs(projectId, datasetId, t),
           activeTab: DATASET_TABS.EXPERIMENTS,
         },
         actionButtonsRight: (
