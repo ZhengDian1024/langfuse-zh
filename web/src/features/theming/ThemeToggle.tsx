@@ -11,8 +11,8 @@ export function ThemeToggle() {
   const { t } = useI18n();
   return (
     <div className="flex items-center space-x-1">
-      <span className="mr-2">{t("user-menu.theme")}11</span>
-      <div title="Light mode">
+      <span className="mr-2">{t("user-menu.theme")}</span>
+      <div title={t("theming.light-mode", "Light mode")}>
         <Sun
           className={cn(
             theme === "light" ? "text-primary-accent" : "",
@@ -27,7 +27,7 @@ export function ThemeToggle() {
           }}
         />
       </div>
-      <div title="Dark mode">
+      <div title={t("theming.dark-mode", "Dark mode")}>
         <Moon
           className={cn(
             theme === "dark" ? "text-primary-accent" : "",
@@ -42,7 +42,7 @@ export function ThemeToggle() {
           }}
         />
       </div>
-      <div title="System mode">
+      <div title={t("theming.system-mode", "System mode")}>
         <Monitor
           className={cn(
             theme === "system" ? "text-primary-accent" : "",

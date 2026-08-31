@@ -3574,5 +3574,8 @@
   "payment-banner.title": "Billing Issue:",
   "payment-banner.description": "We have problems collecting subscription payment for your organization '{name}'. Please update your payment information to continue using Langfuse.",
   "payment-banner.update-payment": "Update Payment",
-  "cloud-status.status": "Status"
+  "cloud-status.status": "Status",
+  "theming.light-mode": "Light mode",
+  "theming.dark-mode": "Dark mode",
+  "theming.system-mode": "System mode"
 }

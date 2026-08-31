@@ -3574,5 +3574,8 @@
   "payment-banner.title": "账单问题：",
   "payment-banner.description": "我们无法为您的组织“{name}”收取订阅付款。请更新您的付款信息以继续使用 Langfuse。",
   "payment-banner.update-payment": "更新付款信息",
-  "cloud-status.status": "状态"
+  "cloud-status.status": "状态",
+  "theming.light-mode": "浅色模式",
+  "theming.dark-mode": "深色模式",
+  "theming.system-mode": "跟随系统"
 }
