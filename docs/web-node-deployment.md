@@ -1,32 +1,47 @@
-# Langfuse Web 去 Docker 化部署迁移（交接文档）
+# Langfuse Web 去 Docker 化部署全记录
 
-> 目标读者：下一个执行此任务的 Claude 会话 / 工程师
-> 文档日期：2026-08-26
-> 当前状态：**进行中**（构建链路已通，服务器端部署做到一半，详见「当前进度」）
+> 记录时间：2026-08-26
+> 状态：**已上线，全链路验收通过**
+> 服务器：10.105.36.51（ehr-okragent-sandbox-test1）
+> 线上入口：https://ehr-service.netease.com/langfuse
+> 仓库：ssh://git@g.hz.netease.com:22222/zhengdian/langfuse.git（main 分支）
+> 线上文档（POPO 富文本，内容一致）：https://docs.popo.netease.com/lingxi/b4e1260378444ce4b8d666080d514064
 
-## 一、背景与目标
+## 一、背景
 
 Langfuse 在 10.105.36.51 上以 docker-compose 方式私有化部署。本项目对其 web 做了私有化改造（国际化、权限等），改造后的发布流程原本是：push GitHub → GitHub CI 构建镜像 → 手动登录服务器拉镜像重启，非常繁琐。
 
 **目标**：web 改为宿主机 Node 进程（pm2 守护）直接运行 Next.js standalone 产物，通过公司构建发布平台（NDP）自动构建分发，实现 **push 代码 → 平台点发布 → 服务器 1 分钟内自动更新**。
 
 **不变的部分**：
+
 - postgres / clickhouse / redis / minio 继续用 docker 容器（数据不迁移）
 - worker 继续用官方镜像 `ghcr.io/langfuse/langfuse-worker:3`
 - 反代入口不变：`https://ehr-service.netease.com/langfuse` → 服务器 3000 端口
 
-## 二、总体架构
+## 二、最终架构
 
 ### 发布链路
 
 ```
 本地 push (gitlab: ssh://git@g.hz.netease.com:22222/zhengdian/langfuse.git main)
   → NDP 构建平台（ant 脚本：pnpm install → next build → 组装 standalone → 打 tar）
-  → 平台打包上传 NOS 对象存储（外层包 a.ehr-langfuse_*.tar.gz，约 608MB，含冗余，待优化）
-  → 服务器 ndpclient 下载解压到 deploy_path
-  → 服务器 cron watch 脚本检测 RELEASE_ID 变化
-  → 解压 release.tar.gz 到运行目录 → pm2 restart
+  → 平台打包上传 NOS 对象存储（外层包约 608MB，含冗余）
+  → 服务器 ndpclient 下载解压到 /data/ndp/langfuse-web
+  → 服务器 cron 每分钟跑 watch-release.sh 检测 RELEASE_ID 变化
+  → 解压 release.tar.gz → 原子换目录 → pm2 restart
 ```
+
+### 关键目录
+
+| 目录 | 用途 | 盘 |
+|---|---|---|
+| `/data/ndp/langfuse-web` | 发布落盘区（ndpclient 写入，只有 release.tar.gz + RELEASE_ID 是我们的产物） | 数据盘 98G |
+| `/data/langfuse/web-current` | 实际运行目录（pm2 cwd，整体原子换目录） | 数据盘 98G |
+| `/data/langfuse/web.env` | 运行时环境变量（pm2 注入，含密钥，600 权限） | 数据盘 |
+| `/data/langfuse/watch-release.sh` | 自动发布 watch 脚本（cron 每分钟） | 数据盘 |
+| `/data/langfuse/ecosystem.config.cjs` | pm2 配置 | 数据盘 |
+| `/data/langfuse/watch.log` | watch + cron stderr 日志 | 数据盘 |
 
 ### 三层配置（重要设计，勿混）
 
@@ -36,51 +51,49 @@ Langfuse 在 10.105.36.51 上以 docker-compose 方式私有化部署。本项�
 | 本地 `.env` | 开发机 | 本地 dev 运行时真实配置 | ❌ |
 | `/data/langfuse/web.env` | 服务器 | 生产运行时真实环境变量（pm2 注入） | ❌ |
 
-关键认知：standalone 的 `node server.js` **不会自动加载 .env**（dotenv 只在 npm scripts 里生效），运行时环境变量必须由 pm2 注入。构建期的值不会打进产物（`NEXT_PUBLIC_BASE_PATH` 是唯一例外，见「坑」）。
+关键认知：standalone 的 `node server.js` **不会自动加载 .env**（dotenv 只在 npm scripts 里生效），运行时环境变量必须由 pm2 注入。构建期的值不会打进产物（`NEXT_PUBLIC_BASE_PATH` 是唯一例外，构建期固化）。
 
 ## 三、各环境关键信息
 
 ### 仓库（开发机）
 
 - 路径：`/Users/zhengdian/project/ehr-langfuse`
-- 远程：`gitlab` = ssh://git@g.hz.netease.com:22222/zhengdian/langfuse.git（**发布用这个**）；`origin` = GitHub ZhengDian1024/langfuse-zh（旧镜像 CI 流程，仍在但不再用于发布）
+- 远程：`gitlab` = ssh://git@g.hz.netease.com:22222/zhengdian/langfuse.git（**发布用这个**）；`origin` = GitHub ZhengDian1024/langfuse-zh（旧镜像 CI 流程，不再用于发布）
 - 分支：main
-- 最新已推 commit（含部署配置改动）：`56e0252`（.env.build 加了 NEXT_PUBLIC_BASE_PATH=/langfuse）
 
 ### 构建平台（NDP）
 
 - 应用名 `ehr-agent-service`，集群 `ehr-langfuse`，模板 47（静态资源模板），应用类型选**「静态资源」**（不要选 Node.js——那是平台托管运行，我们只借它构建分发）
-- 构建机工作区：`/home/appops/ndp/source/ehr-langfuse`（另一台构建机见过 `/srv/nbs/0/ndp/source/ehr-langfuse`，以日志实际为准）
-- Node：`/home/ndp-soft/node-v24.19.0-linux-x64/bin/node`（Node 24，满足 repo engines 要求）
-- pnpm：`${node.home}/bin/pnpm` 是 corepack 包装脚本，**必须给 exec 注入 `PATH=${node.home}/bin:${env.PATH}`**，否则包装脚本内部用 PATH 里的老 node（v16.14.2）报 "requires at least Node.js v22.13"
-- 发布产物通过 NOS（nos2-i.service.163.org）中转，服务器 ndpclient 自动下载，**无需自建传输通道**
+- deploy_path：`/data/ndp/langfuse-web`
+- Node：`/home/ndp-soft/node-v24.19.0-linux-x64/bin/node`（Node 24）
+- pnpm：`${node.home}/bin/pnpm` 是 corepack 包装脚本，**必须给 exec 注入 `PATH=${node.home}/bin:${env.PATH}`**，否则包装脚本内部用 PATH 里的老 node（v16）报 "requires at least Node.js v22.13"
+- ant 里 `${env.PATH}` 必须先 `<property environment="env"/>` 声明；`DSTAMP`/`TSTAMP` 必须先 `<tstamp/>`
 
-### 服务器（10.105.36.51，主机名 ehr-okragent-sandbox-test1）
+### 服务器（10.105.36.51）
 
 - root 可用；docker-compose 在 `/data/langfuse/docker-compose.yml`，env 在 `/data/langfuse/.env`
-- 容器：`langfuse-langfuse-web-1`（要替换的）、`langfuse-langfuse-worker-1`、`langfuse-postgres-1`、`langfuse-clickhouse-1`、`langfuse-redis-1`、`langfuse-minio-1`
-- docker 数据目录在 `/data/docker`（98G 数据盘）；**镜像存在 `/var/lib/containerd`（40G 根盘，Docker 启用了 containerd snapshotter，namespace=moby）**
-- 端口现状：web 3000 已映射；minio 9090→9000（API）、9091→9001（控制台）；postgres/clickhouse/redis **未映射宿主机端口**（待办）
-- 外部入口：`https://ehr-service.netease.com/langfuse`（反代到 3000，`NEXT_PUBLIC_BASE_PATH=/langfuse`）
+- 容器：`langfuse-langfuse-web-1`（已 stop 未 rm，保留用于跑迁移）、`langfuse-langfuse-worker-1`、`langfuse-langfuse-postgres-1`、`langfuse-langfuse-clickhouse-1`、`langfuse-langfuse-redis-1`、`langfuse-langfuse-minio-1`
+- 基础设施端口映射（docker-compose 已加，只绑 127.0.0.1）：postgres 5432、clickhouse 8123/9000、redis 6379
+- minio 宿主机 API 端口是 **9090**（容器内 9000；9000 被 clickhouse 原生协议占用），控制台 9091
+- Node 24 装在 `/usr/local`（`/usr/local/bin/node`），pm2 全局安装
 
-## 四、当前进度
+## 四、实施步骤全记录
 
-### ✅ 已完成
+按实际执行顺序，每步含关键操作与验证。
 
-1. **ant 构建脚本调通**（历经：PATH 里老 node → pnpm.cjs 路径不存在 → ${env.PATH} 未声明 → .env 缺失 → S3 bucket 必填 → basePath 缺失 → monorepo 嵌套结构），最终版见附录 A
-2. **`.env.build` 进仓库**（含全部 9 个构建期必填变量，含 `NEXT_PUBLIC_BASE_PATH=/langfuse`、`NEXTAUTH_URL=https://ehr-service.netease.com/langfuse`、`LANGFUSE_S3_EVENT_UPLOAD_BUCKET=langfuse`）
-3. **一次完整成功的构建+发布**（commit 0dbbe72 那次产物，但那次 static/public 拷错了位置）；monorepo 结构修正版（56e0252）构建成功，发布失败于磁盘满
-4. **磁盘排查结论**：根盘 40G 满。已定位：`/var/lib/containerd` 22G（docker 镜像，可 `docker image prune -a -f` 清理）、`/var/log/journal` 4G（`journalctl --vacuum-size=200M`）、`/home/appops/.ndp/biz` 5.5G（ndpclient 下载缓存，可清）
-5. **docker web 容器真实环境变量已导出**（曾导出到服务器 `/tmp/web-env-raw.txt`，源头是 `/data/langfuse/.env`）
-6. 服务器 `/data/ndp`（appops 可写，发布目录用）与 `/data/langfuse`（运行目录用）已建
+### 第 1 步：服务器磁盘清理
 
-### ⏳ 待完成（按顺序执行）
+根盘 40G 曾被占满（containerd 镜像 22G + journal 4G + ndpclient 缓存 5.5G）。清理后根盘降到 59%（16G 可用）。后续又做了磁盘治理（见第七节）。
 
-**第 1 步：服务器磁盘清理**（详见上面第 4 条，清完 `df -h` 确认根盘可用 > 5G）
+### 第 2 步：NDP 平台构建发布
 
-**第 2 步：确认 ant 脚本为附录 A 版本**（含 monorepo 修正 + tstamp），在平台触发构建发布，deploy_path 改为 `/data/ndp/langfuse-web`
+- ant 脚本（最终版见附录 A）调通，产物为 `release.tar.gz` + `RELEASE_ID`（内容 `git短hash + 日期时间戳`）
+- deploy_path 设为 `/data/ndp/langfuse-web`
+- **踩坑**：`/data/ndp` 最初是 root 建的，ndpclient 以 appops 用户运行报 `Permission denied`。修复：`chown -R appops: /data/ndp`（appops 主组是 netease，不是 appops）
 
-**第 3 步：docker-compose 加基础设施端口映射**（文件 `/data/langfuse/docker-compose.yml`，只动 postgres/clickhouse/redis 三段，**web/worker/minio 一个字不动**）：
+### 第 3 步：docker-compose 加基础设施端口映射
+
+只动 postgres/clickhouse/redis 三段（web/worker/minio 不动），端口只绑 `127.0.0.1`：
 
 ```yaml
   postgres:
@@ -95,11 +108,13 @@ Langfuse 在 10.105.36.51 上以 docker-compose 方式私有化部署。本项�
       - "127.0.0.1:6379:6379"
 ```
 
-`cd /data/langfuse && docker compose up -d`（只重建这三个容器，约 1 分钟服务抖动，数据在 volume 不丢，redis 有 volume）。验证：`curl -s http://127.0.0.1:8123/ping` 返回 `Ok.`
+`cd /data/langfuse && docker compose up -d` 重建三个容器，验证 `curl -s http://127.0.0.1:8123/ping` 返回 `Ok.`
 
-**第 4 步：整理运行时环境变量 `/data/langfuse/web.env`**（以 `/data/langfuse/.env` 为底，只改这些，其余原样保留，尤其 `SALT`/`ENCRYPTION_KEY`/`NEXTAUTH_SECRET`/所有 `LANGFUSE_INIT_*`）：
+### 第 4 步：生成运行时环境变量 /data/langfuse/web.env
 
-| 改动 | 原值 → 新值 |
+以 `/data/langfuse/.env` 为底，只改主机名指向，密钥类（SALT/ENCRYPTION_KEY/NEXTAUTH_SECRET/所有 LANGFUSE_INIT_*）原样保留：
+
+| 变量 | 原值 → 新值 |
 |---|---|
 | DATABASE_URL | `@postgres:5432` → `@127.0.0.1:5432` |
 | CLICKHOUSE_URL | `http://clickhouse:8123` → `http://127.0.0.1:8123` |
@@ -107,48 +122,161 @@ Langfuse 在 10.105.36.51 上以 docker-compose 方式私有化部署。本项�
 | REDIS_HOST | `redis` → `127.0.0.1` |
 | LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT | `http://minio:9000` → `http://127.0.0.1:9090` |
 | LANGFUSE_S3_BATCH_EXPORT_ENDPOINT | `http://minio:9000` → `http://127.0.0.1:9090` |
-| LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT | **不动**（已是 `http://10.105.36.51:9090`） |
+| LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT | 不动（已是 `http://10.105.36.51:9090`） |
 
-末尾追加三行：`NODE_ENV=production`、`PORT=3000`、`HOSTNAME=0.0.0.0`
+末尾追加 `NODE_ENV=production`、`PORT=3000`、`HOSTNAME=0.0.0.0`，`chmod 600`。
 
-**第 5 步：手动试跑（关键验证）**：
+**踩坑**：web.env 里有带空格的值（如 LANGFUSE_INIT_ORG_NAME），bash `source` 会把空格后内容当命令执行报 `Org: command not found`。**web.env 保持 docker .env 格式不动**，加载用逐行解析（pm2 的 ecosystem 本来就是逐行正则解析，不受影响）。
+
+### 第 5 步：手动试跑（关键验证）
 
 ```bash
 mkdir -p /data/langfuse/web-current
 tar -xzf /data/ndp/langfuse-web/release.tar.gz -C /data/langfuse/web-current
-ls /data/langfuse/web-current      # 应有: node_modules  web  packages  RELEASE_ID
-ls /data/langfuse/web-current/web  # 应有: server.js  .next  public  node_modules ...
-
 docker stop langfuse-langfuse-web-1    # 只停 web！
 cd /data/langfuse/web-current
-set -a && . /data/langfuse/web.env && set +a
+while IFS= read -r line; do
+  case "$line" in ''|\#*) continue ;; esac
+  export "${line%%=*}=${line#*=}"
+done < /data/langfuse/web.env
 node web/server.js --keepAliveTimeout 110000
 ```
 
-浏览器验证 `https://ehr-service.netease.com/langfuse`（登录、trace 列表、国际化文案）。前台报错直接看终端。
+**踩坑（本项目最大的坑）**：启动报 `Cannot find module '@swc/helpers/_/_interop_require_default'`。
 
-**第 6 步：pm2 + 自动化**（试跑通过后）：装 pm2 → 用附录 B 的 ecosystem 配置启动 → 附录 C 的 watch 脚本 + cron → 全链路验证一次「平台发布 → 自动重启」→ 最后 `docker rm langfuse-langfuse-web-1`（建议先留着容器只 stop，跑迁移时还用得上，见下）。
+根因：pnpm 布局下 standalone 产物里 `web/node_modules/next` 是**符号链接**，指向 `node_modules/.pnpm/next@.../node_modules/next`，next 的依赖（含 @swc/helpers）都在 .pnpm 邻居位置，靠链接解析可达。而 **ant 的 `<copy>` 和 `<tar>` 默认解引用符号链接**，拷贝后链接被拍平成普通目录，解析链断裂 → 模块找不到。（官方 Dockerfile 用 docker COPY 保留链接，所以官方镜像没事。）
 
-## 五、已知的坑（前人踩过，勿重复）
+修复（ant 脚本两处改动）：
 
-1. **monorepo 嵌套结构**：standalone 入口是 `web/server.js`（不是顶层 server.js）；`web/.next/static` 和 `web/public` 必须放进 `web/` 子目录（对照 `web/Dockerfile:165-170`）。`ls` 看不到 `.next` 是因为点开头目录默认隐藏。
-2. **`NEXT_PUBLIC_BASE_PATH` 是构建期变量**（`web/next.config.mjs:85`），必须进 `.env.build` 且与线上反代路径（`/langfuse`）一致，否则静态资源全 404。
-3. **数据库迁移不会自动跑**：docker 靠 `web/entrypoint.sh` 启动时跑 `prisma migrate deploy` + clickhouse 迁移；直接 node 启动不执行 entrypoint。将来升级涉及 schema 变更时：`docker start langfuse-langfuse-web-1` 等它跑完迁移再 `docker stop`（所以 web 容器先别删）。产物里已带 `packages/shared/prisma` 和 `packages/shared/clickhouse` 备用。
-4. **外层发布包 608MB 冗余**：平台打的外层包包含工作区杂物（我们的 release.tar.gz 只有 290MB）。待找平台管理员确认能否只打包 `compressed` 目录。每次发布占根盘空间的部分已通过 deploy_path 迁到 /data 解决。
-5. **`/home/appops/.ndp/biz` 会累积发布包缓存**（每次 608MB），磁盘紧张时先清它。
-6. **ant 里 `${env.PATH}` 必须先声明 `<property environment="env"/>`**；`DSTAMP`/`TSTAMP` 必须先 `<tstamp/>`。
-7. **服务器部署目录里的杂目录**（`web/`、`node_modules/`、`public/`，外层包解压物）不是我们的产物，watch 脚本只认 `release.tar.gz` + `RELEASE_ID`。
-8. minio 在宿主机的 API 端口是 **9090**（不是容器内的 9000；9000 被 clickhouse 原生协议占用）。
+```xml
+<!-- standalone 拷贝改用 cp -a 保留符号链接 -->
+<mkdir dir="${staging.dir}"/>
+<exec executable="cp" failonerror="true">
+    <arg line="-a web/.next/standalone/. ${staging.dir}/"/>
+</exec>
 
-## 六、验收清单
+<!-- ant 的 tar 同样会解引用，改用 shell tar -->
+<exec executable="tar" failonerror="true">
+    <arg line="-czf ${dist.dir}/release.tar.gz -C ${staging.dir} ."/>
+</exec>
+```
 
-- [ ] `https://ehr-service.netease.com/langfuse` 正常访问，登录正常（SALT 未变，历史 API Key 有效）
-- [ ] trace/observation 列表正常（ClickHouse 连通）
-- [ ] 上传媒体、事件上传正常（minio 连通）
-- [ ] 国际化文案正常（zh）
-- [ ] 平台发布一次新版本，1~2 分钟内线上自动更新（watch + pm2 restart）
-- [ ] `docker stop langfuse-langfuse-web-1` 后一切仍正常（彻底摆脱 web 容器）
-- [ ] 回滚验证：平台回滚到旧版本 → watch 检测 RELEASE_ID 变化 → 自动解压旧包重启
+副作用是正向的：包从 290MB 降到 120MB（不再有解引用导致的内容重复）。
+
+验证通过标志：`✓ Ready` + init scripts 完成 + ClickHouse 连接日志出现。
+
+### 第 6 步：pm2 + 自动发布 watch
+
+装 pm2（npm 全局）、写 ecosystem.config.cjs（附录 B）和 watch-release.sh（附录 C）、切换 pm2 托管、挂 cron。
+
+**踩坑三连（都在这里发生）**：
+
+1. **`-nt` 时间戳检查不可靠**：最初用「RELEASE_ID 必须比 tar 新」判断包写完没有，但 ndpclient 中转会**重置两个文件的 mtime 且顺序不受控**（实测两个文件同为 14:11），导致检查误判、部署被跳过。修复：去掉 `-nt`，改为「两个文件都静置满 10 秒」。
+2. **cron 环境找不到 pm2（exit 127）**：pm2 的 shebang 是 `#!/usr/bin/env node`，cron 的 PATH 只有 `/usr/bin:/bin`，node 在 `/usr/local/bin` → `pm2 restart` 报 127，**包换了但服务没重启**。修复：脚本开头 `export PATH=/usr/local/bin:/usr/bin:/bin`。教训：`env -i` 模拟测试时版本一致提前退出，没走到 pm2 那步，暴露不了这个问题。
+3. **cron stderr 丢失**：服务器无 MTA，cron 报错无邮件无日志，失败是「无声」的。修复：crontab 改为 `>> /data/langfuse/watch.log 2>&1`，脚本内加 `trap 'log "异常退出: 行 $LINENO (exit=$?)"' ERR`。
+
+另有一个使用习惯坑：部署换目录瞬间，站在 `web-current` 里的交互终端会因 cwd 被删导致 pm2/git 报 `ENOENT: uv_cwd`——服务器操作时停在 `/data/langfuse` 即可。
+
+### 全链路验收（已通过）
+
+- push 改动 → 平台发布 → watch 自动检测 RELEASE_ID 变化 → 解压换目录 → pm2 restart → 线上更新，全程 1~2 分钟
+- 用「改写 web-current/RELEASE_ID 制造版本差」的方式复测了 cron 触发的完整部署路径
+- 回滚：平台点回滚 → 发布区换回旧包 → watch 检测变化 → 自动恢复旧版本（同一机制，天然支持）
+
+## 五、部署期间的服务影响
+
+每次自动发布的中断窗口约 **1~3 秒**（pm2 停旧进程 → 新进程监听 3000）。解压/换目录阶段不影响线上；撞上窗口的请求会看到一次 502，几秒后自愈。已打开的页面不受影响。长连接（SSE、上传中）会被切断。
+
+注意：新版本如果起来就崩，pm2 会崩溃重启循环，页面持续挂直到回滚（无自动回滚，平台点回滚即可，watch 1 分钟内恢复）。
+
+## 六、日常运维手册
+
+### 发版
+
+```
+改代码 → push gitlab main → NDP 平台点发布 → 等 1~2 分钟
+```
+
+确认：`tail /data/langfuse/watch.log`（应有「检测到新版本」+「部署完成」两条）、`pm2 status`（online）。
+
+### 回滚
+
+NDP 平台直接点回滚到历史版本，watch 自动完成恢复，无需登录服务器。
+
+### 公司统一登录（company-sso，2026-09 新增）
+
+代码侧 `COMPANY_SSO_*` 全为可选环境变量，缺失时 provider 不挂载——**可先发包、后加配置**，互不阻塞。
+
+`/data/langfuse/web.env` 末尾追加（值**不加引号**，ecosystem 逐行解析会保留引号）：
+
+```
+COMPANY_SSO_NAME=网易CORP邮箱登录
+COMPANY_SSO_LOGIN_URL=https://ehr-service.netease.com/api/auth/login/openId
+COMPANY_SSO_SYSTEM_CODE=ats
+COMPANY_SSO_NACOS_ADDR=https://ehr-nacos.netease.com/nacos
+COMPANY_SSO_NACOS_NAMESPACE=0ae732c6-a403-4092-addf-dc9431635c25
+COMPANY_SSO_NACOS_USERNAME=zhengdian
+COMPANY_SSO_NACOS_PASSWORD=zhengdian
+```
+
+生效必须 `pm2 startOrRestart /data/langfuse/ecosystem.config.cjs`——watch 脚本里的裸
+`pm2 restart` 不重读 web.env（env 在首次 start 时固化）。回滚：删追加行 +
+startOrRestart。设计与实测契约见 `openspec/changes/company-openid-sso/`。
+
+首登用户提 admin：
+
+```bash
+docker exec -i langfuse-langfuse-postgres-1 psql -U <web.env的DB用户> <db> \
+  -c "UPDATE users SET admin=true WHERE email='zhengdian@corp.netease.com';"
+```
+
+### 常用命令
+
+```bash
+cd /data/langfuse                       # 不要停在 web-current 里
+pm2 status                              # 进程状态
+pm2 logs langfuse-web --lines 50        # 应用日志
+tail -20 watch.log                      # 发布日志
+cat web-current/RELEASE_ID              # 当前运行版本
+```
+
+### 数据库迁移（升级 Langfuse 版本时注意）
+
+直接 node 启动**不执行** docker entrypoint 的 `prisma migrate deploy` + clickhouse 迁移。将来升级涉及 schema 变更时：
+
+```bash
+docker start langfuse-langfuse-web-1    # 借旧容器跑迁移
+docker logs -f langfuse-langfuse-web-1  # 等迁移完成
+docker stop langfuse-langfuse-web-1
+```
+
+所以 web 容器**先不 rm**。产物里已带 `packages/shared/prisma` 和 `packages/shared/clickhouse` 备用。
+
+### 磁盘治理（已配置）
+
+| 增长源 | 治理 |
+|---|---|
+| `/home/appops/.ndp/biz`（每次发布 +608MB，根盘） | watch 脚本每次部署后清理 2 小时前的缓存 |
+| pm2 日志（根盘，无限增长） | pm2-logrotate：50MB 轮转、留 5 份、压缩 |
+| systemd journal | `SystemMaxUse=200M` 上限 |
+| 根盘水位 | `disk-check.sh` 每日巡检，≥85% 记入 watch.log |
+
+## 七、踩坑总表（前人血泪，勿重复）
+
+| # | 坑 | 解法 |
+|---|---|---|
+| 1 | ant `<copy>`/`<tar>` 解引用 pnpm 符号链接 → `@swc/helpers` MODULE_NOT_FOUND | standalone 拷贝用 `cp -a`，打包用 shell `tar` |
+| 2 | monorepo 嵌套：standalone 入口是 `web/server.js`，static/public 要放 `web/` 子目录 | 对照 `web/Dockerfile` COPY 结构 |
+| 3 | `NEXT_PUBLIC_BASE_PATH=/langfuse` 是构建期变量，必须进 `.env.build` | 已配置，缺失则静态资源全 404 |
+| 4 | `/data/ndp` 属主 root，ndpclient（appops）写入报 Permission denied | `chown -R appops: /data/ndp`（appops 主组是 netease） |
+| 5 | web.env 值含空格，bash source 报错 | 用逐行解析注入，文件本身保持 docker .env 格式 |
+| 6 | ndpclient 重置发布区文件 mtime，`-nt` 检查失灵 | 稳定性检查改为「文件静置满 10 秒」 |
+| 7 | cron PATH 找不到 node → `pm2 restart` exit 127 | 脚本开头 `export PATH=/usr/local/bin:/usr/bin:/bin` |
+| 8 | 无 MTA，cron stderr 无声丢失 | crontab 重定向到 watch.log + ERR trap 记行号 |
+| 9 | 部署换目录时站在 web-current 里的终端报 `ENOENT: uv_cwd` | 服务器操作停在 `/data/langfuse` |
+| 10 | pnpm 包装脚本用了 PATH 里的老 node | ant exec 注入 `PATH=${node.home}/bin:${env.PATH}` |
+| 11 | minio 宿主机 API 端口是 9090 不是 9000 | web.env 里 S3 endpoint 用 `http://127.0.0.1:9090` |
+| 12 | 数据库迁移不随 node 启动自动跑 | 升级时临时 `docker start` web 容器跑迁移，容器先别删 |
 
 ## 附录 A：ant 构建脚本最终版（build.xml）
 
@@ -204,10 +332,11 @@ node web/server.js --keepAliveTimeout 110000
         </exec>
 
         <!-- 组装 standalone 运行包到 staging（结构与官方 Docker 镜像一致） -->
+        <!-- 注意：必须用 cp -a 保留 pnpm 的符号链接，ant copy 会解引用导致模块解析失败 -->
         <mkdir dir="${staging.dir}"/>
-        <copy todir="${staging.dir}">
-            <fileset dir="web/.next/standalone"/>
-        </copy>
+        <exec executable="cp" failonerror="true">
+            <arg line="-a web/.next/standalone/. ${staging.dir}/"/>
+        </exec>
         <!-- monorepo 嵌套结构：static 和 public 要放进 web/ 子目录 -->
         <copy todir="${staging.dir}/web/.next/static">
             <fileset dir="web/.next/static"/>
@@ -231,14 +360,15 @@ node web/server.js --keepAliveTimeout 110000
 
         <!-- dist 目录只放两个文件：tar 包 + 同名版本标记（供服务器端免解压对比） -->
         <mkdir dir="${dist.dir}"/>
-        <tar destfile="${dist.dir}/release.tar.gz" compression="gzip"
-             basedir="${staging.dir}"/>
+        <!-- ant 的 tar 同样会解引用符号链接，必须用 shell tar -->
+        <exec executable="tar" failonerror="true">
+            <arg line="-czf ${dist.dir}/release.tar.gz -C ${staging.dir} ."/>
+        </exec>
         <copy file="${staging.dir}/RELEASE_ID" todir="${dist.dir}"/>
         <checksum file="${dist.dir}/release.tar.gz" property="release.md5"/>
         <echo message="=== 打包完成: ${git.rev} md5=${release.md5} ==="/>
     </target>
 
-    <!-- 以下三个 target 语义不变：历史版本/回滚机制照旧，只是拷贝对象变成了 2 个文件 -->
     <target name="cpToHistoryDir">
         <copy todir="${history.build.dir}" overwrite="true">
             <fileset dir="${dist.dir}"/>
@@ -267,9 +397,7 @@ node web/server.js --keepAliveTimeout 110000
 </project>
 ```
 
-注：`history.build.dir` 是构建机上的历史目录（appops 可写即可）；服务器拿到的产物由平台发布配置的 **deploy_path** 决定（当前应为 `/data/ndp/langfuse-web`）。
-
-## 附录 B：pm2 配置（服务器 /data/langfuse/ecosystem.config.cjs）
+## 附录 B：pm2 配置（/data/langfuse/ecosystem.config.cjs）
 
 ```js
 const fs = require("fs");
@@ -293,34 +421,61 @@ module.exports = {
 
 启动：`pm2 start /data/langfuse/ecosystem.config.cjs && pm2 save && pm2 startup`
 
-## 附录 C：watch 脚本（服务器 /data/langfuse/watch-release.sh + cron）
+## 附录 C：watch 脚本最终版（/data/langfuse/watch-release.sh）
 
 ```bash
 #!/bin/bash
-# 检测 deploy_path 的 RELEASE_ID 变化 → 解压新包 → pm2 restart
-set -e
+set -euo pipefail
+export PATH=/usr/local/bin:/usr/bin:/bin   # cron 环境找不到 node/pm2，必须显式加
 DEPLOY_DIR="/data/ndp/langfuse-web"
 RUN_DIR="/data/langfuse/web-current"
 LOG=/data/langfuse/watch.log
+PM2=$(command -v pm2 || echo /usr/local/bin/pm2)
 
-if ! cmp -s "$DEPLOY_DIR/RELEASE_ID" "$RUN_DIR/RELEASE_ID" 2>/dev/null; then
-  echo "$(date) 检测到新版本: $(cat "$DEPLOY_DIR/RELEASE_ID")" >> "$LOG"
-  TMP=$(mktemp -d /data/langfuse/release.XXXXXX)
-  tar -xzf "$DEPLOY_DIR/release.tar.gz" -C "$TMP"
-  rm -rf "$RUN_DIR.old"
-  [ -d "$RUN_DIR" ] && mv "$RUN_DIR" "$RUN_DIR.old"
-  mv "$TMP" "$RUN_DIR"
-  rm -rf "$RUN_DIR.old"
-  pm2 restart langfuse-web
-  echo "$(date) 部署完成: $(cat "$RUN_DIR/RELEASE_ID")" >> "$LOG"
+exec 9>/var/run/langfuse-watch.lock
+flock -n 9 || exit 0    # 防重叠：上一轮还在跑就直接退出
+
+log() { echo "$(date '+%F %T') $*" >> "$LOG"; }
+
+ID_FILE="$DEPLOY_DIR/RELEASE_ID"
+TAR_FILE="$DEPLOY_DIR/release.tar.gz"
+[ -f "$ID_FILE" ] && [ -f "$TAR_FILE" ] || exit 0
+
+# 稳定性检查：两个文件都静置满 10 秒（不依赖文件间新旧顺序，ndpclient 会重写 mtime）
+now=$(date +%s)
+for f in "$ID_FILE" "$TAR_FILE"; do
+  [ $(( now - $(stat -c %Y "$f") )) -ge 10 ] || exit 0
+done
+
+cmp -s "$ID_FILE" "$RUN_DIR/RELEASE_ID" 2>/dev/null && exit 0
+
+log "检测到新版本: $(cat "$ID_FILE")"
+TMP=$(mktemp -d /data/langfuse/release.XXXXXX)
+trap 'rm -rf "$TMP"' EXIT
+trap 'log "异常退出: 行 $LINENO (exit=$?)"' ERR
+if ! tar -xzf "$TAR_FILE" -C "$TMP" || [ ! -f "$TMP/RELEASE_ID" ]; then
+  log "包不完整（解压失败或缺 RELEASE_ID），跳过本次，等下一轮"
+  exit 1
 fi
+rm -rf "$RUN_DIR.old"
+[ -d "$RUN_DIR" ] && mv "$RUN_DIR" "$RUN_DIR.old"
+mv "$TMP" "$RUN_DIR"
+trap - EXIT
+rm -rf "$RUN_DIR.old"
+"$PM2" restart langfuse-web
+log "部署完成: $(cat "$RUN_DIR/RELEASE_ID")"
+
+# 清理 ndpclient 发布缓存（只删 2 小时前的，避免碰到正在下载的包）
+find /home/appops/.ndp/biz -mindepth 1 -mmin +120 -delete 2>/dev/null || true
 ```
 
-cron（root）：`* * * * * /data/langfuse/watch-release.sh`
+cron（root，stderr 收进日志）：
 
-注意：服务器上的 node/pm2 需要先装好（Node 24，可用与构建机同款 `/home/ndp-soft/node-v24.19.0-linux-x64` tar 包装到服务器）。
+```
+* * * * * /data/langfuse/watch-release.sh >> /data/langfuse/watch.log 2>&1
+```
 
-## 附录 D：`.env.build` 当前内容（仓库根目录，随代码走）
+## 附录 D：.env.build（仓库根目录，随代码走）
 
 ```bash
 DATABASE_URL=postgresql://langfuse:dummy@127.0.0.1:5432/langfuse
@@ -334,4 +489,18 @@ CLICKHOUSE_PASSWORD=dummy
 LANGFUSE_S3_EVENT_UPLOAD_BUCKET=langfuse
 ```
 
-这些只为过构建校验（`web/src/env.mjs` + `packages/shared/src/env.ts` 的全部无默认值必填字段就这 9 个），运行时读服务器 `/data/langfuse/web.env`。
+这 9 个是 `web/src/env.mjs` + `packages/shared/src/env.ts` 全部无默认值必填字段，只为过构建校验，运行时读服务器 `/data/langfuse/web.env`。
+
+## 附录 E：验收清单（已全部通过）
+
+- [x] `https://ehr-service.netease.com/langfuse` 正常访问，登录正常（SALT 未变，历史 API Key 有效）
+- [x] trace/observation 列表正常（ClickHouse 连通）
+- [x] 事件上传正常（minio 连通）
+- [x] 国际化文案正常（zh）
+- [x] 平台发布新版本，1~2 分钟内线上自动更新（watch + pm2 restart）
+- [x] cron 环境下的完整部署路径单独复测通过
+- [x] 回滚机制与发布同一链路，天然支持
+
+## 附：本地仓库同步文档
+
+仓库内 `docs/web-node-deployment.md` 为开发机本地交接文档，本文档为其线上化完整版（补充了实施过程中踩坑与修复）。后续如部署配置变更，两处需同步更新。

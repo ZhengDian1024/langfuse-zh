@@ -1,0 +1,8 @@
+schema: spec-driven
+
+context: |
+  ehr-langfuse 是 Langfuse（LLM 工程平台，Next.js + tRPC + Prisma + ClickHouse
+  monorepo）的公司本地化定制 fork，需长期跟随上游版本，定制层必须收敛以控制
+  merge 冲突。部门基础设施：Nacos（服务发现/配置，集群入口
+  ehr-nacos.netease.com，namespace pre/prod）、公司统一认证服务 auth-service
+  （非标准 OIDC 票据协议）。工件使用中文撰写。

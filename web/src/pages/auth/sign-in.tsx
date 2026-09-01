@@ -88,6 +88,11 @@ export type PageProps = {
           name: string;
         }
       | false;
+    companySso:
+      | {
+          name: string;
+        }
+      | false;
     sso: boolean;
   };
   runningOnHuggingFaceSpaces: boolean;
@@ -172,6 +177,11 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
           env.AUTH_CUSTOM_ISSUER !== undefined &&
           env.AUTH_CUSTOM_NAME !== undefined
             ? { name: env.AUTH_CUSTOM_NAME }
+            : false,
+        companySso:
+          env.COMPANY_SSO_STUB === "true" ||
+          env.COMPANY_SSO_LOGIN_URL !== undefined
+            ? { name: env.COMPANY_SSO_NAME ?? "网易CORP邮箱登录" }
             : false,
         sso,
       },
@@ -504,6 +514,17 @@ export function SSOButtons({
               loading={providerSigningIn === "custom"}
               showLastUsedBadge={
                 hasMultipleAuthMethods && lastUsedMethod === "custom"
+              }
+            />
+          )}
+          {authProviders.companySso && (
+            <AuthProviderButton
+              icon={<TbBrandOauth className="mr-3" size={18} />}
+              label={authProviders.companySso.name}
+              onClick={() => handleSignIn("company-sso")}
+              loading={providerSigningIn === "company-sso"}
+              showLastUsedBadge={
+                hasMultipleAuthMethods && lastUsedMethod === "company-sso"
               }
             />
           )}

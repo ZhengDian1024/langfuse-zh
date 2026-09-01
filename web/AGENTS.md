@@ -27,6 +27,9 @@ Use root [AGENTS.md](../AGENTS.md) for monorepo-level rules.
 - tRPC router registry: `src/server/api/root.ts`
 - tRPC routers: `src/server/api/routers/*`, `src/features/*/server/*`
 - Public REST API routes: `src/pages/api/public/*`
+- Company OpenID SSO shim (ehr-langfuse localization, change
+  `company-openid-sso`): `src/pages/api/company-sso/*` routes backed by
+  `src/features/company-sso/server/*`
 - Unstable public eval APIs: `src/pages/api/public/unstable/{evaluators,evaluation-rules}/*`
 - Feature modules: `src/features/*`
 - Reusable UI components: `src/components/*`

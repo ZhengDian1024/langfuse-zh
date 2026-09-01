@@ -56,6 +56,8 @@ import {
   logger,
   resolveProjectRole,
 } from "@langfuse/shared/src/server";
+import { CompanySSOProvider } from "@/src/features/company-sso/server/provider";
+import { isCompanySsoEnabled } from "@/src/features/company-sso/server/authClient";
 import {
   getOrganizationPlanServerSide,
   getSelfHostedInstancePlanServerSide,
@@ -185,6 +187,10 @@ if (
       ...(env.AUTH_CUSTOM_CHECKS ? { checks: env.AUTH_CUSTOM_CHECKS } : {}),
     }),
   );
+
+// Company OpenID SSO (ehr-langfuse localization): self-hosted OAuth shim,
+// see web/src/features/company-sso/server/*.
+if (isCompanySsoEnabled()) staticProviders.push(CompanySSOProvider());
 
 if (env.AUTH_GOOGLE_CLIENT_ID && env.AUTH_GOOGLE_CLIENT_SECRET)
   staticProviders.push(

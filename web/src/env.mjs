@@ -260,6 +260,22 @@ export const env = createEnv({
     AUTH_WORDPRESS_CLIENT_AUTH_METHOD: zAuthMethod,
     AUTH_WORDPRESS_CHECKS: zAuthChecks,
     AUTH_WORDPRESS_ID_TOKEN_SIGNED_RESPONSE_ALG: zIdTokenAlg,
+    // Company OpenID SSO (ehr-langfuse localization): non-OIDC corporate auth
+    // bridged via self-hosted OAuth shim endpoints under /api/company-sso/*.
+    COMPANY_SSO_NAME: z.string().optional(),
+    COMPANY_SSO_LOGIN_URL: z.string().optional(),
+    COMPANY_SSO_SYSTEM_CODE: z.string().optional(),
+    COMPANY_SSO_COOKIE_NAME: z.string().optional().default("authOpenIdToken"),
+    COMPANY_SSO_AUTH_BASE_URL: z.string().optional(),
+    COMPANY_SSO_NACOS_ADDR: z.string().optional(),
+    COMPANY_SSO_NACOS_NAMESPACE: z.string().optional(),
+    COMPANY_SSO_NACOS_USERNAME: z.string().optional(),
+    COMPANY_SSO_NACOS_PASSWORD: z.string().optional(),
+    COMPANY_SSO_NACOS_SERVICE_NAME: z
+      .string()
+      .optional()
+      .default("auth-service"),
+    COMPANY_SSO_STUB: z.enum(["true", "false"]).optional(),
     AUTH_DOMAINS_WITH_SSO_ENFORCEMENT: z.string().optional(),
     AUTH_IGNORE_ACCOUNT_FIELDS: z.string().optional(),
     AUTH_DISABLE_USERNAME_PASSWORD: z.enum(["true", "false"]).optional(),
@@ -727,6 +743,17 @@ export const env = createEnv({
     AUTH_WORDPRESS_CHECKS: process.env.AUTH_WORDPRESS_CHECKS,
     AUTH_WORDPRESS_ID_TOKEN_SIGNED_RESPONSE_ALG:
       process.env.AUTH_WORDPRESS_ID_TOKEN_SIGNED_RESPONSE_ALG,
+    COMPANY_SSO_NAME: process.env.COMPANY_SSO_NAME,
+    COMPANY_SSO_LOGIN_URL: process.env.COMPANY_SSO_LOGIN_URL,
+    COMPANY_SSO_SYSTEM_CODE: process.env.COMPANY_SSO_SYSTEM_CODE,
+    COMPANY_SSO_COOKIE_NAME: process.env.COMPANY_SSO_COOKIE_NAME,
+    COMPANY_SSO_AUTH_BASE_URL: process.env.COMPANY_SSO_AUTH_BASE_URL,
+    COMPANY_SSO_NACOS_ADDR: process.env.COMPANY_SSO_NACOS_ADDR,
+    COMPANY_SSO_NACOS_NAMESPACE: process.env.COMPANY_SSO_NACOS_NAMESPACE,
+    COMPANY_SSO_NACOS_USERNAME: process.env.COMPANY_SSO_NACOS_USERNAME,
+    COMPANY_SSO_NACOS_PASSWORD: process.env.COMPANY_SSO_NACOS_PASSWORD,
+    COMPANY_SSO_NACOS_SERVICE_NAME: process.env.COMPANY_SSO_NACOS_SERVICE_NAME,
+    COMPANY_SSO_STUB: process.env.COMPANY_SSO_STUB,
     AUTH_IGNORE_ACCOUNT_FIELDS: process.env.AUTH_IGNORE_ACCOUNT_FIELDS,
     AUTH_DOMAINS_WITH_SSO_ENFORCEMENT:
       process.env.AUTH_DOMAINS_WITH_SSO_ENFORCEMENT,
